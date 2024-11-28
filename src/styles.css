@@ -1,0 +1,43 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import url("app/common/common.css");
+
+* {
+  padding: 0;
+  margin: 0px;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 5px;
+  background-color: #eff6fc;
+}
+
+/* ::-webkit-scrollbar {
+    display: none;
+    Hide scrollbar in Webkit browsers (Chrome, Safari)
+  } */
+
+/* Track */
+::-webkit-scrollbar {
+  width: 2px;
+  border-radius: 5px;
+  /* Width of the scrollbar */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #5c5c5c;
+  border-radius: 5px;
+  /* Color of the scrollbar handle */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #9b9b9b;
+  border-radius: 5px;
+  /* Color of the scrollbar handle on hover */
+}

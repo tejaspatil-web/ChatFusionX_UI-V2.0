@@ -1,0 +1,100 @@
+.main {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  gap: 20px;
+}
+
+.main-group {
+  display: flex;
+  height: 100%;
+  min-width: 300px;
+  max-width: 300px;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.main-chat {
+  width: 100%;
+  height: 100%;
+}
+
+.search-field {
+  display: flex;
+  width: 100%;
+  padding: 5px;
+  border-radius: 15px;
+  gap: 5px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+.search-field input {
+  outline: none;
+  border: none;
+  background-color: transparent;
+}
+
+.group {
+  background-color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  overflow: hidden;
+}
+
+.group-title {
+  margin: 5px;
+}
+
+.group-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 0px, rgba(0, 0, 0, 0.24) 0px 0px 0px;
+  border: none;
+}
+
+.group-list {
+  width: 100%;
+  height: 100%;
+  padding-bottom: 20px;
+  overflow-y: scroll;
+}
+
+.group-icon {
+  min-width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.group-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.group-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+
+  span {
+    font-size: 10px;
+    font-weight: 700;
+  }
+}
+
+.group-name {
+  font-family: Arial, Helvetica, sans-serif;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

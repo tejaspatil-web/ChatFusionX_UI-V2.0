@@ -1,0 +1,31 @@
+<div class="main">
+  <div class="main-group">
+    <div class="search-field">
+      <img src="{{ baseUrl }}search.svg" alt="" />
+      <input type="text" placeholder="Search" />
+    </div>
+
+    <div class="group">
+      <h4 class="group-title">Groups</h4>
+      <div class="group-list">
+        @for (item of items; let index = $index; track index) {
+        <div class="group-card">
+          <div class="group-icon">
+            <img
+              src="https://www.w3schools.com/w3images/avatar3.png"
+              alt="group-icon"
+            />
+          </div>
+          <div class="group-header">
+            <h5 class="group-name">Group Name</h5>
+            <span>2:13 PM</span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+  <div class="main-chat">
+    <app-chat></app-chat>
+  </div>
+</div>
