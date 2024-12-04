@@ -21,3 +21,53 @@
 .chat-profile img {
   object-fit: cover;
 }
+
+.user-chat span {
+  background-color: #d7d7d7;
+  font-size: small;
+  max-width: 600px;
+  word-break: break-all;
+  color: black;
+  padding: 10px 20px;
+  border-radius: 20px;
+}
+
+.client-chat span {
+  background-color: #6e00ff;
+  font-size: small;
+  max-width: 600px;
+  word-break: break-all;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+}
+
+.group-chat {
+  max-height: calc(100% - 100px);
+  min-height: calc(100% - 100px);
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
+
+.message {
+  margin: 10px 0px;
+}
+
+.message-input input {
+  width: 100%;
+  height: 100%;
+  padding: 0px 10px;
+  border: none;
+  outline: none;
+  font-size: medium;
+}
+
+.message button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #6e00ff;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+}

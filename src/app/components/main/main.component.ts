@@ -1,18 +1,41 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { baseUrl } from '../../environment/base-urls';
 import { ChatComponent } from '../chat/chat.component';
+import { SharedService } from '../../shared/services/shared.service';
+import {
+  ActivatedRoute,
+  provideRouter,
+  Router,
+  RouterOutlet,
+} from '@angular/router';
 
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [ChatComponent],
+  imports: [RouterOutlet, ChatComponent],
   templateUrl: './main.component.html',
   styleUrl: './main.component.css',
 })
-export class MainComponent {
+export class MainComponent implements OnInit {
   public baseUrl = baseUrl.images;
   public items = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0,
+    { groupName: 'Test', groupId: 1 },
+    { groupName: 'Test', groupId: 2 },
+    { groupName: 'Test', groupId: 3 },
+    { groupName: 'Test', groupId: 4 },
+    { groupName: 'Test', groupId: 5 },
+    { groupName: 'Test', groupId: 6 },
+    { groupName: 'Test', groupId: 7 },
   ];
-  constructor() {}
+  constructor(public sharedService: SharedService, private _router: Router) {}
+  ngOnInit(): void {}
+
+  checkRoute() {
+    return this._router.url.includes('group');
+  }
+
+  onGroupClick(item, index) {
+    this._router.navigate([`group/${item.groupId}`]);
+    item;
+  }
 }

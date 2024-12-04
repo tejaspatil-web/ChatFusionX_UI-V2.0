@@ -1,6 +1,13 @@
 <div class="chat w-100 h-100 p-10">
-  <div class="chat-header d-flex space-between w-100 item-center p-5 gap-10">
+  <div class="chat-header d-flex space-between w-100 item-center pb-5 gap-10">
     <div class="d-flex item-center justify-center gap-10">
+      @if(sharedService.isMobile){
+      <img
+        (click)="onBackButton()"
+        src="{{ baseUrl }}arrowback.svg"
+        alt="Back"
+      />
+      }
       <div class="chat-profile">
         <img
           class="w-100 h-100"
@@ -11,5 +18,38 @@
       <h4>Tejas</h4>
     </div>
     <img src="{{ baseUrl }}share.svg" alt="share" />
+  </div>
+  <div #chatContainer class="group-chat w-100">
+    @for(message of messages;let index = $index; track index){
+    <!-- User Message Div -->
+    <div
+      class="w-100 d-flex p-10 flex-column {{
+        message.isCurrentUser ? 'user-chat' : 'item-end client-chat'
+      }}"
+    >
+      <div class="d-flex item-center gap-5">
+        <h5>{{ message.name }}:</h5>
+        <span>{{ message.message }}</span>
+        <h6>{{ message.time }}</h6>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Message Input Code -->
+  <div class="message w-100 d-flex justify-center gap-10">
+    <div class="message-input w-100">
+      <input
+        #messageInput
+        (keyup)="onEnter($event)"
+        type="text"
+        name=""
+        id=""
+        placeholder="Type your message here..."
+      />
+    </div>
+    <button (click)="sendMessage()">
+      <img src="{{ baseUrl }}send.svg" alt="" />
+    </button>
   </div>
 </div>

@@ -1,3 +1,13 @@
+.main-container {
+  gap: 20px;
+}
+
 header {
   max-width: 65px;
+}
+
+@media screen and (max-width: 768px) {
+  .main-container {
+    gap: 0px;
+  }
 }

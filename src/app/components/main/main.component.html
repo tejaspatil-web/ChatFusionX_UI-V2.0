@@ -1,4 +1,6 @@
 <div class="main">
+  <!-- This Code for Mobile View -->
+  @if(sharedService.isMobile){ @if(!checkRoute()){
   <div class="main-group">
     <div class="search-field">
       <img src="{{ baseUrl }}search.svg" alt="" />
@@ -9,7 +11,7 @@
       <h4 class="group-title">Groups</h4>
       <div class="group-list">
         @for (item of items; let index = $index; track index) {
-        <div class="group-card">
+        <div (click)="onGroupClick(item, index)" class="group-card">
           <div class="group-icon">
             <img
               src="https://www.w3schools.com/w3images/avatar3.png"
@@ -17,7 +19,39 @@
             />
           </div>
           <div class="group-header">
-            <h5 class="group-name">Group Name</h5>
+            <h5 class="group-name">{{ item.groupName }}</h5>
+            <span>2:13 PM</span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+  } @if(checkRoute()) {
+  <div class="main-chat">
+    <router-outlet></router-outlet>
+  </div>
+  } }@else {
+  <!-- This Code for Desktop View -->
+  <div class="main-group">
+    <div class="search-field">
+      <img src="{{ baseUrl }}search.svg" alt="" />
+      <input type="text" placeholder="Search" />
+    </div>
+
+    <div class="group">
+      <h4 class="group-title">Groups</h4>
+      <div class="group-list">
+        @for (item of items; let index = $index; track index) {
+        <div (click)="onGroupClick(item, index)" class="group-card">
+          <div class="group-icon">
+            <img
+              src="https://www.w3schools.com/w3images/avatar3.png"
+              alt="group-icon"
+            />
+          </div>
+          <div class="group-header">
+            <h5 class="group-name">{{ item.groupName }}</h5>
             <span>2:13 PM</span>
           </div>
         </div>
@@ -26,6 +60,7 @@
     </div>
   </div>
   <div class="main-chat">
-    <app-chat></app-chat>
+    <router-outlet></router-outlet>
   </div>
+  }
 </div>
