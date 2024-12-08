@@ -11,12 +11,14 @@ import { baseUrl } from '../../environment/base-urls';
 import { Helper } from '../../shared/classes/helper.class';
 import { FormsModule } from '@angular/forms';
 import { SharedService } from '../../shared/services/shared.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { SocketService } from '../../connection/socket.service';
 
 @Component({
   selector: 'app-chat',
   standalone: true,
   imports: [FormsModule],
+  providers: [],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css',
 })
@@ -27,13 +29,32 @@ export class ChatComponent implements OnInit, AfterViewInit {
   public isMobile = false;
   private _userInput: HTMLInputElement;
   private _chatContainer: HTMLDivElement;
+  private _groupId: string;
   public messages = [
-    { name: 'Tejas', message: 'hiii', time: '2:11 PM', isCurrentUser: true },
-    { name: 'Sagar', message: 'hey', time: '2:11 PM', isCurrentUser: false },
+    { name: 'User', message: 'hiii', time: '2:11 PM', isCurrentUser: true },
+    { name: 'Client', message: 'hey', time: '2:11 PM', isCurrentUser: false },
   ];
-  constructor(public sharedService: SharedService, private _router: Router) {}
+  constructor(
+    public sharedService: SharedService,
+    private _router: Router,
+    private _activatedRoute: ActivatedRoute,
+    private _socketService: SocketService
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this._activatedRoute.paramMap.subscribe((params) => {
+      this._groupId = params.get('id');
+      this._socketService.joinGroup(this._groupId);
+      this._socketService.onMessageReceived(this._groupId, (message) => {
+        this.messages.push({
+          name: 'Client',
+          message: message.message,
+          time: message.time,
+          isCurrentUser: false,
+        });
+      });
+    });
+  }
 
   ngAfterViewInit(): void {
     this._userInput = this.userInput.nativeElement;
@@ -50,7 +71,13 @@ export class ChatComponent implements OnInit, AfterViewInit {
   sendMessage() {
     if (this._userInput.value) {
       this.messages.push({
-        name: 'Tejas',
+        name: 'User',
+        message: this._userInput.value,
+        time: Helper.getTimeInIndia(),
+        isCurrentUser: true,
+      });
+      this._socketService.sendMessageToGroup(this._groupId, {
+        name: 'User',
         message: this._userInput.value,
         time: Helper.getTimeInIndia(),
         isCurrentUser: true,
