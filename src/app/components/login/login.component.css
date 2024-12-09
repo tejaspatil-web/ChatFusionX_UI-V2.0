@@ -1,0 +1,56 @@
+form {
+  min-width: 350px;
+  min-height: 350px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+h4 {
+  color: rgb(129 110 253);
+}
+
+h5 {
+  color: rgb(116, 116, 116);
+}
+
+.signup {
+  color: rgb(129 110 253);
+}
+
+input {
+  height: 35px;
+  width: 100%;
+  padding: 0px 2px;
+  outline: none;
+  border: none;
+  background-color: rgb(226, 226, 226);
+}
+
+button {
+  height: 35px;
+  background-color: rgb(129 110 253);
+  border: none;
+  color: white;
+  border-radius: 25px;
+}
+
+.username {
+  background-color: rgb(226, 226, 226);
+  padding: 5px 10px;
+  border-radius: 25px;
+}
+
+.email {
+  background-color: rgb(226, 226, 226);
+  padding: 5px 10px;
+  border-radius: 25px;
+}
+
+.password {
+  background-color: rgb(226, 226, 226);
+  padding: 5px 10px;
+  border-radius: 25px;
+}

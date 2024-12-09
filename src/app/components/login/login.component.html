@@ -1,0 +1,47 @@
+<div class="h-100 w-100 d-flex justify-center item-center">
+  <form
+    class="d-flex item-center flex-column gap-15"
+    [formGroup]="profileForm"
+    (ngSubmit)="onSubmit()"
+  >
+    <div class="d-flex item-center flex-column">
+      <img src="{{ baseUrl }}logo.png" width="50px" height="50px" alt="" />
+      <h4>ChatFusionX</h4>
+    </div>
+    @if(false){
+    <div class="w-100 d-flex username">
+      <img src="{{ baseUrl }}person.svg" alt="" />
+      <input
+        id="username"
+        type="text"
+        placeholder="Enter your username"
+        formControlName="username"
+      />
+    </div>
+    }
+    <div class="w-100 d-flex email">
+      <img src="{{ baseUrl }}email.svg" alt="" />
+      <input
+        id="email"
+        type="text"
+        placeholder="Enter your email"
+        formControlName="email"
+      />
+    </div>
+    <div class="w-100 d-flex password">
+      <img src="{{ baseUrl }}password.svg" alt="" />
+      <input
+        id="password"
+        type="password"
+        placeholder="Enter your password"
+        formControlName="password"
+      />
+    </div>
+    <button class="w-100">Login</button>
+    <h5>Forgot Password?</h5>
+    <h5>
+      Don't have account yet?
+      <span class="signup" (click)="signUp()">Signup now</span>
+    </h5>
+  </form>
+</div>
