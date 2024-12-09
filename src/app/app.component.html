@@ -1,8 +1,11 @@
 @if(isScreenLoaded){
 <div class="w-100 h-100 d-flex main-container">
+  @if(this.currentRoute !== '/login'){
   <header class="w-100 h-100"><app-header></app-header></header>
-  <main class="w-100 h-100"><app-main></app-main></main>
-  <!-- <router-outlet></router-outlet> -->
-  <!-- <footer><app-footer></app-footer></footer> -->
+  }
+  <div class="w-100 h-100">
+    <router-outlet></router-outlet>
+  </div>
 </div>
+<!-- <footer class="d-flex item-end"><app-footer></app-footer></footer> -->
 }

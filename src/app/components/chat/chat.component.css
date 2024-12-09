@@ -23,21 +23,21 @@
 }
 
 .user-chat span {
-  background-color: #d7d7d7;
-  font-size: small;
-  max-width: 600px;
-  word-break: break-all;
-  color: black;
-  padding: 10px 20px;
-  border-radius: 20px;
-}
-
-.client-chat span {
   background-color: #6e00ff;
   font-size: small;
   max-width: 600px;
   word-break: break-all;
   color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+}
+
+.client-chat span {
+  background-color: #d7d7d7;
+  font-size: small;
+  max-width: 600px;
+  word-break: break-all;
+  color: black;
   padding: 10px 20px;
   border-radius: 20px;
 }

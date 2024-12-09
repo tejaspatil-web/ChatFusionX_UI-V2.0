@@ -89,7 +89,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
   }
 
   onBackButton() {
-    this._router.navigate(['']);
+    this._router.navigate(['/dashboard']);
   }
 
   private _scrollToBottom(): void {

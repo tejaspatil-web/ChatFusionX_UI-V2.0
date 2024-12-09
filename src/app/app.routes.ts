@@ -1,4 +1,7 @@
 import { Routes } from '@angular/router';
-import { ChatComponent } from './components/chat/chat.component';
+import { LoginComponent } from './components/login/login.component';
 
-export const routes: Routes = [{ path: 'group/:id', component: ChatComponent }];
+export const routes: Routes = [
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+];

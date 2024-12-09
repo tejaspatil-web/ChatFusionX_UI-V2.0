@@ -7,8 +7,10 @@ import { io, Socket } from 'socket.io-client';
 })
 export class SocketService {
   private socket: Socket;
-  private serverUrl: string = 'http://localhost:8080/getway';
-  private serverApiUrl: string = 'http://localhost:8080/api/v1/user';
+  private serverUrl: string =
+    'https://chatfusionx-api-v2-0.onrender.com/getway';
+  private serverApiUrl: string =
+    'https://chatfusionx-api-v2-0.onrender.com/api/v1/user';
 
   constructor(private _http: HttpClient) {
     this.socket = io(this.serverUrl);
