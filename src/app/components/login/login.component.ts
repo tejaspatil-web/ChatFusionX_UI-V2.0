@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -6,6 +6,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { baseUrl } from '../../environment/base-urls';
+import { SharedService } from '../../shared/services/shared.service';
+import { UserAuthService } from '../../services/user-auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -16,15 +19,109 @@ import { baseUrl } from '../../environment/base-urls';
 })
 export class LoginComponent {
   public baseUrl = baseUrl.images;
+  public isSignUpPage: boolean = false;
+  public isOtpPage: boolean = false;
+  public otpValidator: string = 'verified';
+  public isLoader: boolean = false;
+  private _sharedService = inject(SharedService);
+  private _userAuthService = inject(UserAuthService);
+  private _router = inject(Router);
+
   profileForm = new FormGroup({
     username: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl(''),
+    password: new FormControl('', [Validators.required]),
+    otp: new FormControl('', [
+      Validators.required,
+      Validators.minLength(6),
+      Validators.maxLength(6),
+    ]),
   });
 
   onSubmit() {
-    this.profileForm;
+    if (this.isSignUpPage) {
+      this._signUp();
+    }
+    if (!this.isSignUpPage && !this.isOtpPage) {
+      this._login();
+    }
   }
 
-  signUp() {}
+  private _login() {
+    const isValid =
+      this.profileForm.get('email')?.valid &&
+      this.profileForm.get('password')?.valid;
+    if (isValid) {
+      this.isLoader = true;
+      const { email, password } = this.profileForm.value;
+      this._userAuthService
+        .userLogin({ email: email, password: password })
+        .subscribe({
+          next: (response: any) => {
+            this._sharedService.opnSnackBar.next('Login successful');
+            this.isLoader = true;
+            this._router.navigate(['/dashboard']);
+          },
+          error: (error) => {
+            this._sharedService.opnSnackBar.next(error?.error.message);
+            this.isLoader = false;
+          },
+        });
+    } else {
+      this._sharedService.opnSnackBar.next(
+        'Please provide valid input for all required fields.'
+      );
+    }
+  }
+
+  private _signUp() {
+    const isValid =
+      this.profileForm.get('username')?.valid &&
+      this.profileForm.get('email')?.valid &&
+      this.profileForm.get('password')?.valid;
+    if (isValid) {
+      this.isLoader = true;
+      const { username, email, password } = this.profileForm.value;
+      this._userAuthService
+        .userRegistation({
+          name: username,
+          email: email,
+          password: password,
+        })
+        .subscribe({
+          next: (response: any) => {
+            this._sharedService.opnSnackBar.next(response.message);
+            this.isLoader = false;
+            this.isOtpPage = true;
+          },
+          error: (error) => {
+            this._sharedService.opnSnackBar.next(error?.error.message);
+            this.isLoader = false;
+          },
+        });
+    } else {
+      this._sharedService.opnSnackBar.next(
+        'Please provide valid input for all required fields.'
+      );
+    }
+  }
+
+  onOtpEnter(event) {
+    if (event.target.value.length > 6) {
+      event.target.value = event.target.value.substring(0, 6);
+    }
+  }
+
+  onSignUpPage() {
+    this.isOtpPage = false;
+    this.isSignUpPage = true;
+  }
+
+  onLoginPage() {
+    this.isSignUpPage = false;
+  }
+
+  resendOtp() {}
+
+  forgotPassword() {}
 }

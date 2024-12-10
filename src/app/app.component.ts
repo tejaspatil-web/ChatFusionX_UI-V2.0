@@ -10,11 +10,12 @@ import { HeaderComponent } from './components/header/header.component';
 import { SharedService } from './shared/services/shared.service';
 import { isPlatformBrowser } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { SnackbarComponent } from './shared/components/snackbar/snackbar.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HeaderComponent, RouterOutlet],
+  imports: [HeaderComponent, SnackbarComponent, RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })

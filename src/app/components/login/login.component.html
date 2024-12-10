@@ -8,7 +8,7 @@
       <img src="{{ baseUrl }}logo.png" width="50px" height="50px" alt="" />
       <h4>ChatFusionX</h4>
     </div>
-    @if(false){
+    @if(!isOtpPage){ @if(isSignUpPage){
     <div class="w-100 d-flex username">
       <img src="{{ baseUrl }}person.svg" alt="" />
       <input
@@ -37,11 +37,57 @@
         formControlName="password"
       />
     </div>
-    <button class="w-100">Login</button>
-    <h5>Forgot Password?</h5>
+    <button class="w-100">
+      {{ isSignUpPage ? "Signup" : "Login" }}
+      @if(isLoader){
+      <div class="loader"></div>
+      }
+    </button>
+    @if(!isSignUpPage){
+    <h5 class="signup" (click)="forgotPassword()">Forgot Password?</h5>
     <h5>
       Don't have account yet?
-      <span class="signup" (click)="signUp()">Signup now</span>
+      <span class="signup" (click)="onSignUpPage()">Signup now</span>
     </h5>
+    }@else{
+    <h5>
+      Already have an account?
+      <span class="signup" (click)="onLoginPage()">Log in</span>
+    </h5>
+    } }@else{
+    <h5>
+      We've send a verification code to your email - <br />
+      {{ this.profileForm.value.email }}
+    </h5>
+    <div class="w-100 d-flex username">
+      @switch (otpValidator) { @case ('check') {
+      <img src="{{ baseUrl }}shield-question.svg" alt="" />
+      } @case ('cheking') {
+      <img src="{{ baseUrl }}safety-check.svg" alt="" />
+      } @case ('wrong') {
+      <img src="{{ baseUrl }}gapp-maybe.svg" alt="" />
+      } @case ('verified') {
+      <img src="{{ baseUrl }}verified-user.svg" alt="" />
+      } }
+      <input
+        id="otp"
+        type="number"
+        maxlength="6"
+        (input)="onOtpEnter($event)"
+        placeholder="Enter your OTP"
+        formControlName="otp"
+      />
+    </div>
+    <h5>
+      Want to change your email address?
+      <span class="signup" (click)="onSignUpPage()">Change Here</span>
+    </h5>
+    <button class="w-100">
+      Validate @if(isLoader){
+      <div class="loader"></div>
+      }
+    </button>
+    <h5 class="signup" (click)="resendOtp()">Resend OTP</h5>
+    }
   </form>
 </div>
