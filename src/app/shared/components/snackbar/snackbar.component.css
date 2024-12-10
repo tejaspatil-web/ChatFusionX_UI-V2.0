@@ -1,0 +1,53 @@
+.snackbar {
+  visibility: visible;
+  min-width: 250px; /* Minimum width */
+  max-width: 90%; /* Maximum width for larger screens */
+  background-color: rgb(129 110 253);
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+  padding: 10px;
+  position: fixed;
+  z-index: 999;
+  left: 50%; /* Horizontally center it */
+  transform: translateX(-50%); /* Ensure it's centered */
+  font-size: 15px;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.5; /* Line height for readability */
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  white-space: normal; /* Wrap text if it's too long */
+  word-wrap: break-word; /* Break long words */
+  box-sizing: border-box; /* Ensure padding is accounted for */
+  padding-left: 12px; /* Add some left padding */
+  padding-right: 12px; /* Add some right padding */
+}
+
+.snackbar.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.snackbar.hide {
+  opacity: 0;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Responsive Styles: smaller font size, reduced padding on mobile screens */
+@media (max-width: 600px) {
+  .snackbar {
+    font-size: 12px; /* Smaller font size for mobile */
+    padding: 12px; /* Reduced padding */
+    max-width: 85%; /* Reduce width even more on mobile */
+    left: 50%; /* Reaffirm centering */
+    transform: translateX(-50%); /* Keep it centered */
+  }
+}
+
+/* Optional: Adjust for medium-sized devices (e.g., tablets) */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .snackbar {
+    font-size: 14px; /* Slightly smaller font size for tablets */
+    max-width: 85%; /* Smaller width for tablet-sized devices */
+  }
+}
