@@ -39,11 +39,15 @@ export class LoginComponent {
   });
 
   onSubmit() {
-    if (this.isSignUpPage) {
+    if (this.isSignUpPage && !this.isOtpPage) {
       this._signUp();
     }
     if (!this.isSignUpPage && !this.isOtpPage) {
       this._login();
+    }
+
+    if (this.isOtpPage) {
+      this._verifyUser();
     }
   }
 
@@ -83,10 +87,9 @@ export class LoginComponent {
       this.isLoader = true;
       const { username, email, password } = this.profileForm.value;
       this._userAuthService
-        .userRegistation({
-          name: username,
+        .sendVerificationCode({
+          userName: username,
           email: email,
-          password: password,
         })
         .subscribe({
           next: (response: any) => {
@@ -103,6 +106,32 @@ export class LoginComponent {
       this._sharedService.opnSnackBar.next(
         'Please provide valid input for all required fields.'
       );
+    }
+  }
+
+  private _verifyUser() {
+    if (this.profileForm.valid) {
+      this.isLoader = true;
+      const { email, password, otp, username } = this.profileForm.value;
+      this._userAuthService
+        .verifyUser({
+          email,
+          otp,
+          password,
+          name: username,
+        })
+        .subscribe({
+          next: (response: any) => {
+            this._sharedService.opnSnackBar.next(response.message);
+            this.isLoader = false;
+            this.isSignUpPage = false;
+            this.isOtpPage = false;
+          },
+          error: (error) => {
+            this._sharedService.opnSnackBar.next(error?.error.message);
+            this.isLoader = false;
+          },
+        });
     }
   }
 

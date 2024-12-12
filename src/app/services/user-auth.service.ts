@@ -9,12 +9,17 @@ export class UserAuthService {
   private _baseUrl = baseUrl.prodApiUrl;
   constructor(private _httpClient: HttpClient) {}
 
-  userRegistation(userDetails: {
-    name: string;
+  sendVerificationCode(userDetails: { email: string; userName: string }) {
+    return this._httpClient.post(`${this._baseUrl}otp/send`, userDetails);
+  }
+
+  verifyUser(userDetails: {
     email: string;
+    otp: string;
     password: string;
+    name: string;
   }) {
-    return this._httpClient.post(`${this._baseUrl}user/register`, userDetails);
+    return this._httpClient.post(`${this._baseUrl}otp/verify`, userDetails);
   }
 
   userLogin(userDetails: { email: string; password: string }) {
