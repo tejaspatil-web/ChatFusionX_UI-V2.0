@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { baseUrl } from '../../environment/base-urls';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -10,5 +11,10 @@ import { baseUrl } from '../../environment/base-urls';
 })
 export class HeaderComponent {
   public baseUrl = baseUrl.images;
-  constructor() {}
+  constructor(private readonly _router: Router) {}
+
+  logOut() {
+    localStorage.clear();
+    this._router.navigate(['/login']);
+  }
 }

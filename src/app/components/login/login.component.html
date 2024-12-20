@@ -37,7 +37,7 @@
         formControlName="password"
       />
     </div>
-    <button class="w-100">
+    <button [disabled]="isLoader" class="w-100">
       {{ isSignUpPage ? "Signup" : "Login" }}
       @if(isLoader){
       <div class="loader"></div>
@@ -60,8 +60,10 @@
       {{ this.profileForm.value.email }}
     </h5>
     <div class="w-100 d-flex username">
-      @switch (otpValidator) { @case ('check') {
+      @switch (otpValidatorIcon) { @case ('check') {
       <img src="{{ baseUrl }}shield-question.svg" alt="" />
+      } @case ('lock') {
+      <img src="{{ baseUrl }}shield-lock.svg" alt="" />
       } @case ('cheking') {
       <img src="{{ baseUrl }}safety-check.svg" alt="" />
       } @case ('wrong') {
@@ -71,6 +73,7 @@
       } }
       <input
         id="otp"
+        [disabled]="isLoader"
         type="number"
         maxlength="6"
         (input)="onOtpEnter($event)"
@@ -82,7 +85,7 @@
       Want to change your email address?
       <span class="signup" (click)="onSignUpPage()">Change Here</span>
     </h5>
-    <button class="w-100">
+    <button [disabled]="isLoader" class="w-100">
       Validate @if(isLoader){
       <div class="loader"></div>
       }

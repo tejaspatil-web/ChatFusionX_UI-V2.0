@@ -21,7 +21,7 @@ export class LoginComponent {
   public baseUrl = baseUrl.images;
   public isSignUpPage: boolean = false;
   public isOtpPage: boolean = false;
-  public otpValidator: string = 'verified';
+  public otpValidatorIcon: string = 'check';
   public isLoader: boolean = false;
   private _sharedService = inject(SharedService);
   private _userAuthService = inject(UserAuthService);
@@ -62,6 +62,11 @@ export class LoginComponent {
         .userLogin({ email: email, password: password })
         .subscribe({
           next: (response: any) => {
+            const authorized = { isUserAuthorized: true };
+            localStorage.setItem(
+              'isUserAuthorized',
+              JSON.stringify(authorized)
+            );
             this._sharedService.opnSnackBar.next('Login successful');
             this.isLoader = true;
             this._router.navigate(['/dashboard']);
@@ -110,7 +115,11 @@ export class LoginComponent {
   }
 
   private _verifyUser() {
-    if (this.profileForm.valid) {
+    if (
+      this.profileForm.valid &&
+      this.profileForm.value.otp.toString().length === 6
+    ) {
+      this.otpValidatorIcon = 'cheking';
       this.isLoader = true;
       const { email, password, otp, username } = this.profileForm.value;
       this._userAuthService
@@ -128,25 +137,40 @@ export class LoginComponent {
             this.isOtpPage = false;
           },
           error: (error) => {
+            this.otpValidatorIcon = 'wrong';
             this._sharedService.opnSnackBar.next(error?.error.message);
             this.isLoader = false;
           },
         });
+    } else {
+      this._sharedService.opnSnackBar.next(
+        'OTP must be exactly 6 numeric digits.'
+      );
     }
   }
 
   onOtpEnter(event) {
-    if (event.target.value.length > 6) {
+    this.otpValidatorIcon = 'lock';
+    if (event.target.value.length >= 6) {
+      this.otpValidatorIcon = 'verified';
       event.target.value = event.target.value.substring(0, 6);
+      this.profileForm.value.otp = event.target.value;
     }
   }
 
   onSignUpPage() {
     this.isOtpPage = false;
     this.isSignUpPage = true;
+    this.otpValidatorIcon = 'lock';
+    this.profileForm.patchValue({
+      otp: '',
+    });
   }
 
   onLoginPage() {
+    this.profileForm.patchValue({
+      password: '',
+    });
     this.isSignUpPage = false;
   }
 

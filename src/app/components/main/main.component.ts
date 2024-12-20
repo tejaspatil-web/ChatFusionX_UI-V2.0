@@ -18,20 +18,16 @@ import {
 })
 export class MainComponent implements OnInit {
   public baseUrl = baseUrl.images;
-  public items = [
-    { groupName: 'Test', groupId: 1 },
-    { groupName: 'Test', groupId: 2 },
-    { groupName: 'Test', groupId: 3 },
-    { groupName: 'Test', groupId: 4 },
-    { groupName: 'Test', groupId: 5 },
-    { groupName: 'Test', groupId: 6 },
-    { groupName: 'Test', groupId: 7 },
-  ];
+  public items = [];
   constructor(public sharedService: SharedService, private _router: Router) {}
   ngOnInit(): void {}
 
   checkRoute() {
     return this._router.url.includes('group');
+  }
+
+  addGroup() {
+    this.items.push({ groupName: 'Test', groupId: 1 });
   }
 
   onGroupClick(item, index) {

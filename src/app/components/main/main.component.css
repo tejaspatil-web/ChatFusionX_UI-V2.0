@@ -47,7 +47,11 @@
 }
 
 .group-title {
-  margin: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 5px 10px 5px;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 0px, rgba(0, 0, 0, 0.24) 0px 0px 0px;
 }
 
 .group-card {

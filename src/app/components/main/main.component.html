@@ -8,7 +8,10 @@
     </div>
 
     <div class="group">
-      <h4 class="group-title">Groups</h4>
+      <div class="group-title">
+        <h4>Groups</h4>
+        <img (click)="addGroup()" src="{{ baseUrl }}add-group.svg" alt="" />
+      </div>
       <div class="group-list">
         @for (item of items; let index = $index; track index) {
         <div (click)="onGroupClick(item, index)" class="group-card">
@@ -40,7 +43,10 @@
     </div>
 
     <div class="group">
-      <h4 class="group-title">Groups</h4>
+      <div class="group-title">
+        <h4>Groups</h4>
+        <img (click)="addGroup()" src="{{ baseUrl }}add-group.svg" alt="" />
+      </div>
       <div class="group-list">
         @for (item of items; let index = $index; track index) {
         <div (click)="onGroupClick(item, index)" class="group-card">
