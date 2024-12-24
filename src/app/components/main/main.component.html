@@ -10,22 +10,26 @@
     <div class="group">
       <div class="group-title">
         <h4>Groups</h4>
-        <img (click)="addGroup()" src="{{ baseUrl }}add-group.svg" alt="" />
+        <img class="pointer" (click)="addGroup()" src="{{ baseUrl }}add-group.svg" alt="" />
       </div>
       <div class="group-list">
-        @for (item of items; let index = $index; track index) {
-        <div (click)="onGroupClick(item, index)" class="group-card">
-          <div class="group-icon">
-            <img
-              src="https://www.w3schools.com/w3images/avatar3.png"
-              alt="group-icon"
-            />
-          </div>
-          <div class="group-header">
-            <h5 class="group-name">{{ item.groupName }}</h5>
-            <span>2:13 PM</span>
-          </div>
-        </div>
+        @if(groupList.length === 0){
+          <h4 class="h-100 d-flex justify-center item-center text-center">No groups found. Please join a group or create one.</h4>
+        }@else{
+          @for (group of groupList; let index = $index; track index) {
+            <div (click)="onGroupClick(group, index)" class="group-card">
+              <div class="group-icon">
+                <img
+                  src="{{ baseUrl }}group.png"
+                  alt="group-icon"
+                />
+              </div>
+              <div class="group-header">
+                <h5 class="group-name">{{ group.name }}</h5>
+                <span>2:13 PM</span>
+              </div>
+            </div>
+            }
         }
       </div>
     </div>
@@ -45,22 +49,26 @@
     <div class="group">
       <div class="group-title">
         <h4>Groups</h4>
-        <img (click)="addGroup()" src="{{ baseUrl }}add-group.svg" alt="" />
+        <img class="pointer" (click)="addGroup()" src="{{ baseUrl }}add-group.svg" alt="" />
       </div>
       <div class="group-list">
-        @for (item of items; let index = $index; track index) {
-        <div (click)="onGroupClick(item, index)" class="group-card">
-          <div class="group-icon">
-            <img
-              src="https://www.w3schools.com/w3images/avatar3.png"
-              alt="group-icon"
-            />
-          </div>
-          <div class="group-header">
-            <h5 class="group-name">{{ item.groupName }}</h5>
-            <span>2:13 PM</span>
-          </div>
-        </div>
+        @if(groupList.length === 0){
+          <h4 class="h-100 d-flex justify-center item-center text-center">No groups found. Please join a group or create one.</h4>
+        }@else{
+          @for (group of groupList; let index = $index; track index) {
+            <div (click)="onGroupClick(group, index)" class="group-card">
+              <div class="group-icon">
+                <img
+                  src="{{ baseUrl }}group.png"
+                  alt="group-icon"
+                />
+              </div>
+              <div class="group-header">
+                <h5 class="group-name">{{ group.name }}</h5>
+                <span>2:13 PM</span>
+              </div>
+            </div>
+            }
         }
       </div>
     </div>
@@ -70,3 +78,7 @@
   </div>
   }
 </div>
+
+@if(isShowDialog){
+  <app-dialog (afterDialogClose)="afterDialogClose($event)"></app-dialog>
+}

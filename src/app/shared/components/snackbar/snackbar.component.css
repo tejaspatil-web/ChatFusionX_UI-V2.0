@@ -8,7 +8,7 @@
   border-radius: 5px;
   padding: 10px;
   position: fixed;
-  z-index: 999;
+  z-index: 1001;
   left: 50%; /* Horizontally center it */
   transform: translateX(-50%); /* Ensure it's centered */
   font-size: 15px;

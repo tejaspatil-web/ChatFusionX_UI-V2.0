@@ -9,6 +9,8 @@ import { baseUrl } from '../../environment/base-urls';
 import { SharedService } from '../../shared/services/shared.service';
 import { UserAuthService } from '../../services/user-auth.service';
 import { Router } from '@angular/router';
+import { UserService } from '../../shared/services/user-shared.service';
+import { UserDetails } from '../../shared/models/user.model';
 
 @Component({
   selector: 'app-login',
@@ -23,8 +25,11 @@ export class LoginComponent {
   public isOtpPage: boolean = false;
   public otpValidatorIcon: string = 'check';
   public isLoader: boolean = false;
+
+  // Services
   private _sharedService = inject(SharedService);
   private _userAuthService = inject(UserAuthService);
+  private _userService = inject(UserService);
   private _router = inject(Router);
 
   profileForm = new FormGroup({
@@ -61,12 +66,24 @@ export class LoginComponent {
       this._userAuthService
         .userLogin({ email: email, password: password })
         .subscribe({
-          next: (response: any) => {
+          next: (response: UserDetails) => {
             const authorized = { isUserAuthorized: true };
             localStorage.setItem(
               'isUserAuthorized',
               JSON.stringify(authorized)
             );
+            localStorage.setItem(
+              'userDetails',
+              JSON.stringify(response)
+            );
+            this._userService.userDetails = new UserDetails(
+              response.name,
+              response.email,
+              response.id,
+              response.adminGroupIds,
+              response.joinedGroupIds
+            );
+
             this._sharedService.opnSnackBar.next('Login successful');
             this.isLoader = true;
             this._router.navigate(['/dashboard']);

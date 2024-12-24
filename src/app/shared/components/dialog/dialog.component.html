@@ -1,0 +1,22 @@
+@if(showDialog){
+  <div class="dialog-backdrop" (click)="closeDialog()">
+    <div class="dialog-container" (click)="$event.stopPropagation()">
+      <div>
+        <form [formGroup]="groupForm"
+        (ngSubmit)="onSubmit()">
+          <p>New Group</p>
+          <div class="input-group w-100">
+            <input type="text" placeholder="Enter group name" formControlName="groupName">
+          </div>
+          <div class="input-group w-100">
+            <input type="text" placeholder="Enter group description" formControlName="description">
+          </div>
+          <div class="btn">
+            <button (click)="createGroup()">Create</button>
+            <button (click)="closeDialog()">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}

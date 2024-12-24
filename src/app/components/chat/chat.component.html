@@ -11,13 +11,13 @@
       <div class="chat-profile">
         <img
           class="w-100 h-100"
-          src="https://www.w3schools.com/w3images/avatar3.png"
+          src="{{ baseUrl }}group.png"
           alt="profile"
         />
       </div>
-      <h4>Tejas</h4>
+      <h4>{{groupName}}</h4>
     </div>
-    <img src="{{ baseUrl }}share.svg" alt="share" />
+    <img (click)="shareGroupLink()" class="pointer" src="{{ baseUrl }}share.svg" alt="share" />
   </div>
   <div #chatContainer class="group-chat w-100">
     @for(message of messages;let index = $index; track index){
@@ -28,7 +28,7 @@
       }}"
     >
       <div class="d-flex item-center gap-5">
-        <h5>{{ message.name }}:</h5>
+        <h5>{{ message.userName }}:</h5>
         <span>{{ message.message }}</span>
         <h6>{{ message.time }}</h6>
       </div>

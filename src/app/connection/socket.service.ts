@@ -9,11 +9,12 @@ export class SocketService {
   private socket: Socket;
   private serverUrl: string =
     'https://chatfusionx-api-v2-0.onrender.com/getway';
-  private serverApiUrl: string =
-    'https://chatfusionx-api-v2-0.onrender.com/api/v1/user';
+
+  private localUrl: string =
+    'http://localhost:8080/getway';
 
   constructor(private _http: HttpClient) {
-    this.socket = io(this.serverUrl);
+    this.socket = io(this.localUrl);
   }
 
   // Join a group (room)
@@ -22,8 +23,8 @@ export class SocketService {
   }
 
   // Leave a group (room)
-  leaveGroup(groupName: string): void {
-    this.socket.emit('leaveGroup', groupName);
+  leaveGroup(groupId: string): void {
+    this.socket.emit('leaveGroup', groupId);
   }
 
   // Send a message to a group
@@ -34,6 +35,11 @@ export class SocketService {
   // Listen for responses from the server
   onMessageReceived(groupId, callback: (data: any) => void): void {
     this.socket.on(groupId, callback);
+  }
+
+  // Listen for responses from the server
+  offMessageReceived(groupId): void {
+    this.socket.off(groupId);
   }
 
   // Disconnect from the server

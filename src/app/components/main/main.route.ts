@@ -10,7 +10,7 @@ export const mainRoutes: Routes = [
     canActivate: [AuthGuardService],
     children: [
       {
-        path: 'group/:id',
+        path: 'group/:id/:name',
         component: ChatComponent,
       },
     ],
