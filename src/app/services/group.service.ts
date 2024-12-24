@@ -6,7 +6,7 @@ import { baseUrl } from '../environment/base-urls';
   providedIn: 'root',
 })
 export class GroupService {
-  private _baseUrl = baseUrl.devApiUrl;
+  private _baseUrl = baseUrl.prodApiUrl;
   constructor(private _httpClient: HttpClient) {}
 
   getAllJoinedGroups(groupIds:string[]){

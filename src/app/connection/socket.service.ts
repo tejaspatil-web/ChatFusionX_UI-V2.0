@@ -14,7 +14,7 @@ export class SocketService {
     'http://localhost:8080/getway';
 
   constructor(private _http: HttpClient) {
-    this.socket = io(this.localUrl);
+    this.socket = io(this.serverUrl);
   }
 
   // Join a group (room)
