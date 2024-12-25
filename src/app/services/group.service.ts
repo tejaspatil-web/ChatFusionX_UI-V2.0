@@ -19,7 +19,7 @@ export class GroupService {
   }
 
  joinGroup(groupData:{userId:string,groupId:string}){
-  this._httpClient.post(`${this._baseUrl}group/join`,groupData)
+  return this._httpClient.post(`${this._baseUrl}group/join`,groupData)
  }
 
 }

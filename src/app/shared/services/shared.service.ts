@@ -6,7 +6,8 @@ import { Subject } from 'rxjs';
 })
 export class SharedService {
   public isMobile = false;
-  public isAlreadyGroupJoin:boolean = false
+  public isAlreadyGroupJoin:boolean = false;
+  public userRedirectUrl:string = ''
   public opnSnackBar: Subject<string> = new Subject<string>();
   constructor() {}
 }

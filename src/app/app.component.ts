@@ -6,7 +6,7 @@ import {
   Renderer2,
 } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { HeaderComponent } from './components/header/header.component';
+import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { SharedService } from './shared/services/shared.service';
 import { isPlatformBrowser } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -17,7 +17,7 @@ import { UserDetails } from './shared/models/user.model';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HeaderComponent, SnackbarComponent, RouterOutlet],
+  imports: [SidenavComponent, SnackbarComponent, RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })

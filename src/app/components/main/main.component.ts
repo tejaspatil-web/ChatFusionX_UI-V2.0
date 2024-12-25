@@ -34,15 +34,39 @@ export class MainComponent implements OnInit,OnDestroy{
 
   ngOnInit(): void {
     const joinedGroupIds = this._userService.userDetails.joinedGroupIds;
+    const redirectUrl = this.sharedService.userRedirectUrl
+    if(redirectUrl && redirectUrl.includes('dashboard/group')){
+      this._joinUserToNewGroup(joinedGroupIds,redirectUrl)
+    }
     if(joinedGroupIds.length > 0){
-      this._groupService.getAllJoinedGroups(joinedGroupIds).subscribe((groupData:GroupData[]) =>{
-        this.groupList.push(...groupData)
-        if(!this._sharedService.isAlreadyGroupJoin){
-          this.groupList.forEach(ele =>{
-            this._socketService.joinGroup(ele._id)
-          })
-        }
-        this._sharedService.isAlreadyGroupJoin = true;
+      this._fetchDataAndJoinGroups(joinedGroupIds)
+    }
+  }
+
+ private _fetchDataAndJoinGroups(joinedGroupIds){
+  this._groupService.getAllJoinedGroups(joinedGroupIds).subscribe((groupData:GroupData[]) =>{
+    this.groupList.push(...groupData)
+    if(!this._sharedService.isAlreadyGroupJoin){
+      this.groupList.forEach(ele =>{
+        this._socketService.joinGroup(ele._id)
+      })
+    }
+    this._sharedService.isAlreadyGroupJoin = true;
+  })
+ }
+
+
+  private _joinUserToNewGroup(joinedGroupIds,redirectUrl){
+    const groupId = redirectUrl.split('/')[3];
+    const isUserAlreadyJoinedGroup = joinedGroupIds.includes(groupId);
+    if(!isUserAlreadyJoinedGroup){
+      this._groupService.joinGroup({userId:this._userService.userDetails.id,groupId:groupId}
+      ).subscribe((response:GroupData) =>{
+        this.groupList.push({_id:response._id,name:response.name,description:response.description})
+        this._userService.userDetails.joinedGroupIds.push(response._id)
+        localStorage.setItem('userDetails',JSON.stringify(this._userService.userDetails))
+        this._sharedService.userRedirectUrl = '';
+        this.sharedService.opnSnackBar.next(`User has been added to the group: ${response.name}`);
       })
     }
   }

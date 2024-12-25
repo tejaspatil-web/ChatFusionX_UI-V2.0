@@ -1,18 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
+import { baseUrl } from '../environment/base-urls';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SocketService {
   private socket: Socket;
-  private serverUrl: string =
-    'https://chatfusionx-api-v2-0.onrender.com/getway';
-
-  private localUrl: string =
-    'http://localhost:8080/getway';
-
+  private serverUrl: string = baseUrl.prodSocketUrl
   constructor(private _http: HttpClient) {
     this.socket = io(this.serverUrl);
   }
