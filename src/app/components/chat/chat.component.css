@@ -10,6 +10,19 @@
   box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 0px, rgba(0, 0, 0, 0.24) 0px 0px 0px;
 }
 
+.group-name{
+  max-width: 500px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media screen and (max-width: 768px) {
+  .group-name {
+    max-width: 180px;
+  }
+}
+
 .chat-profile {
   max-width: 40px;
   min-width: 40px;
