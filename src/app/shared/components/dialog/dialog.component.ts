@@ -10,7 +10,8 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
   standalone: true,
 })
 export class DialogComponent implements OnInit {
- public showDialog:boolean = true
+  @Input() public isShowDialog:boolean = false;
+  @Input() public isShowLoader:boolean = false;
   @Output() public afterDialogClose:EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private readonly _sharedService: SharedService) {}
@@ -35,7 +36,7 @@ export class DialogComponent implements OnInit {
   }
 
   closeDialog(): void {
-    this.showDialog = false;
+    this.isShowDialog = false;
     this.afterDialogClose.emit({isDialogClose:true})
   }
 

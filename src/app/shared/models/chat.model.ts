@@ -4,5 +4,5 @@ export class Message{
   userId:string
   message: string
   time: string
-  isCurrentUser: boolean
+  isCurrentUser?: boolean
 }

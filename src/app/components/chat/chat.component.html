@@ -28,7 +28,9 @@
       }}"
     >
       <div class="d-flex item-center gap-5">
-        <h5>{{ message.userName }}:</h5>
+        @if(!message.isCurrentUser){
+          <h5>{{ message.userName }}:</h5>
+        }
         <span>{{ message.message }}</span>
         <h6>{{ message.time }}</h6>
       </div>

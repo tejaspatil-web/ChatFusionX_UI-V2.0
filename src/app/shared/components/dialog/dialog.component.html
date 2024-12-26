@@ -1,4 +1,4 @@
-@if(showDialog){
+@if(isShowDialog){
   <div class="dialog-backdrop" (click)="closeDialog()">
     <div class="dialog-container" (click)="$event.stopPropagation()">
       <div>
@@ -17,6 +17,13 @@
           </div>
         </form>
       </div>
+    </div>
+  </div>
+}@else if(isShowLoader){
+  <div class="dialog-backdrop">
+    <div class="loader">
+      <span class="loader-text">Loading</span>
+        <span class="load"></span>
     </div>
   </div>
 }

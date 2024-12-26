@@ -1,6 +1,7 @@
 <div class="main">
-  <!-- This Code for Mobile View -->
-  @if(sharedService.isMobile){ @if(!checkRoute()){
+ @if(!isShowLoader){
+ <!-- This Code for Mobile View -->
+ @if(sharedService.isMobile){ @if(!checkRoute()){
   <div class="main-group">
     <div class="search-field">
       <img src="{{ baseUrl }}search.svg" alt="" />
@@ -77,8 +78,10 @@
     <router-outlet></router-outlet>
   </div>
   }
-</div>
-
 @if(isShowDialog){
-  <app-dialog (afterDialogClose)="afterDialogClose($event)"></app-dialog>
+  <app-dialog (afterDialogClose)="afterDialogClose($event)" [isShowDialog]="true"></app-dialog>
 }
+ }@else {
+  <app-dialog (afterDialogClose)="afterDialogClose($event)" [isShowLoader]="isShowLoader"></app-dialog>
+ }
+</div>

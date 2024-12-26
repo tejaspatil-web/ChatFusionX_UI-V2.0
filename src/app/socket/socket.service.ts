@@ -24,8 +24,8 @@ export class SocketService {
   }
 
   // Send a message to a group
-  sendMessageToGroup(groupId: string, message: any): void {
-    this.socket.emit('groupMessage', { groupId, message: message });
+  sendMessageToGroup(message: any): void {
+    this.socket.emit('groupMessage', message );
   }
 
   // Listen for responses from the server
@@ -33,7 +33,7 @@ export class SocketService {
     this.socket.on(groupId, callback);
   }
 
-  // Listen for responses from the server
+  // Off Listening responses from the server
   offMessageReceived(groupId): void {
     this.socket.off(groupId);
   }

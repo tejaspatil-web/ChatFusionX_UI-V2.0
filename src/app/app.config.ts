@@ -3,7 +3,7 @@ import { provideRouter, Routes } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
-import { SocketService } from './connection/socket.service';
+import { SocketService } from './socket/socket.service';
 import { provideHttpClient } from '@angular/common/http';
 import { mainRoutes } from './components/main/main.route';
 

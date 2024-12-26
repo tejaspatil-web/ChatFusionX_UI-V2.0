@@ -13,7 +13,7 @@ import { Helper } from '../../shared/classes/helper.class';
 import { FormsModule } from '@angular/forms';
 import { SharedService } from '../../shared/services/shared.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SocketService } from '../../connection/socket.service';
+import { SocketService } from '../../socket/socket.service';
 import { Message } from '../../shared/models/chat.model';
 import { UserService } from '../../shared/services/user-shared.service';
 
@@ -44,20 +44,24 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
   ) {}
 
   ngOnInit(): void {
+
     this._activatedRoute.paramMap.subscribe((params) => {
+      this.messages = [];
+      const groupData = this._userService.groupData;
       if(this._groupId) this._socketService.offMessageReceived(this._groupId);
       this._groupId = params.get('id');
       this.groupName = params.get('name');
-      this._socketService.onMessageReceived(this._groupId, (message:Message) => {
-        this.messages.push({
-          userName: message.userName,
-          userId:message.userId,
-          groupId:message.groupId,
-          message: message.message,
-          time: message.time,
-          isCurrentUser: false,
-        });
-      });
+      if(groupData.length > 0){
+       const group = groupData.find(ele => ele._id === this._groupId);
+       if(group?.messages.length > 0){
+        this.messages = group.messages.map(ele => ({
+          ...ele,
+          groupId: this._groupId,
+          isCurrentUser: ele.userId === this._userService.userDetails.id,
+        }));
+       }
+      }
+      this._receivedGroupMessages();
     });
   }
 
@@ -86,14 +90,39 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
       }
 
       // push message in message array
-      this.messages.push(message);
+      this._addMessageToGroup(message);
 
       // send message in to specific group
-      this._socketService.sendMessageToGroup(this._groupId,message);
+      this._socketService.sendMessageToGroup(message);
       this._userInput.value = '';
       this._userInput.focus();
       this._scrollToBottom();
     }
+  }
+
+  private _receivedGroupMessages(){
+    this._socketService.onMessageReceived(this._groupId, (message:Message) => {
+      this._addMessageToGroup(message);
+    });
+  }
+
+ private _addMessageToGroup(message:Message){
+  this.messages.push({
+    userName: message.userName,
+    userId:message.userId,
+    groupId:message.groupId,
+    message: message.message,
+    time: message.time,
+    isCurrentUser: message.isCurrentUser,
+  });
+
+    const group = this._userService.groupData.find(ele => ele._id === this._groupId);
+    group.messages.push({
+      userId:message.userId,
+      userName:message.userName,
+      time:message.time,
+      message:message.message
+    })
   }
 
   shareGroupLink() {
