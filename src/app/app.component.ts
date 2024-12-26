@@ -30,8 +30,10 @@ export class AppComponent implements OnDestroy {
     private renderer: Renderer2,
     private _sharedService: SharedService,
     private router: Router,
-    private _userService:UserService
-  ) {}
+    private _userService:UserService,
+  ) {
+    this._sharedService.getServerStatus().subscribe();
+  }
 
   ngOnInit() {
     this.routerSubscription = this.router.events.subscribe((event) => {
