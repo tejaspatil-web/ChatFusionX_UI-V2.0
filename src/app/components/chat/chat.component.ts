@@ -102,6 +102,7 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
 
   private _receivedGroupMessages(){
     this._socketService.onMessageReceived(this._groupId, (message:Message) => {
+      message.isCurrentUser = false;
       this._addMessageToGroup(message);
     });
   }
