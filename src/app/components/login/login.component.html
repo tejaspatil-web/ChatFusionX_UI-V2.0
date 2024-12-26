@@ -37,14 +37,18 @@
         formControlName="password"
       />
     </div>
-    <button [disabled]="isLoader" class="w-100">
+    <button [disabled]="isLoader || isForgotPassword" class="w-100">
       {{ isSignUpPage ? "Signup" : "Login" }}
       @if(isLoader){
       <div class="loader"></div>
       }
     </button>
     @if(!isSignUpPage){
-    <h5 class="signup" (click)="forgotPassword()">Forgot Password?</h5>
+      <div class="d-flex gap-5 item-center">
+        <h5 class="signup" (click)="forgotPassword()">Forgot Password?</h5>@if(isForgotPassword){
+          <div class="loader1"></div>
+          }
+      </div>
     <h5>
       Don't have account yet?
       <span class="signup" (click)="onSignUpPage()">Signup now</span>

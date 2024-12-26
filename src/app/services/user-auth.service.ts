@@ -25,4 +25,9 @@ export class UserAuthService {
   userLogin(userDetails: { email: string; password: string }) {
     return this._httpClient.post(`${this._baseUrl}user/validate`, userDetails);
   }
+
+  resetPassword(email:string){
+    return this._httpClient.post(`${this._baseUrl}otp/reset`,{email:email})
+  }
+
 }

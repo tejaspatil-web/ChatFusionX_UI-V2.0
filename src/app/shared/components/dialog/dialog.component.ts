@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { baseUrl } from '../../../environment/base-urls';
+import { UserService } from '../../services/user-shared.service';
 
 @Component({
   selector: 'app-dialog',
@@ -10,18 +12,25 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
   standalone: true,
 })
 export class DialogComponent implements OnInit {
+  public baseUrl = baseUrl.images;
   @Input() public isShowDialog:boolean = false;
   @Input() public isShowLoader:boolean = false;
+  @Input() public isShowProfile:boolean = false;
   @Output() public afterDialogClose:EventEmitter<any> = new EventEmitter<any>();
-
-  constructor(private readonly _sharedService: SharedService) {}
-
   public groupForm = new FormGroup({
     groupName:new FormControl('', [Validators.required]),
     description:new FormControl('')
   })
+  public userName:string = ''
+  public userEmail:string = ''
 
-  ngOnInit(): void {}
+  constructor(private readonly _sharedService: SharedService,
+    private readonly _userService:UserService
+  ) {}
+  ngOnInit(): void {
+    this.userName = this._userService.userDetails.email
+    this.userEmail = this._userService.userDetails.email
+  }
 
   onSubmit(){}
 
@@ -37,6 +46,7 @@ export class DialogComponent implements OnInit {
 
   closeDialog(): void {
     this.isShowDialog = false;
+    this.isShowProfile = false;
     this.afterDialogClose.emit({isDialogClose:true})
   }
 

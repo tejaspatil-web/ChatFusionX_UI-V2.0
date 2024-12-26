@@ -1,6 +1,6 @@
 <div class="header">
   <div class="tabs">
-    <div class="profile-image">
+    <div class="profile-image pointer" (click)="onProfileClick()">
       <img
         src="{{ baseUrl }}avatar.png"
         alt="Profile Image"
@@ -19,3 +19,6 @@
     <img src="{{ baseUrl }}logout.svg" alt="Logout-image" class="icons" />
   </div>
 </div>
+@if(isShowProfile){
+  <app-dialog (afterDialogClose)="afterDialogClose($event)" [isShowProfile]="isShowProfile"></app-dialog>
+}

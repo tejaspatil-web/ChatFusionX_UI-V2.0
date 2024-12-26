@@ -25,6 +25,8 @@ export class LoginComponent {
   public isOtpPage: boolean = false;
   public otpValidatorIcon: string = 'check';
   public isLoader: boolean = false;
+  public isResendOtpDisable: boolean = false;
+  public isForgotPassword:boolean = false;
 
   // Services
   private _sharedService = inject(SharedService);
@@ -72,10 +74,7 @@ export class LoginComponent {
               'isUserAuthorized',
               JSON.stringify(authorized)
             );
-            localStorage.setItem(
-              'userDetails',
-              JSON.stringify(response)
-            );
+            localStorage.setItem('userDetails', JSON.stringify(response));
             this._userService.userDetails = new UserDetails(
               response.name,
               response.email,
@@ -107,7 +106,7 @@ export class LoginComponent {
       this.profileForm.get('password')?.valid;
     if (isValid) {
       this.isLoader = true;
-      const { username, email, password } = this.profileForm.value;
+      const { username, email } = this.profileForm.value;
       this._userAuthService
         .sendVerificationCode({
           userName: username,
@@ -176,12 +175,14 @@ export class LoginComponent {
   }
 
   onSignUpPage() {
-    this.isOtpPage = false;
-    this.isSignUpPage = true;
-    this.otpValidatorIcon = 'lock';
-    this.profileForm.patchValue({
-      otp: '',
-    });
+    if(!this.isForgotPassword){
+      this.isOtpPage = false;
+      this.isSignUpPage = true;
+      this.otpValidatorIcon = 'lock';
+      this.profileForm.patchValue({
+        otp: '',
+      });
+    }
   }
 
   onLoginPage() {
@@ -191,7 +192,53 @@ export class LoginComponent {
     this.isSignUpPage = false;
   }
 
-  resendOtp() {}
+  resendOtp() {
+    if (this.isResendOtpDisable) {
+      this._sharedService.opnSnackBar.next('Please wait a few seconds...');
+      return;
+    }
 
-  forgotPassword() {}
+    this.isResendOtpDisable = true;
+    setTimeout(() => {
+      this.isResendOtpDisable = false;
+    }, 10000);
+
+    const { username, email } = this.profileForm.value;
+    this._userAuthService
+      .sendVerificationCode({
+        userName: username,
+        email: email,
+      })
+      .subscribe({
+        next: (response: any) => {
+          this._sharedService.opnSnackBar.next(response.message);
+        },
+        error: (error) => {
+          this._sharedService.opnSnackBar.next(error?.error.message);
+        },
+      });
+  }
+
+  forgotPassword() {
+    if(this.isForgotPassword) return;
+    const emailControl = this.profileForm.get('email');
+    if (emailControl.valid) {
+      this.isForgotPassword = true;
+      this._userAuthService.resetPassword(emailControl.value).subscribe({
+        next:(res:any)=>{
+          this._sharedService.opnSnackBar.next(res.message);
+          this.isForgotPassword = false;
+        },
+        error:(error =>{
+          this._sharedService.opnSnackBar.next(error.message);
+          this.isForgotPassword = false;
+        })
+      }
+    )
+    } else if (!emailControl.value) {
+      this._sharedService.opnSnackBar.next('Please enter your email address.');
+    } else {
+      this._sharedService.opnSnackBar.next('The entered email address is invalid. Please try again.');
+    }
+  }
 }

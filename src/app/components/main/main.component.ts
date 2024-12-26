@@ -41,6 +41,8 @@ export class MainComponent implements OnInit,OnDestroy{
     }
     if(joinedGroupIds.length > 0){
       this._fetchDataAndJoinGroups(joinedGroupIds)
+    }else{
+      this.isShowLoader = false;
     }
   }
 
