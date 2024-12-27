@@ -5,7 +5,7 @@
   <div class="main-group">
     <div class="search-field">
       <img src="{{ baseUrl }}search.svg" alt="" />
-      <input type="text" placeholder="Search" />
+      <input type="text" placeholder="Search" (input)="searchGroup($event)"/>
     </div>
 
     <div class="group">
@@ -14,10 +14,10 @@
         <img class="pointer" (click)="addGroup()" src="{{ baseUrl }}add-group.svg" alt="" />
       </div>
       <div class="group-list">
-        @if(groupList.length === 0){
+        @if(copyGroupList.length === 0){
           <h4 class="h-100 d-flex justify-center item-center text-center">No groups found. Please join a group or create one.</h4>
         }@else{
-          @for (group of groupList; let index = $index; track index) {
+          @for (group of copyGroupList; let index = $index; track index) {
             <div (click)="onGroupClick(group, index)" class="group-card">
               <div class="group-icon">
                 <img
@@ -44,7 +44,7 @@
   <div class="main-group">
     <div class="search-field">
       <img src="{{ baseUrl }}search.svg" alt="" />
-      <input type="text" placeholder="Search" />
+      <input type="text" placeholder="Search"  (input)="searchGroup($event)" />
     </div>
 
     <div class="group">
@@ -53,10 +53,10 @@
         <img class="pointer" (click)="addGroup()" src="{{ baseUrl }}add-group.svg" alt="" />
       </div>
       <div class="group-list">
-        @if(groupList.length === 0){
+        @if(copyGroupList.length === 0){
           <h4 class="h-100 d-flex justify-center item-center text-center">No groups found. Please join a group or create one.</h4>
         }@else{
-          @for (group of groupList; let index = $index; track index) {
+          @for (group of copyGroupList; let index = $index; track index) {
             <div (click)="onGroupClick(group, index)" class="group-card">
               <div class="group-icon">
                 <img

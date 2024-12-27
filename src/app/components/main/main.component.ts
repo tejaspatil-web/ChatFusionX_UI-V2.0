@@ -1,10 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { baseUrl } from '../../environment/base-urls';
-import { ChatComponent } from '../chat/chat.component';
 import { SharedService } from '../../shared/services/shared.service';
 import {
-  ActivatedRoute,
-  provideRouter,
   Router,
   RouterOutlet,
 } from '@angular/router';
@@ -23,7 +20,8 @@ import { DialogComponent } from '../../shared/components/dialog/dialog.component
 })
 export class MainComponent implements OnInit,OnDestroy{
   public baseUrl = baseUrl.images;
-  public groupList:GroupData[] = [];
+  private _groupList:GroupData[] = [];
+  public copyGroupList:GroupData[] = [];
   public isShowDialog:boolean = false;
   public isShowLoader:boolean = true;
   constructor(public sharedService: SharedService, private _router: Router,
@@ -49,13 +47,14 @@ export class MainComponent implements OnInit,OnDestroy{
  private _fetchDataAndJoinGroups(joinedGroupIds){
   this.isShowLoader = true;
   this._groupService.getAllJoinedGroups(joinedGroupIds).subscribe((groupData:GroupData[]) =>{
-    this.groupList.push(...groupData)
+    this._groupList.push(...groupData)
     this._userService.groupData = groupData;
     if(!this._sharedService.isAlreadyGroupJoin){
-      this.groupList.forEach(ele =>{
+      this._groupList.forEach(ele =>{
         this._socketService.joinGroup(ele._id)
       })
     }
+    this.copyGroupList = JSON.parse(JSON.stringify(this._groupList));
     this._sharedService.isAlreadyGroupJoin = true;
     this.isShowLoader = false;
   })
@@ -68,7 +67,8 @@ export class MainComponent implements OnInit,OnDestroy{
     if(!isUserAlreadyJoinedGroup){
       this._groupService.joinGroup({userId:this._userService.userDetails.id,groupId:groupId}
       ).subscribe((response:GroupData) =>{
-        this.groupList.push({_id:response._id,name:response.name,description:response.description,messages:response.messages})
+        this._groupList.push({_id:response._id,name:response.name,description:response.description,messages:response.messages})
+        this.copyGroupList = JSON.parse(JSON.stringify(this._groupList));
         this._userService.userDetails.joinedGroupIds.push(response._id)
         localStorage.setItem('userDetails',JSON.stringify(this._userService.userDetails))
         this._sharedService.userRedirectUrl = '';
@@ -94,13 +94,21 @@ export class MainComponent implements OnInit,OnDestroy{
         ).subscribe((ele:any) =>{
         const {_id,name,description,admins} = ele.response
         const newGroup = {_id:_id,name:name,description:description,messages:[]}
-        this.groupList.push(newGroup);
+        this._groupList.push(newGroup);
+        this.copyGroupList = JSON.parse(JSON.stringify(this._groupList));
         this._userService.groupData.push(newGroup);
         this._userService.userDetails.adminGroupIds.push(...admins)
         this._userService.userDetails.joinedGroupIds.push(_id)
         localStorage.setItem('userDetails',JSON.stringify(this._userService.userDetails))
       })
     }
+  }
+
+  searchGroup(event){
+    const inputValue = event.target.value
+    this.copyGroupList = this._groupList.filter(ele =>(
+       ele.name.trim().toLocaleLowerCase().includes(inputValue.trim().toLocaleLowerCase())
+    ))
   }
 
   onGroupClick(item, index) {

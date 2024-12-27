@@ -28,7 +28,7 @@ export class DialogComponent implements OnInit {
     private readonly _userService:UserService
   ) {}
   ngOnInit(): void {
-    this.userName = this._userService.userDetails.email
+    this.userName = this._userService.userDetails.name
     this.userEmail = this._userService.userDetails.email
   }
 
