@@ -113,7 +113,7 @@ private async groupInit(){
             }})
         }else{
           const groups = [this._userService.groupData,this._groupList,this.copyGroupList]
-          this._showNotification(message);
+          if(!this._sharedService.isMobile) this._showNotification(message);
           groups.forEach(groupList => {
             const group = this._findGroup(groupList, message.groupId);
             if (group) {
@@ -207,16 +207,11 @@ private async groupInit(){
       const body = `${message.userName}: ${message.message}`;
       const options: NotificationOptions = {
         body,
-        icon: `${this.baseUrl}logo.png`,
-        data:{
-          groupId:message.groupId,
-          timestamp:message.time
-        }
+        icon: `${this.baseUrl}logo.`
       };
       const notificationInstance = new Notification(title, options);
       notificationInstance.onclick = () => {
-        this._router.navigate([`dashboard`]);
-        group.unreadCount = 0;
+        this._router.navigate(['dashboard']);
       };
     }
   }
