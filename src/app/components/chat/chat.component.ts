@@ -16,6 +16,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SocketService } from '../../socket/socket.service';
 import { Message } from '../../shared/models/chat.model';
 import { UserService } from '../../shared/services/user-shared.service';
+import { ChatService } from '../../services/chat.service';
 
 @Component({
   selector: 'app-chat',
@@ -40,17 +41,17 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
     private _router: Router,
     private _activatedRoute: ActivatedRoute,
     private _socketService: SocketService,
-    private _userService:UserService
+    private _userService:UserService,
+    private _chatService:ChatService
   ) {}
 
   ngOnInit(): void {
-
     this._activatedRoute.paramMap.subscribe((params) => {
       this.messages = [];
       const groupData = this._userService.groupData;
-      if(this._groupId) this._socketService.offMessageReceived(this._groupId);
       this._groupId = params.get('id');
       this.groupName = params.get('name');
+      this.sharedService.activatedGroupId = this._groupId;
       if(groupData.length > 0){
        const group = groupData.find(ele => ele._id === this._groupId);
        if(group?.messages.length > 0){
@@ -61,8 +62,9 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
         }));
        }
       }
-      this._receivedGroupMessages();
+      this._scrollToBottom();
     });
+    this._receivedGroupMessages();
   }
 
   ngAfterViewInit(): void {
@@ -101,10 +103,10 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
   }
 
   private _receivedGroupMessages(){
-    this._socketService.onMessageReceived(this._groupId, (message:Message) => {
+    this._chatService.getMessage().subscribe((message:Message) =>{
       message.isCurrentUser = false;
       this._addMessageToGroup(message);
-    });
+    })
   }
 
  private _addMessageToGroup(message:Message){
@@ -161,7 +163,6 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if(this._groupId) this._socketService.offMessageReceived(this._groupId);
   }
 
 }

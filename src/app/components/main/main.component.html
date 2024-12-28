@@ -2,6 +2,7 @@
  @if(!isShowLoader){
  <!-- This Code for Mobile View -->
  @if(sharedService.isMobile){ @if(!checkRoute()){
+    <!-- Showing group component -->
   <div class="main-group">
     <div class="search-field">
       <img src="{{ baseUrl }}search.svg" alt="" />
@@ -27,7 +28,15 @@
               </div>
               <div class="group-header">
                 <h5 class="group-name">{{ group.name }}</h5>
-                <span>2:13 PM</span>
+                <div>
+                  @if(group.unreadCount){
+                    <div class="unread-count">
+                      <span>{{group.unreadCount}}</span>
+                    </div>
+                  }@else {
+                    <span>{{ group.lastMessageTime }}</span><br>
+                  }
+                </div>
               </div>
             </div>
             }
@@ -36,6 +45,7 @@
     </div>
   </div>
   } @if(checkRoute()) {
+  <!-- Showing chat component -->
   <div class="main-chat">
     <router-outlet></router-outlet>
   </div>
@@ -66,7 +76,15 @@
               </div>
               <div class="group-header">
                 <h5 class="group-name">{{ group.name }}</h5>
-                <span>2:13 PM</span>
+                <div>
+                  @if(group.unreadCount){
+                    <div class="unread-count">
+                      <span>{{group.unreadCount}}</span>
+                    </div>
+                  }@else {
+                    <span>{{ group.lastMessageTime }}</span><br>
+                  }
+                </div>
               </div>
             </div>
             }

@@ -10,6 +10,7 @@ export class SharedService {
  private _baseUrl = baseUrl.prodApiUrl;
   public isMobile = false;
   public isAlreadyGroupJoin:boolean = false;
+  public activatedGroupId:string = ''
   public userRedirectUrl:string = ''
   public opnSnackBar: Subject<string> = new Subject<string>();
   constructor(private _httpClient:HttpClient) {}

@@ -10,6 +10,8 @@ import { GroupService } from '../../services/group.service';
 import { GroupData } from '../../shared/models/group.model';
 import { SocketService } from '../../socket/socket.service';
 import { DialogComponent } from '../../shared/components/dialog/dialog.component';
+import { Message } from '../../shared/models/chat.model';
+import { ChatService } from '../../services/chat.service';
 
 @Component({
   selector: 'app-main',
@@ -28,31 +30,45 @@ export class MainComponent implements OnInit,OnDestroy{
     private _userService:UserService,
     private _groupService:GroupService,
     private _socketService: SocketService,
-    private _sharedService:SharedService
+    private _sharedService:SharedService,
+    private _chatService:ChatService
   ) {}
 
   ngOnInit(): void {
-    const joinedGroupIds = this._userService.userDetails.joinedGroupIds;
-    const redirectUrl = this.sharedService.userRedirectUrl
-    if(redirectUrl && redirectUrl.includes('dashboard/group')){
-      this._joinUserToNewGroup(joinedGroupIds,redirectUrl)
-    }
-    if(joinedGroupIds.length > 0){
-      this._fetchDataAndJoinGroups(joinedGroupIds)
-    }else{
-      this.isShowLoader = false;
-    }
+    this.groupInit()
+    this._requestNotificationPermission()
   }
+
+
+private async groupInit(){
+  const joinedGroupIds = this._userService.userDetails.joinedGroupIds;
+  const redirectUrl = this.sharedService.userRedirectUrl;
+  if(redirectUrl && redirectUrl.includes('dashboard/group')){
+   await this._joinUserToNewGroup(joinedGroupIds,redirectUrl)
+  }
+  if(joinedGroupIds.length > 0){
+    this._fetchDataAndJoinGroups(joinedGroupIds)
+  }else{
+    this.isShowLoader = false;
+  }
+  this._receivedGroupMessages();
+}
 
  private _fetchDataAndJoinGroups(joinedGroupIds){
   this.isShowLoader = true;
   this._groupService.getAllJoinedGroups(joinedGroupIds).subscribe((groupData:GroupData[]) =>{
-    this._groupList.push(...groupData)
-    this._userService.groupData = groupData;
+    groupData.forEach(group => {
+      group.unreadCount = 0;
+      if(group.messages.length > 0){
+         const lastMessageIndex = group.messages.length - 1
+         group.lastMessageTime = group.messages[lastMessageIndex].time
+      }
+    })
+    this._groupList = JSON.parse(JSON.stringify(groupData));
+    this._userService.groupData = JSON.parse(JSON.stringify(groupData));
     if(!this._sharedService.isAlreadyGroupJoin){
-      this._groupList.forEach(ele =>{
-        this._socketService.joinGroup(ele._id)
-      })
+      const groupIds = this._groupList.map(ele => (ele._id));
+        this._socketService.joinGroups(groupIds);
     }
     this.copyGroupList = JSON.parse(JSON.stringify(this._groupList));
     this._sharedService.isAlreadyGroupJoin = true;
@@ -61,24 +77,67 @@ export class MainComponent implements OnInit,OnDestroy{
  }
 
 
-  private _joinUserToNewGroup(joinedGroupIds,redirectUrl){
+  private async _joinUserToNewGroup(joinedGroupIds,redirectUrl){
     const groupId = redirectUrl.split('/')[3];
     const isUserAlreadyJoinedGroup = joinedGroupIds.includes(groupId);
     if(!isUserAlreadyJoinedGroup){
+    await new Promise((resolve,reject)=>{
       this._groupService.joinGroup({userId:this._userService.userDetails.id,groupId:groupId}
-      ).subscribe((response:GroupData) =>{
-        this._groupList.push({_id:response._id,name:response.name,description:response.description,messages:response.messages})
-        this.copyGroupList = JSON.parse(JSON.stringify(this._groupList));
+      ).subscribe({
+        next:(response:GroupData) =>{
         this._userService.userDetails.joinedGroupIds.push(response._id)
         localStorage.setItem('userDetails',JSON.stringify(this._userService.userDetails))
         this._sharedService.userRedirectUrl = '';
         this.sharedService.opnSnackBar.next(`User has been added to the group: ${response.name}`);
-      })
+        this._router.navigate(['dashboard'])
+        resolve(response);
+      },error:(error)=>{
+        this._router.navigate(['dashboard'])
+        reject(error)
+      }
+    })
+    })
     }
   }
 
+    private _receivedGroupMessages(){
+      this._socketService.onMessageReceived((message:Message) => {
+        const activatedGroupId = this._sharedService.activatedGroupId;
+        if(message.groupId === activatedGroupId){
+          this._chatService.setMessage(message);
+          const groups = [this._userService.groupData,this._groupList,this.copyGroupList]
+          groups.forEach(groupList => {
+            const group = this._findGroup(groupList, message.groupId);
+            if (group) {
+              group.lastMessageTime = message.time
+            }})
+        }else{
+          const groups = [this._userService.groupData,this._groupList,this.copyGroupList]
+          this._showNotification(message);
+          groups.forEach(groupList => {
+            const group = this._findGroup(groupList, message.groupId);
+            if (group) {
+              group.unreadCount++;
+              group.lastMessageTime = message.time
+              group.messages.push({
+                userId:message.userId,
+                userName:message.userName,
+                time:message.time,
+                message:message.message
+              })
+            }
+          });
+        }
+      });
+    }
+
   checkRoute() {
-    return this._router.url.includes('group');
+    if(this._router.url.includes('group')){
+      this.copyGroupList = JSON.parse(JSON.stringify(this._groupList));
+      return true
+    }else{
+      return false
+    }
   }
 
   addGroup() {
@@ -93,12 +152,13 @@ export class MainComponent implements OnInit,OnDestroy{
         {name:event.groupName,userId:id,description:event.description}
         ).subscribe((ele:any) =>{
         const {_id,name,description,admins} = ele.response
-        const newGroup = {_id:_id,name:name,description:description,messages:[]}
-        this._groupList.push(newGroup);
+        const newGroup = {_id:_id,name:name,unreadCount:0,lastMessageTime:'',description:description,messages:[]}
+        this._groupList.unshift(newGroup);
         this.copyGroupList = JSON.parse(JSON.stringify(this._groupList));
-        this._userService.groupData.push(newGroup);
+        this._userService.groupData.unshift(newGroup);
         this._userService.userDetails.adminGroupIds.push(...admins)
         this._userService.userDetails.joinedGroupIds.push(_id)
+        this._socketService.joinGroups([_id]);
         localStorage.setItem('userDetails',JSON.stringify(this._userService.userDetails))
       })
     }
@@ -111,11 +171,58 @@ export class MainComponent implements OnInit,OnDestroy{
     ))
   }
 
+  private _findGroup(groupData:GroupData[],groupId){
+    const group = groupData.find(ele => ele._id === groupId);
+   return group;
+  }
+
   onGroupClick(item, index) {
+    const groups = [this._userService.groupData,this._groupList,this.copyGroupList]
+    groups.forEach(groupList => {
+      const group = this._findGroup(groupList, item._id);
+      if (group) {
+        group.unreadCount = 0;
+        if(group.messages.length > 0){
+          const lastMessageIndex = group.messages.length - 1
+          group.lastMessageTime = group.messages[lastMessageIndex].time
+        }
+      }
+    });
     this._router.navigate([`dashboard/group/${item._id}/${item.name}`])
+  }
+
+  // Notification Section
+  private _requestNotificationPermission() {
+    if ('Notification' in window) {
+      Notification.requestPermission().then((permission) => {
+        console.log('Notification permission:', permission);
+      });
+    }
+  }
+
+  private _showNotification(message: Message) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      const group = this._userService.groupData.find(ele => ele._id === message.groupId)
+      const title = `${group.name || ''} New Message`;
+      const body = `${message.userName}: ${message.message}`;
+      const options: NotificationOptions = {
+        body,
+        icon: `${this.baseUrl}logo.png`,
+        data:{
+          groupId:message.groupId,
+          timestamp:message.time
+        }
+      };
+      const notificationInstance = new Notification(title, options);
+      notificationInstance.onclick = () => {
+        this._router.navigate([`dashboard`]);
+        group.unreadCount = 0;
+      };
+    }
   }
 
   ngOnDestroy(): void {
     this._sharedService.isAlreadyGroupJoin = false;
+    this._socketService.offMessageReceived();
   }
 }

@@ -102,3 +102,16 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.unread-count{
+  padding: 10px;
+  background-color: red;
+  text-align: center;
+  color: white;
+  height: 15px;
+  border-radius: 50%;
+  width: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -13,12 +13,12 @@ export class SocketService {
     this.socket = io(this.serverUrl);
   }
 
-  // Join a group (room)
-  joinGroup(groupId: string): void {
-    this.socket.emit('joinGroup', groupId);
+  // Join a group
+  joinGroups(groupIds: string[]): void {
+    this.socket.emit('joinGroups', groupIds);
   }
 
-  // Leave a group (room)
+  // Leave a group
   leaveGroup(groupId: string): void {
     this.socket.emit('leaveGroup', groupId);
   }
@@ -29,13 +29,13 @@ export class SocketService {
   }
 
   // Listen for responses from the server
-  onMessageReceived(groupId, callback: (data: any) => void): void {
-    this.socket.on(groupId, callback);
+  onMessageReceived(callback: (data: any) => void): void {
+    this.socket.on('messageReceived', callback);
   }
 
   // Off Listening responses from the server
-  offMessageReceived(groupId): void {
-    this.socket.off(groupId);
+  offMessageReceived(): void {
+    this.socket.off('messageReceived');
   }
 
   // Disconnect from the server
