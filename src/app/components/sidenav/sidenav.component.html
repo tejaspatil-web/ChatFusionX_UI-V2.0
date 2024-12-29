@@ -6,8 +6,9 @@
         alt="Profile Image"
       />
     </div>
-    <img src="{{ baseUrl }}home.svg" alt="Home-image" class="icons" />
-    <img src="{{ baseUrl }}chat.svg" alt="Chat-image" class="icons" />
+    <img src="{{ baseUrl }}home.svg" alt="Home-image" class="icons pointer" />
+    <img src="{{ baseUrl }}chat.svg" alt="Chat-image" (click)="onDmIconClick()" class="icons pointer" />
+    <img src="{{ baseUrl }}group.svg" alt="Group-image" (click)="onGroupIconClick()" class="icons pointer" />
     <img
       src="{{ baseUrl }}notifications.svg"
       alt="Notifications-image"

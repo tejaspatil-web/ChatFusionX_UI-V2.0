@@ -11,11 +11,11 @@ import {
 import { baseUrl } from '../../environment/base-urls';
 import { Helper } from '../../shared/classes/helper.class';
 import { FormsModule } from '@angular/forms';
-import { SharedService } from '../../shared/services/shared.service';
+import { SharedService, sideNavState } from '../../shared/services/shared.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SocketService } from '../../socket/socket.service';
 import { Message } from '../../shared/models/chat.model';
-import { UserService } from '../../shared/services/user-shared.service';
+import { UserSharedService } from '../../shared/services/user-shared.service';
 import { ChatService } from '../../services/chat.service';
 
 @Component({
@@ -35,36 +35,47 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
   private _chatContainer: HTMLDivElement;
   private _groupId: string = "";
   public groupName: string = "";
+  public userName: string = "";
+  public userId: string = "";
+  public type: string = "";
   public messages:Message[] = [];
   constructor(
     public sharedService: SharedService,
     private _router: Router,
     private _activatedRoute: ActivatedRoute,
     private _socketService: SocketService,
-    private _userService:UserService,
+    private _userSharedService :UserSharedService,
     private _chatService:ChatService
   ) {}
 
   ngOnInit(): void {
     this._activatedRoute.paramMap.subscribe((params) => {
       this.messages = [];
-      const groupData = this._userService.groupData;
-      this._groupId = params.get('id');
-      this.groupName = params.get('name');
-      this.sharedService.activatedGroupId = this._groupId;
-      if(groupData.length > 0){
-       const group = groupData.find(ele => ele._id === this._groupId);
-       if(group?.messages.length > 0){
-        this.messages = group.messages.map(ele => ({
-          ...ele,
-          groupId: this._groupId,
-          isCurrentUser: ele.userId === this._userService.userDetails.id,
-        }));
-       }
+      this.type = params.get('type');
+      if(this.type === sideNavState.user){
+       this.userName = params.get('name')
+       this.userId = params.get('userId')
+      }else if(this.type === sideNavState.group){
+        const groupData = this._userSharedService.groupData;
+        this._groupId = params.get('id');
+        this.groupName = params.get('name');
+        this.sharedService.activatedGroupId = this._groupId;
+        if(groupData.length > 0){
+         const group = groupData.find(ele => ele._id === this._groupId);
+         if(group?.messages.length > 0){
+          this.messages = group.messages.map(ele => ({
+            ...ele,
+            groupId: this._groupId,
+            isCurrentUser: ele.userId === this._userSharedService.userDetails.id,
+          }));
+         }
+        }
       }
       this._scrollToBottom();
     });
-    this._receivedGroupMessages();
+    if(this.type === sideNavState.group){
+      this._receivedGroupMessages();
+    }
   }
 
   ngAfterViewInit(): void {
@@ -81,7 +92,7 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
 
   sendMessage() {
     if (this._userInput.value) {
-      const {id,name} = this._userService.userDetails
+      const {id,name} = this._userSharedService.userDetails
       const message:Message = {
         userName: name,
         groupId:this._groupId,
@@ -119,7 +130,7 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
     isCurrentUser: message.isCurrentUser,
   });
 
-    const group = this._userService.groupData.find(ele => ele._id === this._groupId);
+    const group = this._userSharedService.groupData.find(ele => ele._id === this._groupId);
     group.messages.push({
       userId:message.userId,
       userName:message.userName,

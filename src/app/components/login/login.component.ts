@@ -9,7 +9,7 @@ import { baseUrl } from '../../environment/base-urls';
 import { SharedService } from '../../shared/services/shared.service';
 import { UserAuthService } from '../../services/user-auth.service';
 import { Router } from '@angular/router';
-import { UserService } from '../../shared/services/user-shared.service';
+import { UserSharedService } from '../../shared/services/user-shared.service';
 import { UserDetails } from '../../shared/models/user.model';
 
 @Component({
@@ -31,7 +31,7 @@ export class LoginComponent {
   // Services
   private _sharedService = inject(SharedService);
   private _userAuthService = inject(UserAuthService);
-  private _userService = inject(UserService);
+  private _userSharedService = inject(UserSharedService);
   private _router = inject(Router);
 
   profileForm = new FormGroup({
@@ -75,7 +75,7 @@ export class LoginComponent {
               JSON.stringify(authorized)
             );
             localStorage.setItem('userDetails', JSON.stringify(response));
-            this._userService.userDetails = new UserDetails(
+            this._userSharedService.userDetails = new UserDetails(
               response.name,
               response.email,
               response.id,

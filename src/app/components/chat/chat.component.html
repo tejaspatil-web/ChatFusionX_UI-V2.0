@@ -8,16 +8,30 @@
         alt="Back"
       />
       }
-      <div class="chat-profile">
-        <img
-          class="w-100 h-100"
-          src="{{ baseUrl }}group.png"
-          alt="profile"
-        />
-      </div>
-      <h4 class="group-name">{{groupName}}</h4>
+      @if(type === 'user'){
+        <div class="chat-profile">
+          <img
+            class="w-100 h-100"
+            src="{{ baseUrl }}user.png"
+            alt="profile"
+          />
+        </div>
+        <h4 class="group-name">{{userName}}</h4>
+      }@else if (type === 'group') {
+        <div class="chat-profile">
+          <img
+            class="w-100 h-100"
+            src="{{ baseUrl }}group.png"
+            alt="profile"
+          />
+        </div>
+        <h4 class="group-name">{{groupName}}</h4>
+      }
+
     </div>
-    <img (click)="shareGroupLink()" class="pointer" src="{{ baseUrl }}share.svg" alt="share" />
+    @if (type === 'group'){
+      <img (click)="shareGroupLink()" class="pointer" src="{{ baseUrl }}share.svg" alt="share" />
+    }
   </div>
   <div #chatContainer class="group-chat w-100">
     @for(message of messages;let index = $index; track index){

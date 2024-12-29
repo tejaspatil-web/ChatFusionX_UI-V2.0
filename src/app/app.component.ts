@@ -11,7 +11,7 @@ import { SharedService } from './shared/services/shared.service';
 import { isPlatformBrowser } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { SnackbarComponent } from './shared/components/snackbar/snackbar.component';
-import { UserService } from './shared/services/user-shared.service';
+import { UserSharedService } from './shared/services/user-shared.service';
 import { UserDetails } from './shared/models/user.model';
 
 @Component({
@@ -30,7 +30,7 @@ export class AppComponent implements OnDestroy {
     private renderer: Renderer2,
     private _sharedService: SharedService,
     private router: Router,
-    private _userService:UserService,
+    private _userSharedService:UserSharedService,
   ) {
     this._sharedService.getServerStatus().subscribe();
   }
@@ -45,7 +45,7 @@ export class AppComponent implements OnDestroy {
     const userDetails = localStorage.getItem('userDetails')
     if(userDetails){
       const parseUserDetails = JSON.parse(userDetails);
-       this._userService.userDetails = new UserDetails(
+       this._userSharedService.userDetails = new UserDetails(
         parseUserDetails.name,
         parseUserDetails.email,
         parseUserDetails.id,
@@ -60,6 +60,16 @@ export class AppComponent implements OnDestroy {
       this.isScreenLoaded = true;
     }
   }
+
+checkRoute(){
+  if (this.currentRoute === '/login') {
+    return false;
+  }
+  if (this._sharedService.isMobile) {
+    return !['group', 'user'].some(keyword => this.currentRoute.includes(keyword));
+  }
+  return true;
+}
 
   ngOnDestroy(): void {
     if (this.routerSubscription) {

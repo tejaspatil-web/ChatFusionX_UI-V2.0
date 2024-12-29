@@ -5,7 +5,7 @@ import { GroupData } from '../models/group.model';
 @Injectable({
   providedIn: 'root',
 })
-export class UserService {
+export class UserSharedService {
   public userDetails:UserDetails
   public groupData:GroupData[] = []
   constructor() {}

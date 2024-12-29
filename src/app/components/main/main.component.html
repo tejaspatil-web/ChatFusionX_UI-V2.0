@@ -1,48 +1,59 @@
 <div class="main">
- @if(!isShowLoader){
- <!-- This Code for Mobile View -->
- @if(sharedService.isMobile){ @if(!checkRoute()){
-    <!-- Showing group component -->
+  @if(!isShowLoader){
+  <!-- This Code for Mobile View -->
+  @if(sharedService.isMobile){ @if(!checkRoute()){
+  <!-- Showing group component -->
   <div class="main-group">
     <div class="search-field">
       <img src="{{ baseUrl }}search.svg" alt="" />
-      <input type="text" placeholder="Search" (input)="searchGroup($event)"/>
+      <input type="text" placeholder="Search" (input)="search($event)" />
     </div>
 
+    @switch (sideNavState) { @case ('user') {
+    <div class="group">
+      <app-direct-message
+        (onUserClick)="onUserClick($event)"
+      ></app-direct-message>
+    </div>
+    } @case ('group') {
     <div class="group">
       <div class="group-title">
         <h4>Groups</h4>
-        <img class="pointer" (click)="addGroup()" src="{{ baseUrl }}add-group.svg" alt="" />
+        <img
+          class="pointer"
+          (click)="addGroup()"
+          src="{{ baseUrl }}add-group.svg"
+          alt=""
+        />
       </div>
       <div class="group-list">
         @if(copyGroupList.length === 0){
-          <h4 class="h-100 d-flex justify-center item-center text-center">No groups found. Please join a group or create one.</h4>
-        }@else{
-          @for (group of copyGroupList; let index = $index; track index) {
-            <div (click)="onGroupClick(group, index)" class="group-card">
-              <div class="group-icon">
-                <img
-                  src="{{ baseUrl }}group.png"
-                  alt="group-icon"
-                />
+        <h4 class="h-100 d-flex justify-center item-center text-center">
+          No groups found. Please join a group or create one.
+        </h4>
+        }@else{ @for (group of copyGroupList; let index = $index; track index) {
+        <div (click)="onGroupClick(group, index)" class="group-card pointer">
+          <div class="group-icon">
+            <img src="{{ baseUrl }}group.png" alt="group-icon" />
+          </div>
+          <div class="group-header">
+            <h5 class="group-name">{{ group.name }}</h5>
+            <div>
+              @if(group.unreadCount){
+              <div class="unread-count">
+                <span>{{ group.unreadCount }}</span>
               </div>
-              <div class="group-header">
-                <h5 class="group-name">{{ group.name }}</h5>
-                <div>
-                  @if(group.unreadCount){
-                    <div class="unread-count">
-                      <span>{{group.unreadCount}}</span>
-                    </div>
-                  }@else {
-                    <span>{{ group.lastMessageTime }}</span><br>
-                  }
-                </div>
-              </div>
+              }@else {
+              <span>{{ group.lastMessageTime }}</span
+              ><br />
+              }
             </div>
-            }
-        }
+          </div>
+        </div>
+        } }
       </div>
     </div>
+    } }
   </div>
   } @if(checkRoute()) {
   <!-- Showing chat component -->
@@ -54,52 +65,72 @@
   <div class="main-group">
     <div class="search-field">
       <img src="{{ baseUrl }}search.svg" alt="" />
-      <input type="text" placeholder="Search"  (input)="searchGroup($event)" />
+      <input
+        type="text"
+        placeholder="Search"
+        [value]="searchValue"
+        (input)="search($event)"
+      />
     </div>
 
+    @switch (sideNavState) { @case ('user') {
+    <div class="group">
+      <app-direct-message
+        (onUserClick)="onUserClick($event)"
+      ></app-direct-message>
+    </div>
+    } @case ('group') {
     <div class="group">
       <div class="group-title">
         <h4>Groups</h4>
-        <img class="pointer" (click)="addGroup()" src="{{ baseUrl }}add-group.svg" alt="" />
+        <img
+          class="pointer"
+          (click)="addGroup()"
+          src="{{ baseUrl }}add-group.svg"
+          alt=""
+        />
       </div>
       <div class="group-list">
         @if(copyGroupList.length === 0){
-          <h4 class="h-100 d-flex justify-center item-center text-center">No groups found. Please join a group or create one.</h4>
-        }@else{
-          @for (group of copyGroupList; let index = $index; track index) {
-            <div (click)="onGroupClick(group, index)" class="group-card">
-              <div class="group-icon">
-                <img
-                  src="{{ baseUrl }}group.png"
-                  alt="group-icon"
-                />
+        <h4 class="h-100 d-flex justify-center item-center text-center">
+          No groups found. Please join a group or create one.
+        </h4>
+        }@else{ @for (group of copyGroupList; let index = $index; track index) {
+        <div (click)="onGroupClick(group, index)" class="group-card pointer">
+          <div class="group-icon">
+            <img src="{{ baseUrl }}group.png" alt="group-icon" />
+          </div>
+          <div class="group-header">
+            <h5 class="group-name">{{ group.name }}</h5>
+            <div>
+              @if(group.unreadCount){
+              <div class="unread-count">
+                <span>{{ group.unreadCount }}</span>
               </div>
-              <div class="group-header">
-                <h5 class="group-name">{{ group.name }}</h5>
-                <div>
-                  @if(group.unreadCount){
-                    <div class="unread-count">
-                      <span>{{group.unreadCount}}</span>
-                    </div>
-                  }@else {
-                    <span>{{ group.lastMessageTime }}</span><br>
-                  }
-                </div>
-              </div>
+              }@else {
+              <span>{{ group.lastMessageTime }}</span
+              ><br />
+              }
             </div>
-            }
-        }
+          </div>
+        </div>
+        } }
       </div>
     </div>
+    } }
   </div>
   <div class="main-chat">
     <router-outlet></router-outlet>
   </div>
+  } @if(isShowDialog){
+  <app-dialog
+    (afterDialogClose)="afterDialogClose($event)"
+    [isShowDialog]="true"
+  ></app-dialog>
+  } }@else {
+  <app-dialog
+    (afterDialogClose)="afterDialogClose($event)"
+    [isShowLoader]="isShowLoader"
+  ></app-dialog>
   }
-@if(isShowDialog){
-  <app-dialog (afterDialogClose)="afterDialogClose($event)" [isShowDialog]="true"></app-dialog>
-}
- }@else {
-  <app-dialog (afterDialogClose)="afterDialogClose($event)" [isShowLoader]="isShowLoader"></app-dialog>
- }
 </div>

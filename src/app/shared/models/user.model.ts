@@ -12,3 +12,16 @@ export class UserDetails{
     this.joinedGroupIds = joinedGroupIds
   }
 }
+export class UserList{
+  email:string
+  id:string
+  name:string
+  isActiveUser?:boolean
+  constructor(name:string,email:string,id:string){
+    this.name = name
+    this.email = email
+    this.id = id
+  }
+}
+
+

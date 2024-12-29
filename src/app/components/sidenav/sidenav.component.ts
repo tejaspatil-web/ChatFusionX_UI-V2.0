@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { baseUrl } from '../../environment/base-urls';
 import { Router } from '@angular/router';
-import { SharedService } from '../../shared/services/shared.service';
+import { SharedService, sideNavState } from '../../shared/services/shared.service';
 import { DialogComponent } from '../../shared/components/dialog/dialog.component';
 
 @Component({
@@ -18,6 +18,14 @@ export class SidenavComponent {
 
   onProfileClick(){
     this.isShowProfile = true;
+  }
+
+  onDmIconClick(){
+    this._sharedService.sideNavState.next(sideNavState.user)
+  }
+
+  onGroupIconClick(){
+    this._sharedService.sideNavState.next(sideNavState.group)
   }
 
   afterDialogClose(event){

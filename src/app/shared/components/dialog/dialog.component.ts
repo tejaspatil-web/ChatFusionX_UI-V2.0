@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { SharedService } from '../../services/shared.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { baseUrl } from '../../../environment/base-urls';
-import { UserService } from '../../services/user-shared.service';
+import { UserSharedService } from '../../services/user-shared.service';
 
 @Component({
   selector: 'app-dialog',
@@ -25,11 +25,11 @@ export class DialogComponent implements OnInit {
   public userEmail:string = ''
 
   constructor(private readonly _sharedService: SharedService,
-    private readonly _userService:UserService
+    private readonly _userSharedService:UserSharedService
   ) {}
   ngOnInit(): void {
-    this.userName = this._userService.userDetails.name
-    this.userEmail = this._userService.userDetails.email
+    this.userName = this._userSharedService.userDetails.name
+    this.userEmail = this._userSharedService.userDetails.email
   }
 
   onSubmit(){}

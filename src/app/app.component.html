@@ -1,7 +1,7 @@
 @if(isScreenLoaded){
 <div class="w-100 h-100 d-flex main-container">
   <app-snackbar></app-snackbar>
-  @if(this.currentRoute !== '/login'){
+  @if(checkRoute()){
   <header class="w-100 h-100"><app-sidenav></app-sidenav></header>
   }
   <div class="w-100 h-100">

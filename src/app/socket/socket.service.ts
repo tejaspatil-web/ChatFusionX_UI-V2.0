@@ -9,8 +9,10 @@ import { baseUrl } from '../environment/base-urls';
 export class SocketService {
   private socket: Socket;
   private serverUrl: string = baseUrl.prodSocketUrl
-  constructor(private _http: HttpClient) {
-    this.socket = io(this.serverUrl);
+  constructor(private _http: HttpClient) {}
+
+  socketConnection(userId:string){
+    this.socket = io(this.serverUrl,{query:{userId:userId}});
   }
 
   // Join a group
@@ -21,6 +23,22 @@ export class SocketService {
   // Leave a group
   leaveGroup(groupId: string): void {
     this.socket.emit('leaveGroup', groupId);
+  }
+
+
+  getOnlineUsers(): void {
+    this.socket.emit('getOnlineUsers');
+  }
+
+  handleOnlineUsers(callback: (value: any) => void): void {
+    this.socket.off('onlineUsers');
+    this.socket.on('onlineUsers', (data) => {
+      callback(data);
+    });
+  }
+
+  offGettingOnlineUsers(){
+    this.socket.off('onlineUsers')
   }
 
   // Send a message to a group
