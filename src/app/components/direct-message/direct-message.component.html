@@ -1,0 +1,30 @@
+<div class="dm-container">
+  <div class="dm-title">
+    <h4>Users</h4>
+    <!-- <img class="pointer" src="{{ baseUrl }}add-group.svg" alt="" /> -->
+  </div>
+  <div class="user-list">
+    @for(user of userList; let index = $index; track index){
+    <div (click)="userClick(user, index)" class="dm-card pointer">
+      <span
+        [class]="user.isActiveUser ? 'status-active' : 'status-inactive'"
+      ></span>
+      <div class="user-icon">
+        <img src="{{ baseUrl }}user.png" alt="user-icon" />
+      </div>
+      <div class="user-header">
+        <h5 class="user-name">{{ user.name }}</h5>
+        <div>
+          @if(true){
+          <div class="unread-count">
+            <span>50</span>
+          </div>
+          }@else {
+          <span>12 am</span><br />
+          }
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>
