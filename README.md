@@ -1,6 +1,6 @@
 # ChatFusionX
 
-![ChatFusionX Logo](https://via.placeholder.com/150)  <!-- Replace with your logo URL -->
+![ChatFusionX Logo](https://chatfusionx.web.app/images/logo.png)  <!-- Replace with your logo URL -->
 
 **ChatFusionX** is a real-time chat application that supports **one-on-one chats** and **group messaging**. Built with **Angular** and **NestJS**, it provides instant messaging with a smooth and secure experience using WebSockets.
 
