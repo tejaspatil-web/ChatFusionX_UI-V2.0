@@ -38,7 +38,7 @@ Manage groups – add/remove members and customize chat settings.
 📬 Contact
 For queries, feature requests, or issues, reach out to:
 📧 Email: tejasp094@gmail.com
-🌐 GitHub: Your GitHub Profile
+🌐 GitHub: https://github.com/tejaspatil-web
 
 
 ⭐ If you like this project, don't forget to star it on GitHub! ⭐
