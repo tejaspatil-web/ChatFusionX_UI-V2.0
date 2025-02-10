@@ -38,6 +38,19 @@
             }
           },
           "configurations": {
+            "dev":{
+              "fileReplacements": [
+                {
+                  "replace": "src/app/environment/environment.ts",
+                  "with": "src/app/environment/environment.dev.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "ssr": false,
+              "prerender": false
+            },
             "production": {
               "budgets": [
                 {
@@ -71,6 +84,9 @@
             },
             "development": {
               "buildTarget": "chatfusionx:build:development"
+            },
+            "dev":{
+              "buildTarget": "chatfusionx:build:dev"
             }
           },
           "defaultConfiguration": "development"

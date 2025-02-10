@@ -1,19 +1,20 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { baseUrl } from '../../environment/base-urls';
+import { baseUrl } from '../../environment/environment';
 
 export enum sideNavState{
   group='group',
   user='user',
-  home='home'
+  home='home',
+  notification='notification'
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class SharedService {
- private _baseUrl = baseUrl.prodApiUrl;
+ private _baseUrl = baseUrl.apiUrl;
   public isMobile = false;
   public isAlreadyGroupJoin:boolean = false;
   public activatedGroupId:string = ''

@@ -8,7 +8,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { baseUrl } from '../../environment/base-urls';
+import { baseUrl } from '../../environment/environment';
 import { Helper } from '../../shared/classes/helper.class';
 import { FormsModule } from '@angular/forms';
 import { SharedService, sideNavState } from '../../shared/services/shared.service';

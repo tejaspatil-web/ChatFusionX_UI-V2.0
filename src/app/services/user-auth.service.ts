@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { baseUrl } from '../environment/base-urls';
+import { baseUrl } from '../environment/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserAuthService {
-  private _baseUrl = baseUrl.prodApiUrl;
+  private _baseUrl = baseUrl.apiUrl;
   constructor(private _httpClient: HttpClient) {}
 
   sendVerificationCode(userDetails: { email: string; userName: string }) {

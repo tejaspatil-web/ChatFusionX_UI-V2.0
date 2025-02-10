@@ -17,6 +17,8 @@ export class UserList{
   id:string
   name:string
   isActiveUser?:boolean
+  isRequestPending?:boolean
+  isApproved?:boolean
   constructor(name:string,email:string,id:string){
     this.name = name
     this.email = email

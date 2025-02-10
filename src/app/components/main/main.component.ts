@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { baseUrl } from '../../environment/base-urls';
+import { baseUrl } from '../../environment/environment';
 import {
   SharedService,
   sideNavState,
@@ -31,6 +31,8 @@ export class MainComponent implements OnInit, OnDestroy {
   public isShowLoader: boolean = true;
   public sideNavState: string = 'user';
   public searchValue: string = '';
+  public isAddUser: boolean = false;
+  public onBackButton: object = {};
   constructor(
     public sharedService: SharedService,
     private _router: Router,
@@ -67,9 +69,11 @@ export class MainComponent implements OnInit, OnDestroy {
           break;
         case sideNavState.group:
           this.sideNavState = sideNavState.group;
+          this.isAddUser = false;
           break;
         case sideNavState.home:
           this.sideNavState = sideNavState.home;
+          this.isAddUser = false;
           break;
         default:
           this.sideNavState = '';
@@ -277,8 +281,20 @@ export class MainComponent implements OnInit, OnDestroy {
     return group;
   }
 
+  onAddGroupClick(event) {
+    this.isAddUser = event;
+    this._router.navigate([`dashboard`]);
+  }
+
   onUserClick(event) {
     this._router.navigate([`dashboard/user/${event.userId}/${event.userName}`]);
+  }
+
+  onBackButtonClick() {
+    this.isAddUser = false;
+    this.onBackButton = {
+      status: true,
+    };
   }
 
   onGroupClick(item, index) {

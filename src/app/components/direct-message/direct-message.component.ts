@@ -2,11 +2,14 @@ import {
   Component,
   EventEmitter,
   inject,
+  Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
 } from '@angular/core';
-import { baseUrl } from '../../environment/base-urls';
+import { baseUrl } from '../../environment/environment';
 import { UserService } from '../../services/user.service';
 import { UserList } from '../../shared/models/user.model';
 import { SocketService } from '../../socket/socket.service';
@@ -19,17 +22,28 @@ import { UserSharedService } from '../../shared/services/user-shared.service';
   templateUrl: './direct-message.component.html',
   styleUrl: './direct-message.component.css',
 })
-export class DirectMessageComponent implements OnInit, OnDestroy {
+export class DirectMessageComponent implements OnInit, OnDestroy,OnChanges {
   public baseUrl = baseUrl.images;
   private _socketService = inject(SocketService);
   private _userService = inject(UserService);
   private _userSharedService = inject(UserSharedService);
   private _activeUsers: string[] = [];
+  @Input() onBackButton:any;
   @Output() onUserClick = new EventEmitter<{
     userId: string;
     userName: string;
   }>();
+  @Output() onAddGroupClick = new EventEmitter<boolean>();
   public userList: UserList[] = [];
+  public isAddUser: boolean = false;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['onBackButton']){
+      if(changes['onBackButton'].currentValue?.status){
+        this.isAddUser = !changes['onBackButton'].currentValue?.status;
+      }
+    }
+  }
 
   ngOnInit(): void {
     this.search();
@@ -69,6 +83,15 @@ export class DirectMessageComponent implements OnInit, OnDestroy {
           .includes(value.trim().toLocaleLowerCase())
       );
     });
+  }
+
+redirectToAddUser(){
+  this.isAddUser = true;
+  this.onAddGroupClick.emit(true)
+}
+
+  addUser(user){
+    user.isRequestPending = true;
   }
 
   userClick(user, index) {

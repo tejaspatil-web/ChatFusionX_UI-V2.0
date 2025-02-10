@@ -5,7 +5,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { baseUrl } from '../../environment/base-urls';
+import { baseUrl } from '../../environment/environment';
 import { SharedService } from '../../shared/services/shared.service';
 import { UserAuthService } from '../../services/user-auth.service';
 import { Router } from '@angular/router';

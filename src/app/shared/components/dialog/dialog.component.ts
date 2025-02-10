@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { baseUrl } from '../../../environment/base-urls';
+import { baseUrl } from '../../../environment/environment';
 import { UserSharedService } from '../../services/user-shared.service';
 
 @Component({

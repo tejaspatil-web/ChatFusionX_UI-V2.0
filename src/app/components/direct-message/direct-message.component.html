@@ -1,30 +1,60 @@
+@if(!this.isAddUser){
 <div class="dm-container">
   <div class="dm-title">
     <h4>Users</h4>
-    <!-- <img class="pointer" src="{{ baseUrl }}add-group.svg" alt="" /> -->
+    <img class="pointer" (click)="redirectToAddUser()" src="{{ baseUrl }}add-user.svg" alt="" />
   </div>
   <div class="user-list">
-    @for(user of userList; let index = $index; track index){
-    <div (click)="userClick(user, index)" class="dm-card pointer">
-      <span
-        [class]="user.isActiveUser ? 'status-active' : 'status-inactive'"
-      ></span>
-      <div class="user-icon">
-        <img src="{{ baseUrl }}user.png" alt="user-icon" />
-      </div>
-      <div class="user-header">
-        <h5 class="user-name">{{ user.name }}</h5>
-        <div>
-          @if(true){
-          <div class="unread-count">
-            <span>50</span>
+    @if(userList.length > 0){
+      @for(user of userList; let index = $index; track index){
+        <div (click)="userClick(user, index)" class="dm-card pointer">
+          <span
+            [class]="user.isActiveUser ? 'status-active' : 'status-inactive'"
+          ></span>
+          <div class="user-icon">
+            <img src="{{ baseUrl }}user.png" alt="user-icon" />
           </div>
-          }@else {
-          <span>12 am</span><br />
-          }
+          <div class="user-header">
+            <h5 class="user-name">{{ user.name }}</h5>
+            <div>
+              @if(false){
+              <div class="unread-count">
+                <span>50</span>
+              </div>
+              }@else {
+              <span>{{user.isActiveUser ? 'Online' : 'Offline'}}</span><br />
+              }
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+        }
+    }@else{
+      <h4 class="h-100 d-flex justify-center item-center text-center">
+        No users found. Please add a user or invite one.
+      </h4>
     }
   </div>
 </div>
+}@else {
+  <div class="user-list">
+    @for(user of userList; let index = $index; track index){
+      <div class="dm-card pointer">
+        <!-- <span
+          [class]="true ? 'status-active' : 'status-inactive'"
+        ></span> -->
+        <div class="user-icon">
+          <img src="{{ baseUrl }}user.png" alt="user-icon" />
+        </div>
+        <div class="user-header">
+          <h5 class="user-name">{{user.name}}</h5>
+          @if(!user?.isApproved){
+            <div>
+              <img [src]="user.isRequestPending ? baseUrl+'pending.svg' : baseUrl+'add.svg'"
+              alt="" (click)="addUser(user)">
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+}

@@ -4,15 +4,29 @@
   @if(sharedService.isMobile){ @if(!checkRoute()){
   <!-- Showing group component -->
   <div class="main-group">
-    <div class="search-field">
-      <img src="{{ baseUrl }}search.svg" alt="" />
-      <input type="text" placeholder="Search" (input)="search($event)" />
+    <div class="user-search">
+      @if(isAddUser){
+        <div (click)="onBackButtonClick()">
+          <img src="{{ baseUrl }}arrowback.svg" alt="">
+        </div>
+      }
+      <div class="search-field">
+        <img src="{{ baseUrl }}search.svg" alt="" />
+        <input
+          type="text"
+          placeholder="Search"
+          [value]="searchValue"
+          (input)="search($event)"
+        />
+      </div>
     </div>
 
     @switch (sideNavState) { @case ('user') {
     <div class="group">
       <app-direct-message
-        (onUserClick)="onUserClick($event)"
+      (onAddGroupClick)="onAddGroupClick($event)"
+      (onUserClick)="onUserClick($event)"
+      [onBackButton]="onBackButton"
       ></app-direct-message>
     </div>
     } @case ('group') {
@@ -63,20 +77,29 @@
   } }@else {
   <!-- This Code for Desktop View -->
   <div class="main-group">
-    <div class="search-field">
-      <img src="{{ baseUrl }}search.svg" alt="" />
-      <input
-        type="text"
-        placeholder="Search"
-        [value]="searchValue"
-        (input)="search($event)"
-      />
+    <div class="user-search">
+      @if(isAddUser){
+        <div (click)="onBackButtonClick()">
+          <img src="{{ baseUrl }}arrowback.svg" alt="">
+        </div>
+      }
+      <div class="search-field">
+        <img src="{{ baseUrl }}search.svg" alt="" />
+        <input
+          type="text"
+          placeholder="Search"
+          [value]="searchValue"
+          (input)="search($event)"
+        />
+      </div>
     </div>
 
     @switch (sideNavState) { @case ('user') {
     <div class="group">
       <app-direct-message
+        (onAddGroupClick)="onAddGroupClick($event)"
         (onUserClick)="onUserClick($event)"
+        [onBackButton]="onBackButton"
       ></app-direct-message>
     </div>
     } @case ('group') {

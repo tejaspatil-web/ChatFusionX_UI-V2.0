@@ -1,19 +1,32 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
-import { baseUrl } from '../environment/base-urls';
+import { baseUrl } from '../environment/environment';
+
+export const enum userEvents{
+  addRequest = 'addRequest'
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class SocketService {
   private socket: Socket;
-  private serverUrl: string = baseUrl.prodSocketUrl
+  private socketUrl: string = baseUrl.socketUrl
   constructor(private _http: HttpClient) {}
 
   socketConnection(userId:string){
-    this.socket = io(this.serverUrl,{query:{userId:userId}});
+    this.socket = io(this.socketUrl,{query:{userId:userId}});
   }
+
+  // handle user activity
+  handleUserActivity(event:string,data:object){
+    this.socket.emit('userActivity',{event:event,data:data})
+  }
+
+ onUserActivity(callback: (data: any) => void): void{
+    this.socket.on('messageReceived', callback);
+ }
 
   // Join a group
   joinGroups(groupIds: string[]): void {
