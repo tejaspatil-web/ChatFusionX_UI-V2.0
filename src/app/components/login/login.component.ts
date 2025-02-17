@@ -80,7 +80,10 @@ export class LoginComponent {
               response.email,
               response.id,
               response.adminGroupIds,
-              response.joinedGroupIds
+              response.joinedGroupIds,
+              response.requestPending || [],
+              response.requests || [],
+              response.addedUsers || []
             );
 
             this._sharedService.opnSnackBar.next('Login successful');

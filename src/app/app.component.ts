@@ -50,7 +50,10 @@ export class AppComponent implements OnDestroy {
         parseUserDetails.email,
         parseUserDetails.id,
         parseUserDetails.adminGroupIds,
-        parseUserDetails.joinedGroupIds
+        parseUserDetails.joinedGroupIds,
+        parseUserDetails.requestPending || [],
+        parseUserDetails.requests || [],
+        parseUserDetails.addedUsers || []
        )
     }
 
@@ -66,7 +69,7 @@ checkRoute(){
     return false;
   }
   if (this._sharedService.isMobile) {
-    return !['group', 'user'].some(keyword => this.currentRoute.includes(keyword));
+    return !['group', 'user','ChatFusionXAI'].some(keyword => this.currentRoute.includes(keyword));
   }
   return true;
 }

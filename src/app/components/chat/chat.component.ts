@@ -37,6 +37,7 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
   public groupName: string = "";
   public userName: string = "";
   public userId: string = "";
+  public receiverId: string = "";
   public type: string = "";
   public messages:Message[] = [];
   constructor(
@@ -54,7 +55,7 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
       this.type = params.get('type');
       if(this.type === sideNavState.user){
        this.userName = params.get('name')
-       this.userId = params.get('userId')
+       this.receiverId = params.get('id')
       }else if(this.type === sideNavState.group){
         const groupData = this._userSharedService.groupData;
         this._groupId = params.get('id');
@@ -70,11 +71,15 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
           }));
          }
         }
+      }else if(this.type === 'AI'){
+        this.userName = params.get('name')
       }
       this._scrollToBottom();
     });
     if(this.type === sideNavState.group){
       this._receivedGroupMessages();
+    }else if(this.type === sideNavState.user){
+      this._receivedPrivateMessage()
     }
   }
 
@@ -93,20 +98,37 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
   sendMessage() {
     if (this._userInput.value) {
       const {id,name} = this._userSharedService.userDetails
-      const message:Message = {
-        userName: name,
-        groupId:this._groupId,
-        userId:id,
-        message: this._userInput.value,
-        time: Helper.getTimeInIndia(),
-        isCurrentUser: true,
+      switch(this.type){
+        case 'group':
+          const groupMessage:Message = {
+            userName: name,
+            groupId:this._groupId,
+            userId:id,
+            message: this._userInput.value,
+            time: Helper.getTimeInIndia(),
+            isCurrentUser: true,
+          }
+      // push message in message array
+      this._addMessageToGroup(groupMessage);
+      // send message in to specific group
+      this._socketService.sendMessageToGroup(groupMessage);
+      break;
+        case 'user':
+          const userMessage:Message = {
+            userName: name,
+            userId:id,
+            message: this._userInput.value,
+            time: Helper.getTimeInIndia(),
+            isCurrentUser: true,
+            receiverId:this.receiverId,
+            type:'privateMessage'
+          }
+      this._addMessageToUser(userMessage);
+      // send message in to specific group
+      this._socketService.sendPrivateMessage(userMessage);
+      break;
       }
 
-      // push message in message array
-      this._addMessageToGroup(message);
-
-      // send message in to specific group
-      this._socketService.sendMessageToGroup(message);
       this._userInput.value = '';
       this._userInput.focus();
       this._scrollToBottom();
@@ -118,6 +140,27 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
       message.isCurrentUser = false;
       this._addMessageToGroup(message);
     })
+  }
+
+  private _receivedPrivateMessage(){
+    this._chatService.privateMessage.subscribe(message =>{
+      if(message.type === 'privateMessage'){
+        this._addMessageToUser({...message,isCurrentUser:false})
+      }
+    })
+  }
+
+  private _addMessageToUser(message){
+    this.messages.push({
+      userName: message.userName,
+      userId:message.userId,
+      groupId:message.groupId,
+      message: message.message,
+      time: message.time,
+      isCurrentUser: message.isCurrentUser,
+      receiverId:message.receiverId,
+      type:message.type
+    });
   }
 
  private _addMessageToGroup(message:Message){

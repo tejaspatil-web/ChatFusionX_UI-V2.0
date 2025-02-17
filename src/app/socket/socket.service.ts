@@ -28,6 +28,22 @@ export class SocketService {
     this.socket.on('messageReceived', callback);
  }
 
+  joinPrivateChat(userId:string){
+    this.socket.emit('joinPrivateChat', userId);
+  }
+
+  sendPrivateMessage(message: any){
+    this.socket.emit('privateMessage',message)
+  }
+
+  receivedPrivateNotification(callback: (data: any) => void){
+    this.socket.on('notificationReceived',callback)
+  }
+
+  receivedPrivateMessage(callback: (data: any) => void){
+    this.socket.on('privateMessageReceived',callback)
+  }
+
   // Join a group
   joinGroups(groupIds: string[]): void {
     this.socket.emit('joinGroups', groupIds);

@@ -8,6 +8,7 @@ import { Message } from '../shared/models/chat.model';
 export class ChatService {
 
   public userMessage:Subject<Message> = new Subject<Message>();
+  public privateMessage:Subject<any> = new Subject<any>();
 
   constructor() {}
 

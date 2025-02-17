@@ -14,6 +14,7 @@ import { UserService } from '../../services/user.service';
 import { UserList } from '../../shared/models/user.model';
 import { SocketService } from '../../socket/socket.service';
 import { UserSharedService } from '../../shared/services/user-shared.service';
+import { SharedService } from '../../shared/services/shared.service';
 
 @Component({
   selector: 'app-direct-message',
@@ -25,6 +26,7 @@ import { UserSharedService } from '../../shared/services/user-shared.service';
 export class DirectMessageComponent implements OnInit, OnDestroy,OnChanges {
   public baseUrl = baseUrl.images;
   private _socketService = inject(SocketService);
+  private _sharedService = inject(SharedService);
   private _userService = inject(UserService);
   private _userSharedService = inject(UserSharedService);
   private _activeUsers: string[] = [];
@@ -35,6 +37,7 @@ export class DirectMessageComponent implements OnInit, OnDestroy,OnChanges {
   }>();
   @Output() onAddGroupClick = new EventEmitter<boolean>();
   public userList: UserList[] = [];
+  public addedUserList: UserList[] = [];
   public isAddUser: boolean = false;
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -48,13 +51,21 @@ export class DirectMessageComponent implements OnInit, OnDestroy,OnChanges {
   ngOnInit(): void {
     this.search();
     this._getOnlineUsers();
+    this.requestAcceptSubScription();
+    // this._notification()
   }
+
+  // private _notification(){
+  //   this._.privateMessage.subscribe(id =>{
+
+  //   })
+  // }
 
   private _getOnlineUsers() {
     const userId = this._userSharedService.userDetails.id;
     this._socketService.handleOnlineUsers((data) => {
       this._activeUsers = data;
-      this.userList = JSON.parse(JSON.stringify(this._userService.userList));
+      this.userList = JSON.parse(JSON.stringify(this._userService.userList.filter(ele => ele.id !== userId)));
       this.userList.forEach((ele) => {
         if (this._activeUsers.includes(ele.id) && ele.id !== userId) {
           ele.isActiveUser = true;
@@ -70,28 +81,59 @@ export class DirectMessageComponent implements OnInit, OnDestroy,OnChanges {
         }
         return 0;
       });
+      const addedUsers = this._userSharedService.userDetails.addedUsers;
+      this.addedUserList = this.userList.filter(ele => addedUsers.includes(ele.id));
     });
     this._socketService.getOnlineUsers();
   }
 
   search() {
+    const userId = this._userSharedService.userDetails.id;
     this._userService.userSearchTerm.subscribe((value: string) => {
       this.userList = this._userService.userList.filter((ele) =>
         ele.name
           .trim()
           .toLocaleLowerCase()
-          .includes(value.trim().toLocaleLowerCase())
+          .includes(value.trim().toLocaleLowerCase()) && ele.id !== userId
       );
     });
   }
 
 redirectToAddUser(){
+  const addedUsers = this._userSharedService.userDetails.addedUsers;
+  const requestPending = this._userSharedService.userDetails.requestPending;
+  this.userList.forEach(ele =>{
+    ele.isApproved = addedUsers.includes(ele.id);
+    ele.isRequestPending = requestPending.includes(ele.id);
+  })
   this.isAddUser = true;
   this.onAddGroupClick.emit(true)
 }
 
-  addUser(user){
-    user.isRequestPending = true;
+requestAcceptSubScription(){
+ this._sharedService.requestAccept.subscribe(id =>{
+  const addedUsers = this._userSharedService.userDetails.addedUsers;
+  this.addedUserList = this.userList.filter(ele => addedUsers.includes(ele.id));
+ })
+}
+
+sendRequest(user){
+  const userId = this._userSharedService.userDetails.id
+    if(!user.isRequestPending){
+      this._userService.sendRequest(
+        userId,
+        user.id
+      ).subscribe(ele =>{
+        this._socketService.sendPrivateMessage({type:'notification',action:'send',senderId:userId,receiverId:user.id})
+        this._userSharedService.userDetails.requestPending.push(user.id);
+        user.isRequestPending = true;
+        localStorage.setItem(
+          'userDetails',
+          JSON.stringify(this._userSharedService.userDetails)
+        );
+        this._sharedService.opnSnackBar.next('Request Send Successfully');
+      })
+    }
   }
 
   userClick(user, index) {

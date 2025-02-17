@@ -4,7 +4,7 @@ import {
   SharedService,
   sideNavState,
 } from '../../shared/services/shared.service';
-import { Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { UserSharedService } from '../../shared/services/user-shared.service';
 import { GroupService } from '../../services/group.service';
 import { GroupData } from '../../shared/models/group.model';
@@ -15,6 +15,7 @@ import { ChatService } from '../../services/chat.service';
 import { DirectMessageComponent } from '../direct-message/direct-message.component';
 import { UserService } from '../../services/user.service';
 import { UserList } from '../../shared/models/user.model';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-main',
@@ -49,10 +50,22 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this._checkRouteDynamic();
     this._redirectToDashboard();
     this.apiInit();
     this._requestNotificationPermission();
     this._getSideNavState();
+  }
+
+  private _checkRouteDynamic(){
+    this._router.events.subscribe((event) => {
+      if(event instanceof NavigationEnd &&
+        event.url === '/dashboard' &&
+        this.sideNavState === sideNavState.chatfusionxai
+      ){
+        this.sideNavState = sideNavState.user
+      }
+     })
   }
 
   private _redirectToDashboard() {
@@ -75,14 +88,29 @@ export class MainComponent implements OnInit, OnDestroy {
           this.sideNavState = sideNavState.home;
           this.isAddUser = false;
           break;
+        case sideNavState.chatfusionxai:
+          this.sideNavState = sideNavState.chatfusionxai;
+          this._router.navigate([`dashboard/AI/${this._userSharedService.userDetails.id}/${'ChatFusionXAI'}`])
+          break;
         default:
           this.sideNavState = '';
       }
     });
   }
 
+  private async _getUser() {
+    const userDetails = localStorage.getItem('userDetails');
+    if (userDetails) {
+      const parseUserDetails = JSON.parse(userDetails);
+      const response = await lastValueFrom(
+        this._userService.getUser(parseUserDetails.id)
+      );
+      this._userSharedService.userDetails = response;
+      localStorage.setItem('userDetails', JSON.stringify(response));
+    }
+  }
+
   private async _getAllUsers() {
-    this.isShowLoader = true;
     await new Promise((resolve, reject) => {
       this._userService.getAllUsers().subscribe({
         next: (users: UserList[]) => {
@@ -102,6 +130,9 @@ export class MainComponent implements OnInit, OnDestroy {
     if (redirectUrl && redirectUrl.includes('dashboard/group')) {
       await this._joinUserToNewGroup(joinedGroupIds, redirectUrl);
     }
+    this.isShowLoader = true;
+    await this._joinPrivateChat();
+    await this._getUser();
     await this._getAllUsers();
     if (joinedGroupIds.length > 0) {
       this._fetchDataAndJoinGroups(joinedGroupIds);
@@ -109,6 +140,11 @@ export class MainComponent implements OnInit, OnDestroy {
       this.isShowLoader = false;
     }
     this._receivedGroupMessages();
+    this._receivedPrivateMessages();
+  }
+
+  private async _joinPrivateChat(){
+    this._socketService.joinPrivateChat(this._userSharedService.userDetails.id);
   }
 
   private _fetchDataAndJoinGroups(joinedGroupIds) {
@@ -211,15 +247,40 @@ export class MainComponent implements OnInit, OnDestroy {
     });
   }
 
+  private _receivedPrivateMessages(){
+    this._socketService.receivedPrivateMessage(message =>{
+      this._chatService.privateMessage.next(message)
+    })
+
+    this._socketService.receivedPrivateNotification((message)=>{
+      if(message.type === 'notification'){
+        switch(message.action){
+          case 'send':
+            this._userSharedService.userDetails.requests.push(message.senderId)
+            break;
+          case 'approve':
+            this._userSharedService.userDetails.addedUsers.push(message.senderId);
+            break;
+          case 'reject':
+            const requestPending = this._userSharedService.userDetails.requestPending
+            this._userSharedService.userDetails.requestPending = requestPending.filter(ele => ele !== message.senderId)
+            break;
+        }
+      }
+      this._chatService.privateMessage.next(message)
+    })
+  }
+
   checkRoute() {
-    if (
-      ['user', 'group'].some((keyword) => this._router.url.includes(keyword))
-    ) {
-      if (this.sideNavState === 'group') {
+    const isGroupOrUserState =  ['user', 'group'].some((keyword) => this._router.url.includes(keyword))
+    if(isGroupOrUserState){
+      if(this.sideNavState === sideNavState.group){
         this.copyGroupList = JSON.parse(JSON.stringify(this._groupList));
       }
       return true;
-    } else {
+    }else if(this.sideNavState === sideNavState.chatfusionxai){
+      return true;
+    }else{
       return false;
     }
   }

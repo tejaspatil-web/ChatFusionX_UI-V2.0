@@ -1,7 +1,7 @@
 <div class="main">
   @if(!isShowLoader){
   <!-- This Code for Mobile View -->
-  @if(sharedService.isMobile){ @if(!checkRoute()){
+  @if(sharedService.isMobile || (sideNavState === 'chatfusionxai')){ @if(!checkRoute()){
   <!-- Showing group component -->
   <div class="main-group">
     <div class="user-search">

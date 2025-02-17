@@ -7,7 +7,8 @@ export enum sideNavState{
   group='group',
   user='user',
   home='home',
-  notification='notification'
+  notification='notification',
+  chatfusionxai = 'chatfusionxai'
 }
 
 @Injectable({
@@ -20,6 +21,7 @@ export class SharedService {
   public activatedGroupId:string = ''
   public userRedirectUrl:string = ''
   public opnSnackBar: Subject<string> = new Subject<string>();
+  public requestAccept: Subject<string> = new Subject<string>();
   public sideNavState: Subject<sideNavState> = new Subject<sideNavState>();
   constructor(private _httpClient:HttpClient) {}
 

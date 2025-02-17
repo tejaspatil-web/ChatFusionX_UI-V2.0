@@ -14,7 +14,7 @@
 
 .notification-container {
   position: absolute;
-  top: 250px;
+  top: 310px;
   z-index: 99;
   left: 75px;
   width: 250px;
@@ -50,6 +50,13 @@
   height: 35px;
   border-radius: 50%;
   overflow: hidden;
+}
+
+.user-name{
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .user-icon img {
@@ -92,6 +99,10 @@
   padding-right: 2px;
 }
 
+.ai-logo{
+  filter: brightness(350%);
+}
+
 /* Media Query - Corrected Syntax */
 @media screen and (max-width: 768px) {
   .header {
@@ -117,7 +128,7 @@
   }
 
   .notification-container{
-    top: 240px;
+    top: 285px;
     left: 45px;
   }
 }

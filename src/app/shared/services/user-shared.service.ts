@@ -8,5 +8,6 @@ import { GroupData } from '../models/group.model';
 export class UserSharedService {
   public userDetails:UserDetails
   public groupData:GroupData[] = []
+  public userChat:[] =[]
   constructor() {}
 }

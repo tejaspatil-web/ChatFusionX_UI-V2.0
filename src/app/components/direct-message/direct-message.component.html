@@ -5,8 +5,8 @@
     <img class="pointer" (click)="redirectToAddUser()" src="{{ baseUrl }}add-user.svg" alt="" />
   </div>
   <div class="user-list">
-    @if(userList.length > 0){
-      @for(user of userList; let index = $index; track index){
+    @if(this.addedUserList.length > 0){
+      @for(user of this.addedUserList; let index = $index; track index){
         <div (click)="userClick(user, index)" class="dm-card pointer">
           <span
             [class]="user.isActiveUser ? 'status-active' : 'status-inactive'"
@@ -50,7 +50,12 @@
           @if(!user?.isApproved){
             <div>
               <img [src]="user.isRequestPending ? baseUrl+'pending.svg' : baseUrl+'add.svg'"
-              alt="" (click)="addUser(user)">
+              alt="" (click)="sendRequest(user)">
+            </div>
+          }@else {
+            <div>
+              <img [src]="baseUrl+'request-approved.svg'"
+              alt="">
             </div>
           }
         </div>
