@@ -29,7 +29,7 @@ export class SidenavComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this._chatService.privateMessage.subscribe(ele =>{
+    this._chatService.getPrivateMessage().subscribe(ele =>{
       if(ele.type === 'notification'){
         const requests = this._userSharedService.userDetails.requests;
         const usersList  = JSON.parse(JSON.stringify(this._userService.userList));
@@ -107,6 +107,8 @@ export class SidenavComponent implements OnInit {
 
   logOut() {
     localStorage.clear();
+    this._socketService.disconnect();
+    this._sharedService.isLoggedOut = true;
     this._sharedService.isAlreadyGroupJoin = false;
     this._sharedService.userRedirectUrl = '';
     this._router.navigate(['/login']);

@@ -32,7 +32,6 @@ export class AppComponent implements OnDestroy {
     private router: Router,
     private _userSharedService:UserSharedService,
   ) {
-    this._sharedService.getServerStatus().subscribe();
   }
 
   ngOnInit() {

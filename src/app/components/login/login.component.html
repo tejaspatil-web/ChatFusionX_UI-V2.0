@@ -1,4 +1,5 @@
 <div class="h-100 w-100 d-flex justify-center item-center">
+  @if(!isLoading){
   <form
     class="d-flex item-center flex-column gap-15"
     [formGroup]="profileForm"
@@ -97,4 +98,7 @@
     <h5 class="signup" (click)="resendOtp()">Resend OTP</h5>
     }
   </form>
+  }@else{
+   <app-loader></app-loader>
+  }
 </div>

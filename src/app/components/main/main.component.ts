@@ -90,7 +90,7 @@ export class MainComponent implements OnInit, OnDestroy {
           break;
         case sideNavState.chatfusionxai:
           this.sideNavState = sideNavState.chatfusionxai;
-          this._router.navigate([`dashboard/AI/${this._userSharedService.userDetails.id}/${'ChatFusionXAI'}`])
+          this._router.navigate([`dashboard/ai/${this._userSharedService.userDetails.id}/${'ChatFusionXAI'}`])
           break;
         default:
           this.sideNavState = '';
@@ -249,7 +249,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
   private _receivedPrivateMessages(){
     this._socketService.receivedPrivateMessage(message =>{
-      this._chatService.privateMessage.next(message)
+      this._chatService.setPrivateMessage(message)
     })
 
     this._socketService.receivedPrivateNotification((message)=>{
@@ -267,7 +267,7 @@ export class MainComponent implements OnInit, OnDestroy {
             break;
         }
       }
-      this._chatService.privateMessage.next(message)
+      this._chatService.setPrivateMessage(message)
     })
   }
 

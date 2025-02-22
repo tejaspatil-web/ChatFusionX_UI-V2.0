@@ -38,7 +38,7 @@
 }@else {
   <div class="user-list">
     @for(user of userList; let index = $index; track index){
-      <div class="dm-card pointer">
+      <div class="dm-card">
         <!-- <span
           [class]="true ? 'status-active' : 'status-inactive'"
         ></span> -->
@@ -48,12 +48,12 @@
         <div class="user-header">
           <h5 class="user-name">{{user.name}}</h5>
           @if(!user?.isApproved){
-            <div>
+            <div class="pointer">
               <img [src]="user.isRequestPending ? baseUrl+'pending.svg' : baseUrl+'add.svg'"
               alt="" (click)="sendRequest(user)">
             </div>
           }@else {
-            <div>
+            <div class="pointer">
               <img [src]="baseUrl+'request-approved.svg'"
               alt="">
             </div>

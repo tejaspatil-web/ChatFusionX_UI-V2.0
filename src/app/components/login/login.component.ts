@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -11,11 +11,12 @@ import { UserAuthService } from '../../services/user-auth.service';
 import { Router } from '@angular/router';
 import { UserSharedService } from '../../shared/services/user-shared.service';
 import { UserDetails } from '../../shared/models/user.model';
+import { LoaderComponent } from '../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule,LoaderComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -27,12 +28,16 @@ export class LoginComponent {
   public isLoader: boolean = false;
   public isResendOtpDisable: boolean = false;
   public isForgotPassword:boolean = false;
+  public isLoading:boolean = false;
+
+  @ViewChild(LoaderComponent) loader!: LoaderComponent;
 
   // Services
   private _sharedService = inject(SharedService);
   private _userAuthService = inject(UserAuthService);
   private _userSharedService = inject(UserSharedService);
   private _router = inject(Router);
+
 
   profileForm = new FormGroup({
     username: new FormControl('', [Validators.required]),
@@ -44,6 +49,22 @@ export class LoginComponent {
       Validators.maxLength(6),
     ]),
   });
+
+  constructor(){
+    if(!this._sharedService.isLoggedOut){
+      this._checkServerStatus();
+    }
+  }
+
+  private _checkServerStatus(){
+    this.isLoading = true;
+    this._sharedService.getServerStatus().subscribe(ele =>{
+      this.loader.completeLoading();
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 500);
+    });
+  }
 
   onSubmit() {
     if (this.isSignUpPage && !this.isOtpPage) {

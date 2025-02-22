@@ -18,6 +18,7 @@ export class SharedService {
  private _baseUrl = baseUrl.apiUrl;
   public isMobile = false;
   public isAlreadyGroupJoin:boolean = false;
+  public isLoggedOut:boolean = false;
   public activatedGroupId:string = ''
   public userRedirectUrl:string = ''
   public opnSnackBar: Subject<string> = new Subject<string>();

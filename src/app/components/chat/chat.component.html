@@ -1,7 +1,7 @@
 <div class="chat w-100 h-100 p-10">
   <div class="chat-header d-flex space-between w-100 item-center pb-5 gap-10">
     <div class="d-flex item-center justify-center gap-10">
-      @if(sharedService.isMobile || type === 'AI'){
+      @if(sharedService.isMobile || type === 'ai'){
       <img
         (click)="onBackButton()"
         src="{{ baseUrl }}arrowback.svg"
@@ -26,7 +26,7 @@
           />
         </div>
         <h4 class="group-name">{{groupName}}</h4>
-      }@else if (type === 'AI') {
+      }@else if (type === 'ai') {
         <div class="chat-profile">
           <img
             class="w-100 h-100"

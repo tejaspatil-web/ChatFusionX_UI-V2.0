@@ -1,0 +1,17 @@
+<div id="wrapper">
+  <div class="loader" [ngClass]="{'active': isLoading , 'complete':isCompleted}">
+    <span *ngIf="isCompleted" class="checkmark">&#10004;</span>
+  </div>
+
+  <div class="loading-bar">
+    <div class="progress-bar" [style.width]="percentage + '%'"></div>
+  </div>
+
+  <div class="status">
+    <div class="state">{{ loadingMessage }}</div>
+    <div class="percentage">{{ percentage }}%</div>
+  </div>
+</div>
+
+
+

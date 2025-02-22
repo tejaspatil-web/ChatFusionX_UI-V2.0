@@ -17,7 +17,12 @@ import { SocketService } from '../../socket/socket.service';
 import { Message } from '../../shared/models/chat.model';
 import { UserSharedService } from '../../shared/services/user-shared.service';
 import { ChatService } from '../../services/chat.service';
+import { ChatfusionxAiService } from '../../services/chatfusionx-ai.service';
 
+export enum aiRole{
+  model = 'model',
+  user = 'user'
+}
 @Component({
   selector: 'app-chat',
   standalone: true,
@@ -46,7 +51,8 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
     private _activatedRoute: ActivatedRoute,
     private _socketService: SocketService,
     private _userSharedService :UserSharedService,
-    private _chatService:ChatService
+    private _chatService:ChatService,
+    private _chatfusionxAiService:ChatfusionxAiService
   ) {}
 
   ngOnInit(): void {
@@ -56,6 +62,7 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
       if(this.type === sideNavState.user){
        this.userName = params.get('name')
        this.receiverId = params.get('id')
+       this._getPrivateChat();
       }else if(this.type === sideNavState.group){
         const groupData = this._userSharedService.groupData;
         this._groupId = params.get('id');
@@ -71,15 +78,17 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
           }));
          }
         }
-      }else if(this.type === 'AI'){
+      }else if(this.type === 'ai'){
         this.userName = params.get('name')
       }
       this._scrollToBottom();
     });
     if(this.type === sideNavState.group){
-      this._receivedGroupMessages();
+      this._receiveGroupMessages();
     }else if(this.type === sideNavState.user){
-      this._receivedPrivateMessage()
+      this._receivePrivateMessage()
+    }else if(this.type === 'ai'){
+      this._getAiChatHistory()
     }
   }
 
@@ -93,6 +102,55 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
     if (event.key === 'Enter') {
       this.sendMessage();
     }
+  }
+
+  private _getPrivateChat(){
+    const userId = this._userSharedService.userDetails.id
+    this._chatService.getPrivateChat(
+      userId,
+      this.receiverId
+    ).subscribe((response:any) =>{
+      response.messages.forEach(ele =>{
+       ele.isCurrentUser = ele.userId === userId
+      })
+      this.messages = response.messages
+    })
+  }
+
+  private _getAiChatHistory(){
+    const userId = this._userSharedService.userDetails.id
+    this._chatfusionxAiService.getAiChatHistory(userId).subscribe((chat:any) =>{
+     this.messages = chat.response.map(ele =>{
+        return {
+          userName:ele.role === aiRole.model ? 'AI' : '',
+          userId:'',
+          message:ele.message,
+          time:'',
+          isCurrentUser:ele.role === aiRole.user
+        }
+      })
+    })
+  }
+
+  private _generateAiResponse(prompt:string){
+    const userId = this._userSharedService.userDetails.id
+    this.messages.push({
+      userName:'',
+      userId:userId,
+      message:prompt,
+      time:'',
+      isCurrentUser:true
+    })
+    this._chatfusionxAiService.generateAiResponse(userId,prompt).subscribe((response:any) =>{
+      this.messages.push({
+        userName:'AI',
+        userId:'',
+        message:response.response,
+        time:'',
+        isCurrentUser:false
+      })
+      this._scrollToBottom();
+    })
   }
 
   sendMessage() {
@@ -127,6 +185,9 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
       // send message in to specific group
       this._socketService.sendPrivateMessage(userMessage);
       break;
+       case 'ai':
+        this._generateAiResponse(this._userInput.value);
+         break;
       }
 
       this._userInput.value = '';
@@ -135,19 +196,19 @@ export class ChatComponent implements OnInit, AfterViewInit,OnDestroy {
     }
   }
 
-  private _receivedGroupMessages(){
+  private _receiveGroupMessages(){
     this._chatService.getMessage().subscribe((message:Message) =>{
       message.isCurrentUser = false;
       this._addMessageToGroup(message);
     })
   }
 
-  private _receivedPrivateMessage(){
-    this._chatService.privateMessage.subscribe(message =>{
-      if(message.type === 'privateMessage'){
-        this._addMessageToUser({...message,isCurrentUser:false})
-      }
-    })
+  private _receivePrivateMessage(){
+      this._chatService.getPrivateMessage().subscribe(message =>{
+        if(message.type === 'privateMessage'){
+          this._addMessageToUser({...message,isCurrentUser:false})
+        }
+      })
   }
 
   private _addMessageToUser(message){
