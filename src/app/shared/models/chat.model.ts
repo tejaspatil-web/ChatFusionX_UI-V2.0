@@ -7,4 +7,5 @@ export class Message{
   isCurrentUser?: boolean
   type?:string
   receiverId?:string
+  hasAiMessageLoaded?:boolean
 }

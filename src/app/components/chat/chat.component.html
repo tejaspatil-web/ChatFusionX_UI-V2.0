@@ -42,6 +42,7 @@
       <img (click)="shareGroupLink()" class="pointer" src="{{ baseUrl }}share.svg" alt="share" />
     }
   </div>
+  @if(type === 'ai' && !isShowLoader){
   <div #chatContainer class="group-chat w-100">
     @for(message of messages;let index = $index; track index){
     <!-- User Message Div -->
@@ -52,9 +53,17 @@
     >
       <div class="d-flex item-center gap-5">
         @if(!message.isCurrentUser){
-          <h5>{{ message.userName }}:</h5>
+            <h5>{{ message.userName }}:</h5>
         }
-        <span>{{ message.message }}</span>
+        @if(type === 'ai'){
+           @if(message.hasAiMessageLoaded){
+            <span><div class="ai-message-container" [innerHTML]="message.message"></div></span>
+           }@else {
+            <div class="loader response"></div>
+           }
+        }@else {
+          <span>{{ message.message }}</span>
+        }
         <h6>{{ message.time }}</h6>
       </div>
     </div>
@@ -77,4 +86,9 @@
       <img src="{{ baseUrl }}send.svg" alt="" />
     </button>
   </div>
+}@else {
+  <div class="loader-container">
+    <div class="loader"></div>
+  </div>
+}
 </div>
