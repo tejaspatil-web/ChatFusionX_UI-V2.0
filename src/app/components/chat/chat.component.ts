@@ -35,7 +35,7 @@ export enum aiRole {
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css',
 })
-export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('messageInput') userInput: ElementRef;
   @ViewChild('chatContainer') chatContainer: ElementRef;
   public baseUrl = baseUrl.images;
@@ -76,6 +76,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
         this.groupName = params.get('name');
         this.sharedService.activatedGroupId = this._groupId;
         if (groupData.length > 0) {
+          this.isShowLoader = true;
           const group = groupData.find((ele) => ele._id === this._groupId);
           if (group?.messages.length > 0) {
             this.messages = group.messages.map((ele) => ({
@@ -85,6 +86,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
                 ele.userId === this._userSharedService.userDetails.id,
             }));
           }
+          this.isShowLoader = false;
         }
       } else if (this.type === 'ai') {
         this.userName = params.get('name');
@@ -100,14 +102,6 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  ngAfterViewInit(): void {
-    if(this.type !== 'ai'){
-      this._userInput = this.userInput.nativeElement;
-      this._chatContainer = this.chatContainer.nativeElement;
-      this._scrollToBottom();
-    }
-  }
-
   onEnter(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       this.sendMessage();
@@ -116,6 +110,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private _getPrivateChat() {
     const userId = this._userSharedService.userDetails.id;
+    this.isShowLoader = true;
     this._chatService
       .getPrivateChat(userId, this.receiverId)
       .subscribe((response: any) => {
@@ -123,6 +118,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
           ele.isCurrentUser = ele.userId === userId;
         });
         this.messages = response.messages;
+        this.isShowLoader = false;
         this._scrollToBottom();
       });
   }
@@ -225,6 +221,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this._userInput.value = '';
       this._userInput.focus();
+      this.cdRef.detectChanges();
       this._scrollToBottom();
     }
   }
@@ -355,14 +352,9 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private _scrollToBottom(): void {
     requestAnimationFrame(()=>{
-      if(this.type === 'ai'){
         this._userInput = this.userInput?.nativeElement;
         const chatContainer = this.chatContainer?.nativeElement
        if(chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
-      }else{
-        const chatContainer = this._chatContainer;
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-      }
     })
   }
 

@@ -42,7 +42,7 @@
       <img (click)="shareGroupLink()" class="pointer" src="{{ baseUrl }}share.svg" alt="share" />
     }
   </div>
-  @if(type === 'ai' && !isShowLoader){
+  @if(!isShowLoader){
   <div #chatContainer class="group-chat w-100">
     @for(message of messages;let index = $index; track index){
     <!-- User Message Div -->
