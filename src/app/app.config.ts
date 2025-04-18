@@ -6,7 +6,7 @@ import { provideClientHydration } from '@angular/platform-browser';
 import { SocketService } from './socket/socket.service';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { mainRoutes } from './components/main/main.route';
-import { CredentialsInterceptor } from './interceptors/credentials.Interceptor';
+import { AuthInterceptor } from './interceptors/auth.Interceptor';
 
 const combinedRoutes: Routes = [...routes, ...mainRoutes];
 
@@ -21,7 +21,7 @@ export const appConfig: ApplicationConfig = {
     ),
     {
       provide:HTTP_INTERCEPTORS,
-      useClass:CredentialsInterceptor,
+      useClass:AuthInterceptor,
       multi:true
     }
   ],

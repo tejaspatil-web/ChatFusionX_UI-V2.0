@@ -91,10 +91,8 @@ export class LoginComponent {
         .subscribe({
           next: (response: UserDetails) => {
             const authorized = { isUserAuthorized: true };
-            localStorage.setItem(
-              'isUserAuthorized',
-              JSON.stringify(authorized)
-            );
+            localStorage.setItem('isUserAuthorized',JSON.stringify(authorized));
+            localStorage.setItem('accessToken',response.accessToken);
             localStorage.setItem('userDetails', JSON.stringify(response));
             this._userSharedService.userDetails = new UserDetails(
               response.name,

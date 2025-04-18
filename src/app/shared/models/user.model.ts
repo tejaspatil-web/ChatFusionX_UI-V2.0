@@ -7,6 +7,7 @@ export class UserDetails{
   requestPending:string[]
   requests: string[]
   addedUsers:string[]
+  accessToken?:string
   constructor(
     name:string,
     email:string,
@@ -15,7 +16,8 @@ export class UserDetails{
     joinedGroupIds:string [],
     requestPending:string[],
     requests: string[],
-    addedUsers:string[]
+    addedUsers:string[],
+    accessToken?:string
   ){
     this.name = name
     this.email = email
@@ -25,6 +27,7 @@ export class UserDetails{
     this.requestPending = requestPending
     this.requests = requests
     this.addedUsers = addedUsers
+    this.accessToken = accessToken
   }
 }
 export class UserList{
