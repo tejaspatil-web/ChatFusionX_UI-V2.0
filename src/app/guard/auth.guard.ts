@@ -14,11 +14,9 @@ export class AuthGuardService implements CanActivate {
   ) {}
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     if (isPlatformBrowser(this.platformId)) {
-      const isUserAuthorized = JSON.parse(
-        localStorage.getItem('isUserAuthorized') || '{}'
-      );
+      const isUserAuthorized = localStorage.getItem('accessToken');
       if(state.url.includes('dashboard/group')) this.sharedService.userRedirectUrl = state.url;
-      if (isUserAuthorized?.isUserAuthorized) {
+      if (isUserAuthorized) {
         return true;
       } else {
         this.router.navigate(['/login']);
