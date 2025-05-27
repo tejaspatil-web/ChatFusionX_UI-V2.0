@@ -14,7 +14,8 @@ constructor(private _httpClient: HttpClient) {}
   }
 
   generateAiResponse(userId:string,prompt:string){
-    return this._httpClient.get(`${this._baseUrl}chatfusionx-ai/generate?user_id=${userId}&prompt=${prompt}`)
+    const payload = {user_id:userId,prompt:prompt}
+    return this._httpClient.post(`${this._baseUrl}chatfusionx-ai/generate`,payload)
   }
 
 }

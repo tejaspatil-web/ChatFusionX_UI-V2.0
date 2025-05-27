@@ -22,6 +22,7 @@ import { UserSharedService } from '../../shared/services/user-shared.service';
 import { ChatService } from '../../services/chat.service';
 import { ChatfusionxAiService } from '../../services/chatfusionx-ai.service';
 import { marked } from 'marked';
+import { TextExtractionService } from '../../services/text-extraction.service';
 
 export enum aiRole {
   model = 'model',
@@ -50,6 +51,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   public receiverId: string = '';
   public type: string = '';
   public messages: Message[] = [];
+  private _images:File[] = [];
+  private _extractedText:string[] = []
+  public isFileUploaded:boolean = false;
+  private _prompt:string = "\n\n- Carefully review the above content. I will now ask questions based on it—answer strictly using the information provided."
   constructor(
     public sharedService: SharedService,
     private _router: Router,
@@ -58,8 +63,9 @@ export class ChatComponent implements OnInit, OnDestroy {
     private _userSharedService: UserSharedService,
     private _chatService: ChatService,
     private _chatfusionxAiService: ChatfusionxAiService,
+    private textExtractionService:TextExtractionService,
     private renderer: Renderer2,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -84,6 +90,7 @@ export class ChatComponent implements OnInit, OnDestroy {
               groupId: this._groupId,
               isCurrentUser:
                 ele.userId === this._userSharedService.userDetails.id,
+                isShowMessage:true
             }));
           }
           this.isShowLoader = false;
@@ -129,8 +136,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     this._chatfusionxAiService
       .getAiChatHistory(userId)
       .subscribe(async (chat: any) => {
+        chat.response.forEach((ele,index) => ele.index = index);
+        let index = 0;
         this.messages = await Promise.all(
           chat.response.map(async (ele) => {
+           index = ele.message.includes(this._prompt) ? ele.index + 1 : 0;
             return {
               userName: ele.role === aiRole.model ? 'AI' : '',
               userId: '',
@@ -140,7 +150,8 @@ export class ChatComponent implements OnInit, OnDestroy {
                   : ele.message,
               time: '',
               isCurrentUser: ele.role === aiRole.user,
-              hasAiMessageLoaded:true
+              hasAiMessageLoaded:true,
+              isShowMessage:!(ele.message.includes(this._prompt) || index === ele.index)
             };
           })
         );
@@ -159,7 +170,8 @@ export class ChatComponent implements OnInit, OnDestroy {
       message: prompt,
       time: '',
       isCurrentUser: true,
-      hasAiMessageLoaded:true
+      hasAiMessageLoaded:true,
+      isShowMessage:true
     },
     {
       userName: 'AI',
@@ -167,7 +179,8 @@ export class ChatComponent implements OnInit, OnDestroy {
       message:'',
       time: '',
       isCurrentUser: false,
-      hasAiMessageLoaded:false
+      hasAiMessageLoaded:false,
+      isShowMessage:true
     });
     this.cdRef.detectChanges();
     this._scrollToBottom();
@@ -182,6 +195,72 @@ export class ChatComponent implements OnInit, OnDestroy {
       });
   }
 
+  uploadFile(event){
+    const input = event.target;
+    const file = input.files[0];
+    this.isFileUploaded = true;
+    const fileTypes = ['image/png', 'image/jpeg'];
+    if(fileTypes.includes(file.type)){
+    this._extractTextFromImage(file);
+    }else{
+      this._convertPdfToPng(file);
+    }
+  }
+
+  private _extractTextFromImage(image){
+    this.textExtractionService.textExtraction(image).subscribe((ele:any) =>{
+      this._extractedText.push(ele.text);
+      const userId = this._userSharedService.userDetails.id;
+      let text = '';
+      if(this._extractedText.length > 0){
+        this._extractedText.forEach(ele =>{
+          text += ele;
+        })
+      }
+      text+= this._prompt
+      this._chatfusionxAiService.generateAiResponse(userId,text).subscribe((response:any) =>{
+      this.messages.push({
+      userName: '',
+      userId: userId,
+      message: text,
+      time: '',
+      isCurrentUser: true,
+      hasAiMessageLoaded:true,
+      isShowMessage:false
+    },
+    {
+      userName: 'AI',
+      userId: '',
+      message:response.response,
+      time: '',
+      isCurrentUser: false,
+      hasAiMessageLoaded:true,
+      isShowMessage:false
+    });
+  });
+  this.isFileUploaded = false;
+})
+}
+
+  private _convertPdfToPng(pdf){
+    this._extractedText = [];
+    this.textExtractionService.pdfToPngConversion(pdf).subscribe((ele:any) =>{
+     this._images = this._base64PngArrayToFiles(ele);
+     this._images.forEach(file =>{
+      this._extractTextFromImage(file);
+     })
+    })
+  }
+
+  private _base64PngArrayToFiles(base64List: string[]): File[] {
+    return base64List.map((base64, index) => {
+      const byteCharacters = atob(base64);
+      const byteNumbers = Array.from(byteCharacters, ch => ch.charCodeAt(0));
+      const byteArray = new Uint8Array(byteNumbers);
+      return new File([byteArray], `image_${index + 1}.png`, { type: 'image/png' });
+    });
+  }
+
   sendMessage() {
     if (this._userInput.value) {
       const { id, name } = this._userSharedService.userDetails;
@@ -194,6 +273,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             message: this._userInput.value,
             time: Helper.getTimeInIndia(),
             isCurrentUser: true,
+            isShowMessage:true
           };
           // push message in message array
           this._addMessageToGroup(groupMessage);
@@ -209,6 +289,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             isCurrentUser: true,
             receiverId: this.receiverId,
             type: 'privateMessage',
+            isShowMessage:true
           };
           this._addMessageToUser(userMessage);
           // send message in to specific group
@@ -298,6 +379,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       isCurrentUser: message.isCurrentUser,
       receiverId: message.receiverId,
       type: message.type,
+      isShowMessage:true
     });
     this._scrollToBottom();
   }
@@ -310,6 +392,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       message: message.message,
       time: message.time,
       isCurrentUser: message.isCurrentUser,
+      isShowMessage:true
     });
 
     const group = this._userSharedService.groupData.find(

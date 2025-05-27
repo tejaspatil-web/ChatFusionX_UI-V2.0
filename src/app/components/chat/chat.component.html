@@ -51,6 +51,7 @@
         message.isCurrentUser ? 'item-end client-chat' : 'user-chat'
       }}"
     >
+    @if(message.isShowMessage){
       <div class="d-flex item-center gap-5">
         @if(!message.isCurrentUser){
             <h5>{{ message.userName }}:</h5>
@@ -66,12 +67,23 @@
         }
         <h6>{{ message.time }}</h6>
       </div>
+    }
     </div>
     }
   </div>
 
   <!-- Message Input Code -->
-  <div class="message w-100 d-flex justify-center gap-10">
+  <div class="message w-100 d-flex justify-center item-center gap-10">
+    @if(type === 'ai'){
+      @if(!isFileUploaded){
+      <div class="upload">
+        <img src="{{ baseUrl }}plus.svg" alt="" />
+        <input type="file" (change)="uploadFile($event)" accept="application/pdf, image/png, image/jpeg">
+      </div>
+      }@else {
+      <div class="upload-loader"></div>
+      }
+    }
     <div class="message-input w-100">
       <input
         #messageInput

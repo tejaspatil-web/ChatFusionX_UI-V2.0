@@ -8,4 +8,5 @@ export class Message{
   type?:string
   receiverId?:string
   hasAiMessageLoaded?:boolean
+  isShowMessage:boolean;
 }
