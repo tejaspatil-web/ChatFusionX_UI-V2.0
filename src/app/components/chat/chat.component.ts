@@ -123,6 +123,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       .subscribe((response: any) => {
         response.messages.forEach((ele) => {
           ele.isCurrentUser = ele.userId === userId;
+          ele.isShowMessage = true;
         });
         this.messages = response.messages;
         this.isShowLoader = false;
