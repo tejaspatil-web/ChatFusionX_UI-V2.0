@@ -62,4 +62,45 @@
       </div>
     </div>
   </div>
+}@else if (isShowSetting) {
+   <div class="dialog-backdrop" (click)="closeDialog()">
+    <div class="profile-container" (click)="$event.stopPropagation()">
+      <div class="profile-header">
+       <h3>Update Password</h3>
+      </div>
+
+      <div class="profile-details">
+        <div class="profile-field">
+          <label for="oldPassword">Old Password*:</label>
+          <input
+            id="oldPassword"
+            type="text"
+            placeholder="Old Password"
+            [(ngModel)]="oldPassword"
+          />
+        </div>
+        <div class="profile-field">
+          <label for="newPassword">New Password*:</label>
+          <input
+            id="newPassword"
+            type="text"
+            placeholder="New Password"
+            [(ngModel)]="newPassword"
+          />
+        </div>
+          <div class="profile-field">
+          <label for="newPassword">Confirm Password*:</label>
+          <input
+            id="newpassword1"
+            type="text"
+            placeholder="Confirm Password"
+            [(ngModel)]="confirmPassword"
+          />
+        </div>
+        <div class="d-flex item-center justify-center">
+          <button (click)="updatePassword()">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
 }

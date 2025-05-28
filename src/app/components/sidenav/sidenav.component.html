@@ -49,11 +49,13 @@
         class="icons aline"
       />
     </div>
+    <div class="pointer" (click)="onSettingClick(); $event.stopPropagation()">
     <img
       src="{{ baseUrl }}settings.svg"
       alt="Settings-image"
       class="icons aline"
     />
+    </div>
   </div>
   <div class="pointer" (click)="logOut()">
     <img src="{{ baseUrl }}logout.svg" alt="Logout-image" class="icons" />
@@ -96,9 +98,10 @@
    <h6 class="text-center">No pending requests found.</h6>
   }
 </div>
-} @if(isShowProfile){
+} @if(isShowProfile || isShowSetting){
 <app-dialog
   (afterDialogClose)="afterDialogClose($event)"
   [isShowProfile]="isShowProfile"
+  [isShowSetting]="isShowSetting"
 ></app-dialog>
 }

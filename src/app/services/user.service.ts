@@ -9,39 +9,49 @@ import { Subject } from 'rxjs';
 })
 export class UserService {
   private _baseUrl = baseUrl.apiUrl;
-  public userList:UserList[] = [];
-  public userSearchTerm:Subject<string> = new Subject<string>();
-  constructor(private _httpClient: HttpClient) {}
+  public userList: UserList[] = [];
+  public userSearchTerm: Subject<string> = new Subject<string>();
+  constructor(private _httpClient: HttpClient) { }
 
-  getUser(userId:string){
-   return this._httpClient.get<UserDetails>(`${this._baseUrl}user/getUser/${userId}`)
+  getUser(userId: string) {
+    return this._httpClient.get<UserDetails>(`${this._baseUrl}user/getUser/${userId}`)
   }
 
-  getAllUsers(){
-   return this._httpClient.get(`${this._baseUrl}user/getAll`)
+  getAllUsers() {
+    return this._httpClient.get(`${this._baseUrl}user/getAll`)
   }
 
-  sendRequest(userId:string,requestUserId:string){
-    return this._httpClient.post(`${this._baseUrl}user/sendRequest`,{
-      userId:userId,
-      requestUserId:requestUserId,
+  sendRequest(userId: string, requestUserId: string) {
+    return this._httpClient.post(`${this._baseUrl}user/sendRequest`, {
+      userId: userId,
+      requestUserId: requestUserId,
     })
   }
 
-  acceptRequest(userId:string,acceptUserId:string){
-    return this._httpClient.post(`${this._baseUrl}user/acceptRequest`,
+  updatePassword(userId: string, oldPassword: string, newPassword: string) {
+    return this._httpClient.post(`${this._baseUrl}user/updatePassword`,
       {
-        userId:userId,
-        acceptUserId:acceptUserId
+      userId:userId,
+      oldPassword:oldPassword,
+      newPassword:newPassword
       }
     )
   }
 
-  rejectRequest(userId:string,rejectUserId:string){
+  acceptRequest(userId: string, acceptUserId: string) {
+    return this._httpClient.post(`${this._baseUrl}user/acceptRequest`,
+      {
+        userId: userId,
+        acceptUserId: acceptUserId
+      }
+    )
+  }
+
+  rejectRequest(userId: string, rejectUserId: string) {
     return this._httpClient.post(`${this._baseUrl}user/rejectRequest`,
       {
-        userId:userId,
-        rejectUserId:rejectUserId
+        userId: userId,
+        rejectUserId: rejectUserId
       }
     )
   }

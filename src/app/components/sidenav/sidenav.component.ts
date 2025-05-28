@@ -18,6 +18,7 @@ import { ChatService } from '../../services/chat.service';
 export class SidenavComponent implements OnInit {
   public baseUrl = baseUrl.images;
   public isShowProfile:boolean = false;
+  public isShowSetting:boolean = false;
   public isNotifications:boolean = false;
   public requests = [];
   constructor(private readonly _router: Router,
@@ -46,6 +47,7 @@ export class SidenavComponent implements OnInit {
 
   onProfileClick(){
     this.isShowProfile = true;
+    this.isShowSetting = false;
   }
 
   onDmIconClick(){
@@ -65,6 +67,11 @@ export class SidenavComponent implements OnInit {
     const usersList  = JSON.parse(JSON.stringify(this._userService.userList));
     this.requests = usersList.filter(ele => requests.includes(ele.id));
     this.isNotifications = !this.isNotifications;
+  }
+
+  onSettingClick(){
+    this.isShowProfile = false;
+    this.isShowSetting = true;
   }
 
   acceptRequest(request){
@@ -102,6 +109,7 @@ export class SidenavComponent implements OnInit {
 
   afterDialogClose(event){
     this.isShowProfile = false;
+    this.isShowSetting = false;
   }
 
 
