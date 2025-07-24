@@ -5,10 +5,10 @@
     </div>
     <div class="pointer" (click)="onHomeClick()">
       <img
-      src="{{ baseUrl }}home.svg"
-      alt="Home-image"
-      class="aline-home icons pointer"
-    />
+        src="{{ baseUrl }}home.svg"
+        alt="Home-image"
+        class="aline-home icons pointer"
+      />
     </div>
     <div class="icons dmIcon pointer" (click)="onDmIconClick()">
       <svg
@@ -37,7 +37,13 @@
       </svg>
     </div>
     <div class="icons pointer" (click)="onChatFusionXAiClick()">
-    <img src="{{baseUrl}}logo-removebg.png" width="30px" height="27px" alt="" class="icons aline ai-logo">
+      <img
+        src="{{ baseUrl }}logo-removebg.png"
+        width="30px"
+        height="27px"
+        alt=""
+        class="icons aline ai-logo"
+      />
     </div>
     <div
       (click)="onNotificationClick(); $event.stopPropagation()"
@@ -50,11 +56,11 @@
       />
     </div>
     <div class="pointer" (click)="onSettingClick(); $event.stopPropagation()">
-    <img
-      src="{{ baseUrl }}settings.svg"
-      alt="Settings-image"
-      class="icons aline"
-    />
+      <img
+        src="{{ baseUrl }}settings.svg"
+        alt="Settings-image"
+        class="icons aline"
+      />
     </div>
   </div>
   <div class="pointer" (click)="logOut()">
@@ -63,39 +69,38 @@
 </div>
 @if(isNotifications){
 <div class="notification-container">
-  @if(requests.length > 0){
-    @for(request of requests; let index = $index; track index){
-      <div class="notification-card" (click)="$event.stopPropagation()">
-        <div class="d-flex item-center justify-center gap-10">
-          <div class="user-icon">
-            <img src="{{ baseUrl }}user.png" alt="user-icon" />
-          </div>
-          <div class="user-header">
-            <h5 class="user-name">{{request.name}}</h5>
-          </div>
-        </div>
-        <div class="d-flex gap-5">
-          <img
-            src="{{ baseUrl }}check.svg"
-            width="20px"
-            height="20px"
-            alt="user-icon"
-            class="pointer"
-            (click)="acceptRequest(request)"
-          />
-          <img
-            src="{{ baseUrl }}cancel.svg"
-            width="20px"
-            height="20px"
-            alt="user-icon"
-            class="pointer"
-            (click)="rejectRequest(request)"
-          />
-        </div>
+  @if(requests.length > 0){ @for(request of requests; let index = $index; track
+  index){
+  <div class="notification-card" (click)="$event.stopPropagation()">
+    <div class="d-flex item-center justify-center gap-10">
+      <div class="user-icon">
+        <img src="{{ baseUrl }}user.png" alt="user-icon" />
       </div>
-      }
-  }@else{
-   <h6 class="text-center">No pending requests found.</h6>
+      <div class="user-header">
+        <h5 class="user-name">{{ request.name }}</h5>
+      </div>
+    </div>
+    <div class="d-flex gap-5">
+      <img
+        src="{{ baseUrl }}check.svg"
+        width="20px"
+        height="20px"
+        alt="user-icon"
+        class="pointer"
+        (click)="acceptRequest(request)"
+      />
+      <img
+        src="{{ baseUrl }}cancel.svg"
+        width="20px"
+        height="20px"
+        alt="user-icon"
+        class="pointer"
+        (click)="rejectRequest(request)"
+      />
+    </div>
+  </div>
+  } }@else{
+  <h6 class="text-center">No pending requests found.</h6>
   }
 </div>
 } @if(isShowProfile || isShowSetting){

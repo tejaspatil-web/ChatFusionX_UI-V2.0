@@ -26,23 +26,23 @@
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.profile{
+.profile {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
 }
 
-.notification-card{
-    user-select: none;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-    padding: 10px;
-    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 0px, rgba(0, 0, 0, 0.24) 0px 0px 0px;
-    border: none;
+.notification-card {
+  user-select: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 0px, rgba(0, 0, 0, 0.24) 0px 0px 0px;
+  border: none;
 }
 
 .user-icon {
@@ -52,7 +52,7 @@
   overflow: hidden;
 }
 
-.user-name{
+.user-name {
   max-width: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -87,38 +87,38 @@
   object-fit: cover;
 }
 
-.nav-group{
+.nav-group {
   color: white !important;
 }
 
-.aline{
+.aline {
   padding-right: 5px;
 }
 
-.aline-home{
+.aline-home {
   padding-right: 2px;
 }
 
-.ai-logo{
+.ai-logo {
   filter: brightness(350%);
 }
 
 /* Media Query - Corrected Syntax */
 @media screen and (max-width: 768px) {
   .header {
-    width: 90%;
+    width: 85%;
   }
 
   .icons {
-    height: 30px;
-    width: 30px;
+    height: 28px;
+    width: 28px;
   }
 
-  .aline{
+  .aline {
     padding-right: 1px;
   }
 
-  .aline-home{
+  .aline-home {
     padding-right: 1px;
   }
 
@@ -127,19 +127,19 @@
     height: 40px;
   }
 
-  .dmIcon{
+  .dmIcon {
     width: 30px;
     height: 30px;
     margin-left: 5px;
 
-    svg{
-      width: 29px;
-      height: 29px;
+    svg {
+      width: 28px;
+      height: 28px;
     }
   }
 
-  .notification-container{
-    top: 285px;
-    left: 45px;
+  .notification-container {
+    top: 310px;
+    left: 50px;
   }
 }

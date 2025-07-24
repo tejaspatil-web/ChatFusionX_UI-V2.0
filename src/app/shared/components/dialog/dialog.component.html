@@ -1,106 +1,113 @@
 @if(isShowDialog){
-  <div class="dialog-backdrop" (click)="closeDialog()">
-    <div class="dialog-container" (click)="$event.stopPropagation()">
-      <div>
-        <form [formGroup]="groupForm"
-        (ngSubmit)="onSubmit()">
-          <p>New Group</p>
-          <div class="input-group w-100">
-            <input type="text" placeholder="Enter group name" formControlName="groupName">
-          </div>
-          <div class="input-group w-100">
-            <input type="text" placeholder="Enter group description" formControlName="description">
-          </div>
-          <div class="btn">
-            <button (click)="createGroup()">Create</button>
-            <button (click)="closeDialog()">Close</button>
-          </div>
-        </form>
-      </div>
+<div class="dialog-backdrop" (click)="closeDialog()">
+  <div class="dialog-container" (click)="$event.stopPropagation()">
+    <div>
+      <form [formGroup]="groupForm" (ngSubmit)="onSubmit()">
+        <p>New Group</p>
+        <div class="input-group w-100">
+          <input
+            type="text"
+            placeholder="Enter group name"
+            formControlName="groupName"
+          />
+        </div>
+        <div class="input-group w-100">
+          <input
+            type="text"
+            placeholder="Enter group description"
+            formControlName="description"
+          />
+        </div>
+        <div class="btn">
+          <button (click)="createGroup()">Create</button>
+          <button (click)="closeDialog()">Close</button>
+        </div>
+      </form>
     </div>
   </div>
+</div>
 }@else if(isShowLoader){
-  <div class="dialog-backdrop">
-    <div class="loader">
-      <span class="loader-text">Loading</span>
-        <span class="load"></span>
-    </div>
+<div class="dialog-backdrop">
+  <div class="loader">
+    <span class="loader-text">Loading</span>
+    <span class="load"></span>
   </div>
+</div>
 }@else if(isShowProfile){
-  <div class="dialog-backdrop" (click)="closeDialog()">
-    <div class="profile-container" (click)="$event.stopPropagation()">
-      <div class="profile-header">
-        <div class="profile-image">
-          <img src="{{ baseUrl }}avatar.png" alt="Profile Image" />
-        </div>
-        <div class="icon-corner">
-          <img src="{{ baseUrl }}edit.svg" alt="Profile Image" />
-        </div>
+<div class="dialog-backdrop" (click)="closeDialog()">
+  <div class="profile-container" (click)="$event.stopPropagation()">
+    <div class="profile-header">
+      <div class="profile-image">
+        <img src="{{ baseUrl }}avatar.png" alt="Profile Image" />
       </div>
+      <div class="icon-corner">
+        <img src="{{ baseUrl }}edit.svg" alt="Profile Image" />
+      </div>
+    </div>
 
-      <div class="profile-details">
-        <div class="profile-field">
-          <label for="name">Name:</label>
-          <input
-            id="name"
-            type="text"
-            disabled
-            placeholder="Name"
-            [value]="userName"
-          />
-        </div>
-        <div class="profile-field">
-          <label for="email">Email:</label>
-          <input
-            id="email"
-            type="text"
-            disabled
-            placeholder="Email"
-            [value]="userEmail"
-          />
-        </div>
+    <div class="profile-details">
+      <div class="profile-field">
+        <label for="name">Name:</label>
+        <input
+          id="name"
+          type="text"
+          disabled
+          placeholder="Name"
+          [value]="userName"
+        />
+      </div>
+      <div class="profile-field">
+        <label for="email">Email:</label>
+        <input
+          id="email"
+          type="text"
+          disabled
+          placeholder="Email"
+          [value]="userEmail"
+        />
       </div>
     </div>
   </div>
+</div>
 }@else if (isShowSetting) {
-   <div class="dialog-backdrop" (click)="closeDialog()">
-    <div class="profile-container" (click)="$event.stopPropagation()">
-      <div class="profile-header">
-       <h3>Update Password</h3>
-      </div>
+<div class="dialog-backdrop" (click)="closeDialog()">
+  <div class="profile-container" (click)="$event.stopPropagation()">
+    <div class="profile-header">
+      <h3>Update Password</h3>
+    </div>
 
-      <div class="profile-details">
-        <div class="profile-field">
-          <label for="oldPassword">Old Password*:</label>
-          <input
-            id="oldPassword"
-            type="text"
-            placeholder="Old Password"
-            [(ngModel)]="oldPassword"
-          />
-        </div>
-        <div class="profile-field">
-          <label for="newPassword">New Password*:</label>
-          <input
-            id="newPassword"
-            type="text"
-            placeholder="New Password"
-            [(ngModel)]="newPassword"
-          />
-        </div>
-          <div class="profile-field">
-          <label for="newPassword">Confirm Password*:</label>
-          <input
-            id="newpassword1"
-            type="text"
-            placeholder="Confirm Password"
-            [(ngModel)]="confirmPassword"
-          />
-        </div>
-        <div class="d-flex item-center justify-center">
-          <button (click)="updatePassword()">Update</button>
-        </div>
+    <div class="profile-details">
+      <div class="profile-field">
+        <label for="oldPassword">Old Password*</label>
+        <input
+          id="oldPassword"
+          type="text"
+          placeholder="Old Password"
+          [(ngModel)]="oldPassword"
+        />
+      </div>
+      <div class="profile-field">
+        <label for="newPassword">New Password*</label>
+        <input
+          id="newPassword"
+          type="text"
+          placeholder="New Password"
+          [(ngModel)]="newPassword"
+        />
+      </div>
+      <div class="profile-field">
+        <label for="newPassword">Confirm Password*</label>
+        <input
+          id="newpassword1"
+          type="text"
+          placeholder="Confirm Password"
+          [(ngModel)]="confirmPassword"
+        />
+      </div>
+      <div class="d-flex item-center update-password-btn justify-center">
+        <button (click)="updatePassword()">Update</button>
       </div>
     </div>
   </div>
+</div>
 }
