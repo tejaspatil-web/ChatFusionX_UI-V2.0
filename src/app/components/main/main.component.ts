@@ -57,15 +57,16 @@ export class MainComponent implements OnInit, OnDestroy {
     this._getSideNavState();
   }
 
-  private _checkRouteDynamic(){
+  private _checkRouteDynamic() {
     this._router.events.subscribe((event) => {
-      if(event instanceof NavigationEnd &&
+      if (
+        event instanceof NavigationEnd &&
         event.url === '/dashboard' &&
         this.sideNavState === sideNavState.chatfusionxai
-      ){
-        this.sideNavState = sideNavState.user
+      ) {
+        this.sideNavState = sideNavState.user;
       }
-     })
+    });
   }
 
   private _redirectToDashboard() {
@@ -76,6 +77,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this._sharedService.sideNavState.subscribe((state) => {
       this._router.navigate(['dashboard']);
       this.searchValue = '';
+      this.copyGroupList = JSON.parse(JSON.stringify(this._groupList));
       switch (state) {
         case sideNavState.user:
           this.sideNavState = sideNavState.user;
@@ -90,7 +92,11 @@ export class MainComponent implements OnInit, OnDestroy {
           break;
         case sideNavState.chatfusionxai:
           this.sideNavState = sideNavState.chatfusionxai;
-          this._router.navigate([`dashboard/ai/${this._userSharedService.userDetails.id}/${'ChatFusionXAI'}`])
+          this._router.navigate([
+            `dashboard/ai/${
+              this._userSharedService.userDetails.id
+            }/${'ChatFusionXAI'}`,
+          ]);
           break;
         default:
           this.sideNavState = '';
@@ -143,7 +149,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this._receivedPrivateMessages();
   }
 
-  private async _joinPrivateChat(){
+  private async _joinPrivateChat() {
     this._socketService.joinPrivateChat(this._userSharedService.userDetails.id);
   }
 
@@ -247,40 +253,46 @@ export class MainComponent implements OnInit, OnDestroy {
     });
   }
 
-  private _receivedPrivateMessages(){
-    this._socketService.receivedPrivateMessage(message =>{
-      this._chatService.setPrivateMessage(message)
-    })
+  private _receivedPrivateMessages() {
+    this._socketService.receivedPrivateMessage((message) => {
+      this._chatService.setPrivateMessage(message);
+    });
 
-    this._socketService.receivedPrivateNotification((message)=>{
-      if(message.type === 'notification'){
-        switch(message.action){
+    this._socketService.receivedPrivateNotification((message) => {
+      if (message.type === 'notification') {
+        switch (message.action) {
           case 'send':
-            this._userSharedService.userDetails.requests.push(message.senderId)
+            this._userSharedService.userDetails.requests.push(message.senderId);
             break;
           case 'approve':
-            this._userSharedService.userDetails.addedUsers.push(message.senderId);
+            this._userSharedService.userDetails.addedUsers.push(
+              message.senderId
+            );
             break;
           case 'reject':
-            const requestPending = this._userSharedService.userDetails.requestPending
-            this._userSharedService.userDetails.requestPending = requestPending.filter(ele => ele !== message.senderId)
+            const requestPending =
+              this._userSharedService.userDetails.requestPending;
+            this._userSharedService.userDetails.requestPending =
+              requestPending.filter((ele) => ele !== message.senderId);
             break;
         }
       }
-      this._chatService.setPrivateMessage(message)
-    })
+      this._chatService.setPrivateMessage(message);
+    });
   }
 
   checkRoute() {
-    const isGroupOrUserState =  ['user', 'group'].some((keyword) => this._router.url.includes(keyword))
-    if(isGroupOrUserState){
-      if(this.sideNavState === sideNavState.group){
+    const isGroupOrUserState = ['user', 'group'].some((keyword) =>
+      this._router.url.includes(keyword)
+    );
+    if (isGroupOrUserState) {
+      if (this.sideNavState === sideNavState.group) {
         this.copyGroupList = JSON.parse(JSON.stringify(this._groupList));
       }
       return true;
-    }else if(this.sideNavState === sideNavState.chatfusionxai){
+    } else if (this.sideNavState === sideNavState.chatfusionxai) {
       return true;
-    }else{
+    } else {
       return false;
     }
   }
@@ -343,15 +355,18 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   onAddGroupClick(event) {
+    this.searchValue = '';
     this.isAddUser = event;
     this._router.navigate([`dashboard`]);
   }
 
   onUserClick(event) {
+    this.searchValue = '';
     this._router.navigate([`dashboard/user/${event.userId}/${event.userName}`]);
   }
 
   onBackButtonClick() {
+    this.searchValue = '';
     this.isAddUser = false;
     this.onBackButton = {
       status: true,
@@ -359,6 +374,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   onGroupClick(item, index) {
+    this.searchValue = '';
     const groups = [
       this._userSharedService.groupData,
       this._groupList,

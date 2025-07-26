@@ -30,9 +30,8 @@ export class AppComponent implements OnDestroy {
     private renderer: Renderer2,
     private _sharedService: SharedService,
     private router: Router,
-    private _userSharedService:UserSharedService,
-  ) {
-  }
+    private _userSharedService: UserSharedService
+  ) {}
 
   ngOnInit() {
     this.routerSubscription = this.router.events.subscribe((event) => {
@@ -41,10 +40,10 @@ export class AppComponent implements OnDestroy {
       }
     });
 
-    const userDetails = localStorage.getItem('userDetails')
-    if(userDetails){
+    const userDetails = localStorage.getItem('userDetails');
+    if (userDetails) {
       const parseUserDetails = JSON.parse(userDetails);
-       this._userSharedService.userDetails = new UserDetails(
+      this._userSharedService.userDetails = new UserDetails(
         parseUserDetails.name,
         parseUserDetails.email,
         parseUserDetails.id,
@@ -52,8 +51,9 @@ export class AppComponent implements OnDestroy {
         parseUserDetails.joinedGroupIds,
         parseUserDetails.requestPending || [],
         parseUserDetails.requests || [],
-        parseUserDetails.addedUsers || []
-       )
+        parseUserDetails.addedUsers || [],
+        parseUserDetails.profileUrl || ''
+      );
     }
 
     if (isPlatformBrowser(this.platformId)) {
@@ -63,15 +63,17 @@ export class AppComponent implements OnDestroy {
     }
   }
 
-checkRoute(){
-  if (this.currentRoute === '/login') {
-    return false;
+  checkRoute() {
+    if (this.currentRoute === '/login') {
+      return false;
+    }
+    if (this._sharedService.isMobile) {
+      return !['group', 'user', 'ChatFusionXAI'].some((keyword) =>
+        this.currentRoute.includes(keyword)
+      );
+    }
+    return true;
   }
-  if (this._sharedService.isMobile) {
-    return !['group', 'user','ChatFusionXAI'].some(keyword => this.currentRoute.includes(keyword));
-  }
-  return true;
-}
 
   ngOnDestroy(): void {
     if (this.routerSubscription) {

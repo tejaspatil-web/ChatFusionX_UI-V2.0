@@ -23,6 +23,7 @@ import { ChatService } from '../../services/chat.service';
 import { ChatfusionxAiService } from '../../services/chatfusionx-ai.service';
 import { marked } from 'marked';
 import { TextExtractionService } from '../../services/text-extraction.service';
+import { UserService } from '../../services/user.service';
 
 export enum aiRole {
   model = 'model',
@@ -40,7 +41,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('messageInput') userInput: ElementRef;
   @ViewChild('chatContainer') chatContainer: ElementRef;
   public baseUrl = baseUrl.images;
-  public isShowLoader:boolean = false;
+  public isShowLoader: boolean = false;
   public isMobile = false;
   private _userInput: HTMLInputElement;
   private _chatContainer: HTMLDivElement;
@@ -51,10 +52,12 @@ export class ChatComponent implements OnInit, OnDestroy {
   public receiverId: string = '';
   public type: string = '';
   public messages: Message[] = [];
-  private _images:File[] = [];
-  private _extractedText:string[] = []
-  public isFileUploaded:boolean = false;
-  private _prompt:string = "\n\n- Carefully review the above content. I will now ask questions based on it—answer strictly using the information provided."
+  private _images: File[] = [];
+  private _extractedText: string[] = [];
+  public isFileUploaded: boolean = false;
+  public profileUrl: string = '';
+  private _prompt: string =
+    '\n\n- Carefully review the above content. I will now ask questions based on it—answer strictly using the information provided.';
   constructor(
     public sharedService: SharedService,
     private _router: Router,
@@ -63,9 +66,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     private _userSharedService: UserSharedService,
     private _chatService: ChatService,
     private _chatfusionxAiService: ChatfusionxAiService,
-    private textExtractionService:TextExtractionService,
+    private textExtractionService: TextExtractionService,
     private renderer: Renderer2,
     private cdRef: ChangeDetectorRef,
+    private _userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -75,6 +79,10 @@ export class ChatComponent implements OnInit, OnDestroy {
       if (this.type === sideNavState.user) {
         this.userName = params.get('name');
         this.receiverId = params.get('id');
+        const user = this._userService.userList.find(
+          (ele) => ele.id === this.receiverId
+        );
+        this.profileUrl = user.profileUrl || this.baseUrl + 'user.png';
         this._getPrivateChat();
       } else if (this.type === sideNavState.group) {
         const groupData = this._userSharedService.groupData;
@@ -90,7 +98,7 @@ export class ChatComponent implements OnInit, OnDestroy {
               groupId: this._groupId,
               isCurrentUser:
                 ele.userId === this._userSharedService.userDetails.id,
-                isShowMessage:true
+              isShowMessage: true,
             }));
           }
           this.isShowLoader = false;
@@ -137,11 +145,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     this._chatfusionxAiService
       .getAiChatHistory(userId)
       .subscribe(async (chat: any) => {
-        chat.response.forEach((ele,index) => ele.index = index);
+        chat.response.forEach((ele, index) => (ele.index = index));
         let index = 0;
         this.messages = await Promise.all(
           chat.response.map(async (ele) => {
-           index = ele.message.includes(this._prompt) ? ele.index + 1 : 0;
+            index = ele.message.includes(this._prompt) ? ele.index + 1 : 0;
             return {
               userName: ele.role === aiRole.model ? 'AI' : '',
               userId: '',
@@ -151,8 +159,10 @@ export class ChatComponent implements OnInit, OnDestroy {
                   : ele.message,
               time: '',
               isCurrentUser: ele.role === aiRole.user,
-              hasAiMessageLoaded:true,
-              isShowMessage:!(ele.message.includes(this._prompt) || index === ele.index)
+              hasAiMessageLoaded: true,
+              isShowMessage: !(
+                ele.message.includes(this._prompt) || index === ele.index
+              ),
             };
           })
         );
@@ -162,103 +172,110 @@ export class ChatComponent implements OnInit, OnDestroy {
       });
   }
 
-
   private _generateAiResponse(prompt: string) {
     const userId = this._userSharedService.userDetails.id;
-    this.messages.push({
-      userName: '',
-      userId: userId,
-      message: prompt,
-      time: '',
-      isCurrentUser: true,
-      hasAiMessageLoaded:true,
-      isShowMessage:true
-    },
-    {
-      userName: 'AI',
-      userId: '',
-      message:'',
-      time: '',
-      isCurrentUser: false,
-      hasAiMessageLoaded:false,
-      isShowMessage:true
-    });
+    this.messages.push(
+      {
+        userName: '',
+        userId: userId,
+        message: prompt,
+        time: '',
+        isCurrentUser: true,
+        hasAiMessageLoaded: true,
+        isShowMessage: true,
+      },
+      {
+        userName: 'AI',
+        userId: '',
+        message: '',
+        time: '',
+        isCurrentUser: false,
+        hasAiMessageLoaded: false,
+        isShowMessage: true,
+      }
+    );
     this.cdRef.detectChanges();
     this._scrollToBottom();
     this._chatfusionxAiService
       .generateAiResponse(userId, prompt)
       .subscribe(async (response: any) => {
-       const aiMessage = this.messages.find(ele => !ele.hasAiMessageLoaded)
-       aiMessage.message = await this._convertMarkDown(response.response);
-       aiMessage.hasAiMessageLoaded = true
-       this._scrollToBottom();
+        const aiMessage = this.messages.find((ele) => !ele.hasAiMessageLoaded);
+        aiMessage.message = await this._convertMarkDown(response.response);
+        aiMessage.hasAiMessageLoaded = true;
+        this._scrollToBottom();
         this._addCopyButtons();
       });
   }
 
-  uploadFile(event){
+  uploadFile(event) {
     const input = event.target;
     const file = input.files[0];
     this.isFileUploaded = true;
     const fileTypes = ['image/png', 'image/jpeg'];
-    if(fileTypes.includes(file.type)){
-    this._extractTextFromImage(file);
-    }else{
+    if (fileTypes.includes(file.type)) {
+      this._extractTextFromImage(file);
+    } else {
       this._convertPdfToPng(file);
     }
   }
 
-  private _extractTextFromImage(image){
-    this.textExtractionService.textExtraction(image).subscribe((ele:any) =>{
+  private _extractTextFromImage(image) {
+    this.textExtractionService.textExtraction(image).subscribe((ele: any) => {
       this._extractedText.push(ele.text);
       const userId = this._userSharedService.userDetails.id;
       let text = '';
-      if(this._extractedText.length > 0){
-        this._extractedText.forEach(ele =>{
+      if (this._extractedText.length > 0) {
+        this._extractedText.forEach((ele) => {
           text += ele;
-        })
+        });
       }
-      text+= this._prompt
-      this._chatfusionxAiService.generateAiResponse(userId,text).subscribe((response:any) =>{
-      this.messages.push({
-      userName: '',
-      userId: userId,
-      message: text,
-      time: '',
-      isCurrentUser: true,
-      hasAiMessageLoaded:true,
-      isShowMessage:false
-    },
-    {
-      userName: 'AI',
-      userId: '',
-      message:response.response,
-      time: '',
-      isCurrentUser: false,
-      hasAiMessageLoaded:true,
-      isShowMessage:false
+      text += this._prompt;
+      this._chatfusionxAiService
+        .generateAiResponse(userId, text)
+        .subscribe((response: any) => {
+          this.messages.push(
+            {
+              userName: '',
+              userId: userId,
+              message: text,
+              time: '',
+              isCurrentUser: true,
+              hasAiMessageLoaded: true,
+              isShowMessage: false,
+            },
+            {
+              userName: 'AI',
+              userId: '',
+              message: response.response,
+              time: '',
+              isCurrentUser: false,
+              hasAiMessageLoaded: true,
+              isShowMessage: false,
+            }
+          );
+        });
+      this.isFileUploaded = false;
     });
-  });
-  this.isFileUploaded = false;
-})
-}
+  }
 
-  private _convertPdfToPng(pdf){
+  private _convertPdfToPng(pdf) {
     this._extractedText = [];
-    this.textExtractionService.pdfToPngConversion(pdf).subscribe((ele:any) =>{
-     this._images = this._base64PngArrayToFiles(ele);
-     this._images.forEach(file =>{
-      this._extractTextFromImage(file);
-     })
-    })
+    this.textExtractionService.pdfToPngConversion(pdf).subscribe((ele: any) => {
+      this._images = this._base64PngArrayToFiles(ele);
+      this._images.forEach((file) => {
+        this._extractTextFromImage(file);
+      });
+    });
   }
 
   private _base64PngArrayToFiles(base64List: string[]): File[] {
     return base64List.map((base64, index) => {
       const byteCharacters = atob(base64);
-      const byteNumbers = Array.from(byteCharacters, ch => ch.charCodeAt(0));
+      const byteNumbers = Array.from(byteCharacters, (ch) => ch.charCodeAt(0));
       const byteArray = new Uint8Array(byteNumbers);
-      return new File([byteArray], `image_${index + 1}.png`, { type: 'image/png' });
+      return new File([byteArray], `image_${index + 1}.png`, {
+        type: 'image/png',
+      });
     });
   }
 
@@ -274,7 +291,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             message: this._userInput.value,
             time: Helper.getTimeInIndia(),
             isCurrentUser: true,
-            isShowMessage:true
+            isShowMessage: true,
           };
           // push message in message array
           this._addMessageToGroup(groupMessage);
@@ -290,7 +307,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             isCurrentUser: true,
             receiverId: this.receiverId,
             type: 'privateMessage',
-            isShowMessage:true
+            isShowMessage: true,
           };
           this._addMessageToUser(userMessage);
           // send message in to specific group
@@ -313,11 +330,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   private _addCopyButtons() {
-    requestAnimationFrame(()=>{
+    requestAnimationFrame(() => {
       const chatContainer = this.chatContainer.nativeElement;
       const preTags = chatContainer.querySelectorAll('pre');
       preTags.forEach((preTag: HTMLElement) => {
-
         if (preTag.querySelector('button.copy-btn')) {
           return;
         }
@@ -329,30 +345,38 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.renderer.setStyle(copyButton, 'top', '5px');
         this.renderer.setStyle(copyButton, 'right', '5px');
         this.renderer.setStyle(copyButton, 'padding', '5px 10px');
-        this.renderer.setStyle(copyButton, 'background', 'rgba(255, 255, 255, 0.2)');
+        this.renderer.setStyle(
+          copyButton,
+          'background',
+          'rgba(255, 255, 255, 0.2)'
+        );
         this.renderer.setStyle(copyButton, 'font-size', '10px');
         this.renderer.setStyle(copyButton, 'border', 'none');
         this.renderer.setStyle(copyButton, 'cursor', 'pointer');
         this.renderer.setStyle(copyButton, 'color', '#fff');
         this.renderer.setStyle(copyButton, 'border-radius', '5px');
 
-        this.renderer.listen(copyButton, 'click', () => this._copyToClipboard(preTag));
+        this.renderer.listen(copyButton, 'click', () =>
+          this._copyToClipboard(preTag)
+        );
 
         this.renderer.setStyle(preTag, 'position', 'relative');
         this.renderer.appendChild(preTag, copyButton);
       });
-    })
+    });
   }
-
 
   private _copyToClipboard(preTag: HTMLElement) {
     const codeBlock = preTag.querySelector('code');
     const text = codeBlock ? codeBlock.innerText : preTag.innerText;
-    navigator.clipboard.writeText(text).then(() => {
-      this.sharedService.opnSnackBar.next('Copied to clipboard!')
-    }).catch(err => {
-      console.error('Failed to copy:', err);
-    });
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        this.sharedService.opnSnackBar.next('Copied to clipboard!');
+      })
+      .catch((err) => {
+        console.error('Failed to copy:', err);
+      });
   }
 
   private _receiveGroupMessages() {
@@ -380,7 +404,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       isCurrentUser: message.isCurrentUser,
       receiverId: message.receiverId,
       type: message.type,
-      isShowMessage:true
+      isShowMessage: true,
     });
     this._scrollToBottom();
   }
@@ -393,7 +417,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       message: message.message,
       time: message.time,
       isCurrentUser: message.isCurrentUser,
-      isShowMessage:true
+      isShowMessage: true,
     });
 
     const group = this._userSharedService.groupData.find(
@@ -435,11 +459,11 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   private _scrollToBottom(): void {
-    requestAnimationFrame(()=>{
-        this._userInput = this.userInput?.nativeElement;
-        const chatContainer = this.chatContainer?.nativeElement
-       if(chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
-    })
+    requestAnimationFrame(() => {
+      this._userInput = this.userInput?.nativeElement;
+      const chatContainer = this.chatContainer?.nativeElement;
+      if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+    });
   }
 
   ngOnDestroy(): void {}

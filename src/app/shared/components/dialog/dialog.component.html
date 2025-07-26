@@ -38,10 +38,19 @@
   <div class="profile-container" (click)="$event.stopPropagation()">
     <div class="profile-header">
       <div class="profile-image">
-        <img src="{{ baseUrl }}avatar.png" alt="Profile Image" />
+        <img src="{{ imagePreviewUrl }}" alt="Profile Image" />
       </div>
       <div class="icon-corner">
-        <img src="{{ baseUrl }}edit.svg" alt="Profile Image" />
+        <input
+          type="file"
+          id="fileInput"
+          style="display: none"
+          (change)="onFileSelected($event)"
+          accept="image/*"
+        />
+        <label for="fileInput" class="file-input">
+          <img src="{{ baseUrl }}edit.svg" alt="Edit icon" />
+        </label>
       </div>
     </div>
 
@@ -51,9 +60,8 @@
         <input
           id="name"
           type="text"
-          disabled
           placeholder="Name"
-          [value]="userName"
+          [(ngModel)]="userName"
         />
       </div>
       <div class="profile-field">
@@ -67,6 +75,7 @@
         />
       </div>
     </div>
+    <button (click)="updateProfileDetails()" class="w-100">Update</button>
   </div>
 </div>
 }@else if (isShowSetting) {

@@ -2,64 +2,81 @@
 <div class="dm-container">
   <div class="dm-title">
     <h4>Users</h4>
-    <img class="pointer" (click)="redirectToAddUser()" src="{{ baseUrl }}add-user.svg" alt="" />
+    <img
+      class="pointer"
+      (click)="redirectToAddUser()"
+      src="{{ baseUrl }}add-user.svg"
+      alt=""
+    />
   </div>
   <div class="user-list">
-    @if(this.addedUserList.length > 0){
-      @for(user of this.addedUserList; let index = $index; track index){
-        <div (click)="userClick(user, index)" class="dm-card pointer">
-          <span
-            [class]="user.isActiveUser ? 'status-active' : 'status-inactive'"
-          ></span>
-          <div class="user-icon">
-            <img src="{{ baseUrl }}user.png" alt="user-icon" />
+    @if(this.addedUserList.length > 0){ @for(user of this.addedUserList; let
+    index = $index; track index){
+    <div (click)="userClick(user, index)" class="dm-card pointer">
+      <span
+        [class]="user.isActiveUser ? 'status-active' : 'status-inactive'"
+      ></span>
+      <div class="user-icon">
+        <img
+          src="{{ user.profileUrl || baseUrl + 'user.png' }}"
+          alt="user-icon"
+        />
+      </div>
+      <div class="user-header">
+        <h5 class="user-name">{{ user.name }}</h5>
+        <div>
+          @if(false){
+          <div class="unread-count">
+            <span>50</span>
           </div>
-          <div class="user-header">
-            <h5 class="user-name">{{ user.name }}</h5>
-            <div>
-              @if(false){
-              <div class="unread-count">
-                <span>50</span>
-              </div>
-              }@else {
-              <span>{{user.isActiveUser ? 'Online' : 'Offline'}}</span><br />
-              }
-            </div>
-          </div>
+          }@else {
+          <span>{{ user.isActiveUser ? "Online" : "Offline" }}</span
+          ><br />
+          }
         </div>
-        }
-    }@else{
-      <h4 class="h-100 d-flex justify-center item-center text-center">
-        No users found. Please add a user or invite one.
-      </h4>
+      </div>
+    </div>
+    } }@else{
+    <h4 class="h-100 d-flex justify-center item-center text-center">
+      No users found. Please add a user or invite one.
+    </h4>
     }
   </div>
 </div>
 }@else {
-  <div class="user-list">
-    @for(user of userList; let index = $index; track index){
-      <div class="dm-card">
-        <!-- <span
+<div class="user-list">
+  @for(user of userList; let index = $index; track index){
+  <div class="dm-card">
+    <!-- <span
           [class]="true ? 'status-active' : 'status-inactive'"
         ></span> -->
-        <div class="user-icon">
-          <img src="{{ baseUrl }}user.png" alt="user-icon" />
-        </div>
-        <div class="user-header">
-          <h5 class="user-name">{{user.name}}</h5>
-          @if(!user?.isApproved){
-            <div class="pointer">
-              <img [src]="user.isRequestPending ? baseUrl+'pending.svg' : baseUrl+'add.svg'"
-              alt="" (click)="sendRequest(user)">
-            </div>
-          }@else {
-            <div class="pointer">
-              <img [src]="baseUrl+'request-approved.svg'"
-              alt="">
-            </div>
-          }
-        </div>
+    <div class="user-icon">
+      <img
+        src="{{ user.profileUrl || baseUrl + 'user.png' }}"
+        alt="user-icon"
+      />
+    </div>
+    <div class="user-header">
+      <h5 class="user-name">{{ user.name }}</h5>
+      @if(!user?.isApproved){
+      <div class="pointer">
+        <img
+          [src]="
+            user.isRequestPending
+              ? baseUrl + 'pending.svg'
+              : baseUrl + 'add.svg'
+          "
+          alt=""
+          (click)="sendRequest(user)"
+        />
       </div>
-    }
+      }@else {
+      <div class="pointer">
+        <img [src]="baseUrl + 'request-approved.svg'" alt="" />
+      </div>
+      }
+    </div>
   </div>
+  }
+</div>
 }

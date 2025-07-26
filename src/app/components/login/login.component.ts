@@ -16,7 +16,7 @@ import { LoaderComponent } from '../../shared/components/loader/loader.component
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule,LoaderComponent],
+  imports: [ReactiveFormsModule, LoaderComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -27,8 +27,8 @@ export class LoginComponent {
   public otpValidatorIcon: string = 'check';
   public isLoader: boolean = false;
   public isResendOtpDisable: boolean = false;
-  public isForgotPassword:boolean = false;
-  public isLoading:boolean = false;
+  public isForgotPassword: boolean = false;
+  public isLoading: boolean = false;
 
   @ViewChild(LoaderComponent) loader!: LoaderComponent;
 
@@ -37,7 +37,6 @@ export class LoginComponent {
   private _userAuthService = inject(UserAuthService);
   private _userSharedService = inject(UserSharedService);
   private _router = inject(Router);
-
 
   profileForm = new FormGroup({
     username: new FormControl('', [Validators.required]),
@@ -50,15 +49,15 @@ export class LoginComponent {
     ]),
   });
 
-  constructor(){
-    if(!this._sharedService.isLoggedOut){
+  constructor() {
+    if (!this._sharedService.isLoggedOut) {
       this._checkServerStatus();
     }
   }
 
-  private _checkServerStatus(){
+  private _checkServerStatus() {
     this.isLoading = true;
-    this._sharedService.getServerStatus().subscribe(ele =>{
+    this._sharedService.getServerStatus().subscribe((ele) => {
       this.loader.completeLoading();
       setTimeout(() => {
         this.isLoading = false;
@@ -90,7 +89,7 @@ export class LoginComponent {
         .userLogin({ email: email, password: password })
         .subscribe({
           next: (response: UserDetails) => {
-            localStorage.setItem('accessToken',response.accessToken);
+            localStorage.setItem('accessToken', response.accessToken);
             localStorage.setItem('userDetails', JSON.stringify(response));
             this._userSharedService.userDetails = new UserDetails(
               response.name,
@@ -100,7 +99,8 @@ export class LoginComponent {
               response.joinedGroupIds,
               response.requestPending || [],
               response.requests || [],
-              response.addedUsers || []
+              response.addedUsers || [],
+              response.profileUrl || ''
             );
 
             this._sharedService.opnSnackBar.next('Login successful');
@@ -195,7 +195,7 @@ export class LoginComponent {
   }
 
   onSignUpPage() {
-    if(!this.isForgotPassword){
+    if (!this.isForgotPassword) {
       this.isOtpPage = false;
       this.isSignUpPage = true;
       this.otpValidatorIcon = 'lock';
@@ -240,25 +240,26 @@ export class LoginComponent {
   }
 
   forgotPassword() {
-    if(this.isForgotPassword) return;
+    if (this.isForgotPassword) return;
     const emailControl = this.profileForm.get('email');
     if (emailControl.valid) {
       this.isForgotPassword = true;
       this._userAuthService.resetPassword(emailControl.value).subscribe({
-        next:(res:any)=>{
+        next: (res: any) => {
           this._sharedService.opnSnackBar.next(res.message);
           this.isForgotPassword = false;
         },
-        error:(error =>{
+        error: (error) => {
           this._sharedService.opnSnackBar.next(error.message);
           this.isForgotPassword = false;
-        })
-      }
-    )
+        },
+      });
     } else if (!emailControl.value) {
       this._sharedService.opnSnackBar.next('Please enter your email address.');
     } else {
-      this._sharedService.opnSnackBar.next('The entered email address is invalid. Please try again.');
+      this._sharedService.opnSnackBar.next(
+        'The entered email address is invalid. Please try again.'
+      );
     }
   }
 }

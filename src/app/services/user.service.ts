@@ -11,49 +11,55 @@ export class UserService {
   private _baseUrl = baseUrl.apiUrl;
   public userList: UserList[] = [];
   public userSearchTerm: Subject<string> = new Subject<string>();
-  constructor(private _httpClient: HttpClient) { }
+  constructor(private _httpClient: HttpClient) {}
 
   getUser(userId: string) {
-    return this._httpClient.get<UserDetails>(`${this._baseUrl}user/getUser/${userId}`)
+    return this._httpClient.get<UserDetails>(
+      `${this._baseUrl}user/getUser/${userId}`
+    );
   }
 
   getAllUsers() {
-    return this._httpClient.get(`${this._baseUrl}user/getAll`)
+    return this._httpClient.get(`${this._baseUrl}user/getAll`);
   }
 
   sendRequest(userId: string, requestUserId: string) {
     return this._httpClient.post(`${this._baseUrl}user/sendRequest`, {
       userId: userId,
       requestUserId: requestUserId,
-    })
+    });
   }
 
   updatePassword(userId: string, oldPassword: string, newPassword: string) {
-    return this._httpClient.post(`${this._baseUrl}user/updatePassword`,
-      {
-      userId:userId,
-      oldPassword:oldPassword,
-      newPassword:newPassword
-      }
-    )
+    return this._httpClient.post(`${this._baseUrl}user/updatePassword`, {
+      userId: userId,
+      oldPassword: oldPassword,
+      newPassword: newPassword,
+    });
   }
 
   acceptRequest(userId: string, acceptUserId: string) {
-    return this._httpClient.post(`${this._baseUrl}user/acceptRequest`,
-      {
-        userId: userId,
-        acceptUserId: acceptUserId
-      }
-    )
+    return this._httpClient.post(`${this._baseUrl}user/acceptRequest`, {
+      userId: userId,
+      acceptUserId: acceptUserId,
+    });
   }
 
   rejectRequest(userId: string, rejectUserId: string) {
-    return this._httpClient.post(`${this._baseUrl}user/rejectRequest`,
-      {
-        userId: userId,
-        rejectUserId: rejectUserId
-      }
-    )
+    return this._httpClient.post(`${this._baseUrl}user/rejectRequest`, {
+      userId: userId,
+      rejectUserId: rejectUserId,
+    });
   }
 
+  updateProfile(file: File, userId: string, userName: string) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('userId', userId);
+    formData.append('userName', userName);
+    return this._httpClient.post(
+      `${this._baseUrl}user/upload-profile`,
+      formData
+    );
+  }
 }

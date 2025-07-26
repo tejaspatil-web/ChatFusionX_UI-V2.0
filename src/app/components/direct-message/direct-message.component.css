@@ -1,4 +1,3 @@
-
 .dm-container {
   background-color: white;
   font-family: Arial, Helvetica, sans-serif;
@@ -7,17 +6,18 @@
   overflow: hidden;
 }
 
-.back-button{
+.back-button {
   width: 30px;
   height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: rgba(0, 0, 0, 0.12) 1px 1px 1px 1px, rgba(0, 0, 0, 0.24) 0px 0px 0px 0px;
+  box-shadow: rgba(0, 0, 0, 0.12) 1px 1px 1px 1px,
+    rgba(0, 0, 0, 0.24) 0px 0px 0px 0px;
 }
 
-.back-button img{
+.back-button img {
   width: 15px;
   height: 15px;
 }
@@ -48,7 +48,7 @@
   border: none;
 }
 
-.status-inactive{
+.status-inactive {
   position: absolute;
   top: 10px;
   border-radius: 50%;
@@ -57,7 +57,7 @@
   background-color: #6299ff;
 }
 
-.status-active{
+.status-active {
   position: absolute;
   top: 10px;
   border-radius: 50%;
@@ -67,7 +67,7 @@
   background-color: #13ec13;
 }
 
-.unread-count{
+.unread-count {
   padding: 10px;
   background-color: red;
   text-align: center;
@@ -83,6 +83,7 @@
 .user-icon {
   min-width: 35px;
   height: 35px;
+  width: 35px !important;
   border-radius: 50%;
   overflow: hidden;
 }
@@ -114,11 +115,11 @@
   white-space: nowrap;
 }
 
-.user-search{
+.user-search {
   padding: 5px 10px;
   background-color: rgb(226, 226, 226);
   border-radius: 5px;
-  input{
+  input {
     width: 100%;
     height: 25px;
     border: none;
