@@ -66,7 +66,7 @@
   <div class="message w-100 d-flex justify-center item-center gap-10">
     @if(type === 'ai'){ @if(!isFileUploaded){
     <div class="upload">
-      <img src="{{ baseUrl }}plus.svg" alt="" />
+      <img src="{{ baseUrl }}{{ icon }}" alt="" />
       <input
         type="file"
         (change)="uploadFile($event)"
@@ -78,6 +78,7 @@
     } }
     <div class="message-input w-100">
       <input
+        [disabled]="isFileUploaded"
         #messageInput
         (keyup)="onEnter($event)"
         type="text"
@@ -86,7 +87,7 @@
         placeholder="Type your message here..."
       />
     </div>
-    <button (click)="sendMessage()">
+    <button [disabled]="isFileUploaded" (click)="sendMessage()">
       <img src="{{ baseUrl }}send.svg" alt="" />
     </button>
   </div>

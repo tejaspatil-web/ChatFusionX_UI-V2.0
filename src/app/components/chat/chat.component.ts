@@ -56,6 +56,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   private _extractedText: string[] = [];
   public isFileUploaded: boolean = false;
   public profileUrl: string = '';
+  public icon: string = 'plus.svg';
   private _prompt: string =
     '\n\n- Carefully review the above content. I will now ask questions based on it—answer strictly using the information provided.';
   constructor(
@@ -145,11 +146,17 @@ export class ChatComponent implements OnInit, OnDestroy {
     this._chatfusionxAiService
       .getAiChatHistory(userId)
       .subscribe(async (chat: any) => {
-        chat.response.forEach((ele, index) => (ele.index = index));
-        let index = 0;
+        const indicesToHide = new Set();
+        chat.response.forEach((ele, idx) => {
+          if (ele.message.includes(this._prompt)) {
+            indicesToHide.add(idx);
+            if (idx + 1 < chat.response.length) {
+              indicesToHide.add(idx + 1);
+            }
+          }
+        });
         this.messages = await Promise.all(
-          chat.response.map(async (ele) => {
-            index = ele.message.includes(this._prompt) ? ele.index + 1 : 0;
+          chat.response.map(async (ele, idx) => {
             return {
               userName: ele.role === aiRole.model ? 'AI' : '',
               userId: '',
@@ -160,9 +167,7 @@ export class ChatComponent implements OnInit, OnDestroy {
               time: '',
               isCurrentUser: ele.role === aiRole.user,
               hasAiMessageLoaded: true,
-              isShowMessage: !(
-                ele.message.includes(this._prompt) || index === ele.index
-              ),
+              isShowMessage: !indicesToHide.has(idx),
             };
           })
         );
@@ -213,8 +218,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.isFileUploaded = true;
     const fileTypes = ['image/png', 'image/jpeg'];
     if (fileTypes.includes(file.type)) {
+      this.icon = 'image.svg';
       this._extractTextFromImage(file);
     } else {
+      this.icon = 'pdf.svg';
       this._convertPdfToPng(file);
     }
   }
@@ -314,6 +321,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           this._socketService.sendPrivateMessage(userMessage);
           break;
         case 'ai':
+          this.icon = 'plus.svg';
           this._generateAiResponse(this._userInput.value);
           break;
       }
