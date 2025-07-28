@@ -95,10 +95,6 @@
   padding-right: 5px;
 }
 
-.aline-home {
-  padding-right: 2px;
-}
-
 .ai-logo {
   filter: brightness(350%);
 }
@@ -115,10 +111,6 @@
   }
 
   .aline {
-    padding-right: 1px;
-  }
-
-  .aline-home {
     padding-right: 1px;
   }
 

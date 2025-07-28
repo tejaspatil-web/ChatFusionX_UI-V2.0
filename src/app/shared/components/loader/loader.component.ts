@@ -7,18 +7,18 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './loader.component.html',
-  styleUrl: './loader.component.css'
+  styleUrl: './loader.component.css',
 })
 export class LoaderComponent implements OnInit {
   percentage = 0;
   isLoading = true;
   isCompleted = false;
-  loadingMessage = 'loading'
+  loadingMessage = 'loading...';
   private progressInterval: any;
-  constructor(){}
+  constructor() {}
 
   ngOnInit() {
-    this.startLoading()
+    this.startLoading();
   }
 
   startLoading() {
@@ -30,10 +30,12 @@ export class LoaderComponent implements OnInit {
       progress += 1;
       this.percentage = progress;
 
-    if(progress === 3) this.loadingMessage = 'Server is waking up, please wait...'
-    if (progress === 30) this.loadingMessage = 'Still loading... please wait.';
-    if (progress === 60) this.loadingMessage = 'Almost done...';
-    if (progress === 90) this.loadingMessage = 'Finalizing, just a moment...';
+      if (progress === 3)
+        this.loadingMessage = 'Server is waking up, please wait...';
+      if (progress === 30)
+        this.loadingMessage = 'Still loading... please wait.';
+      if (progress === 60) this.loadingMessage = 'Almost done...';
+      if (progress === 90) this.loadingMessage = 'Finalizing, just a moment...';
       if (progress >= 100) {
         clearInterval(this.progressInterval);
       }
@@ -43,11 +45,10 @@ export class LoaderComponent implements OnInit {
   completeLoading() {
     clearInterval(this.progressInterval);
     this.percentage = 100;
-    setTimeout(()=>{
+    setTimeout(() => {
       this.loadingMessage = 'Completed';
       this.isLoading = false;
       this.isCompleted = true;
-    },100)
+    }, 100);
   }
-
 }

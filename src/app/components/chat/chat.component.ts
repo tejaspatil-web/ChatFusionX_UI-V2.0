@@ -54,11 +54,12 @@ export class ChatComponent implements OnInit, OnDestroy {
   public messages: Message[] = [];
   private _images: File[] = [];
   private _extractedText: string[] = [];
+  private _uploadedFile: File = null;
   public isFileUploaded: boolean = false;
   public profileUrl: string = '';
   public icon: string = 'plus.svg';
   private _prompt: string =
-    '\n\n- Carefully review the above content. I will now ask questions based on it—answer strictly using the information provided.';
+    '\n\n- I will give you the file name and type and the extracted text, so please carefully review the content. I will now ask questions based on it—please answer strictly using the information provided.';
   constructor(
     public sharedService: SharedService,
     private _router: Router,
@@ -179,11 +180,23 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   private _generateAiResponse(prompt: string) {
     const userId = this._userSharedService.userDetails.id;
+    let updatedPrompt = prompt;
+    if (this._uploadedFile) {
+      const type = this._uploadedFile.type;
+      if (type.includes('image')) {
+        const file = `<b>image : ${this._uploadedFile.name}</b>\n\n`;
+        updatedPrompt = file + updatedPrompt;
+      } else {
+        const file = `<b>pdf : ${this._uploadedFile.name}</b>\n\n`;
+        updatedPrompt = file + updatedPrompt;
+      }
+      this._uploadedFile = null;
+    }
     this.messages.push(
       {
         userName: '',
         userId: userId,
-        message: prompt,
+        message: updatedPrompt,
         time: '',
         isCurrentUser: true,
         hasAiMessageLoaded: true,
@@ -202,7 +215,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.cdRef.detectChanges();
     this._scrollToBottom();
     this._chatfusionxAiService
-      .generateAiResponse(userId, prompt)
+      .generateAiResponse(userId, updatedPrompt)
       .subscribe(async (response: any) => {
         const aiMessage = this.messages.find((ele) => !ele.hasAiMessageLoaded);
         aiMessage.message = await this._convertMarkDown(response.response);
@@ -215,6 +228,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   uploadFile(event) {
     const input = event.target;
     const file = input.files[0];
+    this._uploadedFile = file;
     this.isFileUploaded = true;
     const fileTypes = ['image/png', 'image/jpeg'];
     if (fileTypes.includes(file.type)) {
@@ -236,15 +250,27 @@ export class ChatComponent implements OnInit, OnDestroy {
           text += ele;
         });
       }
+
+      text = `Extracted Text : ${text}`;
       text += this._prompt;
+      let updatedPrompt = text;
+      const type = this._uploadedFile.type;
+      if (type.includes('image')) {
+        const file = `image : ${this._uploadedFile.name}\n\n`;
+        updatedPrompt = file + updatedPrompt;
+      } else {
+        const file = `pdf : ${this._uploadedFile.name}\n\n`;
+        updatedPrompt = file + updatedPrompt;
+      }
+
       this._chatfusionxAiService
-        .generateAiResponse(userId, text)
+        .generateAiResponse(userId, updatedPrompt)
         .subscribe((response: any) => {
           this.messages.push(
             {
               userName: '',
               userId: userId,
-              message: text,
+              message: updatedPrompt,
               time: '',
               isCurrentUser: true,
               hasAiMessageLoaded: true,

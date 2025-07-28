@@ -37,12 +37,12 @@
   <div #chatContainer class="group-chat w-100">
     @for(message of messages;let index = $index; track index){
     <!-- User Message Div -->
+    @if(message.isShowMessage){
     <div
       class="w-100 d-flex p-10 flex-column {{
         message.isCurrentUser ? 'item-end client-chat' : 'user-chat'
       }}"
     >
-      @if(message.isShowMessage){
       <div class="d-flex item-center gap-5">
         @if(!message.isCurrentUser){
         <h5>{{ message.userName }}:</h5>
@@ -57,9 +57,8 @@
         }
         <h6>{{ message.time }}</h6>
       </div>
-      }
     </div>
-    }
+    } }
   </div>
 
   <!-- Message Input Code -->
