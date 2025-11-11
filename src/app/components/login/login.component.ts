@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import { UserSharedService } from '../../shared/services/user-shared.service';
 import { UserDetails } from '../../shared/models/user.model';
 import { LoaderComponent } from '../../shared/components/loader/loader.component';
+import { TextExtractionService } from '../../services/text-extraction.service';
 
 @Component({
   selector: 'app-login',
@@ -36,6 +37,7 @@ export class LoginComponent {
   private _sharedService = inject(SharedService);
   private _userAuthService = inject(UserAuthService);
   private _userSharedService = inject(UserSharedService);
+  private _testExtractionService = inject(TextExtractionService);
   private _router = inject(Router);
 
   profileForm = new FormGroup({
@@ -63,6 +65,28 @@ export class LoginComponent {
         this.isLoading = false;
       }, 500);
     });
+    this._callTextExtractionService();
+    this._callPdfToPngConversionService();
+  }
+
+  private _callTextExtractionService() {
+    const imagePath = 'images/logo.png';
+    fetch(imagePath)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], 'logo.png', { type: blob.type });
+        this._testExtractionService.textExtraction(file).subscribe();
+      });
+  }
+
+  private _callPdfToPngConversionService() {
+    const pdfPath = 'files/blank.pdf';
+    fetch(pdfPath)
+      .then(res => res.blob())
+      .then(blob => {
+        const pdfFile = new File([blob], 'blank.pdf', { type: blob.type });
+        this._testExtractionService.pdfToPngConversion(pdfFile).subscribe();
+      });
   }
 
   onSubmit() {
