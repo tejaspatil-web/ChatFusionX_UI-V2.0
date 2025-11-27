@@ -61,6 +61,17 @@ button {
   border-radius: 25px;
 }
 
+.google-login-btn{
+  background-color: rgb(226, 226, 226);
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  color: #000;
+  .google-icon{
+    width: 20px;
+    height: 20px;
+  }
+}
+
+
 .loader {
   width: 20px;
   padding: 5px;

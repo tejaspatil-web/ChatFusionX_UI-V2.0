@@ -36,7 +36,7 @@ export class SidenavComponent implements OnInit {
 
   ngOnInit(): void {
     this.profileUrl =
-      this._userSharedService.userDetails.profileUrl ||
+      this._userSharedService?.userDetails?.profileUrl ||
       this.baseUrl + 'avatar.png';
 
     this._sharedService.getUpdatedProfileUrl.subscribe((url) => {

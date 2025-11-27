@@ -38,10 +38,19 @@
         formControlName="password"
       />
     </div>
-    <button [disabled]="isLoader || isForgotPassword" class="w-100">
+    <button [disabled]="isLoader || isForgotPassword || isGoogleLoginLoader" class="w-100">
       {{ isSignUpPage ? "Signup" : "Login" }}
       @if(isLoader){
       <div class="loader"></div>
+      }
+    </button>
+    <button type="button" (click)="googleLogin()" [disabled]="isLoader || isGoogleLoginLoader || isForgotPassword" class="w-100 google-login-btn">
+      <div class="d-flex item-center justify-center gap-5">
+      <img class="google-icon" src="{{ baseUrl }}google-icon.png" alt="">
+      <span>Continue with Google</span>
+      </div>
+    @if(isGoogleLoginLoader){
+      <div class="loader1"></div>
       }
     </button>
     @if(!isSignUpPage){
@@ -90,7 +99,7 @@
       Want to change your email address?
       <span class="signup" (click)="onSignUpPage()">Change Here</span>
     </h5>
-    <button [disabled]="isLoader" class="w-100">
+    <button [disabled]="isLoader || isGoogleLoginLoader" class="w-100">
       Validate @if(isLoader){
       <div class="loader"></div>
       }

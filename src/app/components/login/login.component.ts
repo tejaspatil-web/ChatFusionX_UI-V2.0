@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -13,6 +13,7 @@ import { UserSharedService } from '../../shared/services/user-shared.service';
 import { UserDetails } from '../../shared/models/user.model';
 import { LoaderComponent } from '../../shared/components/loader/loader.component';
 import { TextExtractionService } from '../../services/text-extraction.service';
+import { GoogleAuthService } from '../../services/google-auth.service';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,7 @@ import { TextExtractionService } from '../../services/text-extraction.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   public baseUrl = baseUrl.images;
   public isSignUpPage: boolean = false;
   public isOtpPage: boolean = false;
@@ -30,6 +31,7 @@ export class LoginComponent {
   public isResendOtpDisable: boolean = false;
   public isForgotPassword: boolean = false;
   public isLoading: boolean = false;
+  public isGoogleLoginLoader: boolean = false;
 
   @ViewChild(LoaderComponent) loader!: LoaderComponent;
 
@@ -38,6 +40,7 @@ export class LoginComponent {
   private _userAuthService = inject(UserAuthService);
   private _userSharedService = inject(UserSharedService);
   private _testExtractionService = inject(TextExtractionService);
+  private _googleAuthService = inject(GoogleAuthService);
   private _router = inject(Router);
 
   profileForm = new FormGroup({
@@ -55,6 +58,16 @@ export class LoginComponent {
     if (!this._sharedService.isLoggedOut) {
       this._checkServerStatus();
     }
+  }
+
+ async ngOnInit() {
+    // Load Google SDK
+    await this._googleAuthService.loadGoogleScript();
+
+    // Initialize token client
+    this._googleAuthService.initTokenClient((token: string) => {
+      this._handleGoogleLogin(token);
+    });
   }
 
   private _checkServerStatus() {
@@ -100,6 +113,38 @@ export class LoginComponent {
     if (this.isOtpPage) {
       this._verifyUser();
     }
+  }
+
+  private _handleGoogleLogin(token) {
+    this.isGoogleLoginLoader = true;
+    this._googleAuthService.googleLogin(token).subscribe({
+      next: (response: UserDetails) => {
+        localStorage.setItem('accessToken', response.accessToken);
+        localStorage.setItem('userDetails', JSON.stringify(response));
+        this._userSharedService.userDetails = new UserDetails(
+          response.name,
+          response.email,
+          response.id,
+          response.adminGroupIds,
+          response.joinedGroupIds,
+          response.requestPending || [],
+          response.requests || [],
+          response.addedUsers || [],
+          response.profileUrl || ''
+        );
+        this.isGoogleLoginLoader = false;
+        this._sharedService.opnSnackBar.next('Login successful');
+        this._router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        this.isGoogleLoginLoader = false;
+        this._sharedService.opnSnackBar.next('Failed to login');
+      }
+    })
+  }
+
+ public googleLogin() {
+    this._googleAuthService.requestAccessToken();
   }
 
   private _login() {
