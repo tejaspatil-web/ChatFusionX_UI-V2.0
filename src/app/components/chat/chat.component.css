@@ -76,16 +76,20 @@
   max-width: 100%;
 }
 
+::ng-deep .ai-message-container .error {
+  color: red;
+}
+
 .upload {
   position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    padding: 8px;
-    background-color: #6e00ff;
-    padding: 10px;
-    border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 8px;
+  background-color: #6e00ff;
+  padding: 10px;
+  border: none;
 
   input {
     position: absolute;
@@ -95,7 +99,6 @@
     top: 0;
     left: 0;
   }
-
 }
 ::-webkit-file-upload-button {
   display: none;
@@ -165,13 +168,12 @@
   left: 3.5em;
 }
 
-
 .upload-loader {
-  width: 40px;
+  width: 30px;
   padding: 6px;
   aspect-ratio: 1;
   border-radius: 50%;
-  background:  #6e00ff;
+  background: #6e00ff;
   --_m: conic-gradient(#0000 10%, #000), linear-gradient(#000 0 0) content-box;
   -webkit-mask: var(--_m);
   mask: var(--_m);

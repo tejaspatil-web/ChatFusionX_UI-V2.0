@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -24,6 +23,8 @@ import { ChatfusionxAiService } from '../../services/chatfusionx-ai.service';
 import { marked } from 'marked';
 import { TextExtractionService } from '../../services/text-extraction.service';
 import { UserService } from '../../services/user.service';
+import { ChatState } from '../../enums/chat.enum';
+import { forkJoin, Observable } from 'rxjs';
 
 export enum aiRole {
   model = 'model',
@@ -181,8 +182,14 @@ export class ChatComponent implements OnInit, OnDestroy {
   private _generateAiResponse(prompt: string) {
     const userId = this._userSharedService.userDetails.id;
     let updatedPrompt = prompt;
+    let extractedText = '';
     if (this._uploadedFile) {
       const type = this._uploadedFile.type;
+      if (this._extractedText.length > 0) {
+        this._extractedText.forEach((ele) => {
+          extractedText += ele;
+        });
+      }
       if (type.includes('image')) {
         const file = `<b>image : ${this._uploadedFile.name}</b>\n\n`;
         updatedPrompt = file + updatedPrompt;
@@ -190,7 +197,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         const file = `<b>pdf : ${this._uploadedFile.name}</b>\n\n`;
         updatedPrompt = file + updatedPrompt;
       }
-      this._uploadedFile = null;
     }
     this.messages.push(
       {
@@ -215,13 +221,23 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.cdRef.detectChanges();
     this._scrollToBottom();
     this._chatfusionxAiService
-      .generateAiResponse(userId, updatedPrompt)
-      .subscribe(async (response: any) => {
-        const aiMessage = this.messages.find((ele) => !ele.hasAiMessageLoaded);
-        aiMessage.message = await this._convertMarkDown(response.response);
-        aiMessage.hasAiMessageLoaded = true;
-        this._scrollToBottom();
-        this._addCopyButtons();
+      .generateAiResponse(
+        userId,
+        updatedPrompt,
+        extractedText,
+        this._uploadedFile ? ChatState.DOCUMENT_UPLOADED : ChatState.NORMAL
+      )
+      .subscribe({
+        next: async (response: any) => {
+          const aiMessage = this.messages.find(
+            (ele) => !ele.hasAiMessageLoaded
+          );
+          aiMessage.message = await this._convertMarkDown(response.response);
+          aiMessage.hasAiMessageLoaded = true;
+          this._scrollToBottom();
+          this._addCopyButtons();
+          this._uploadedFile = null;
+        },
       });
   }
 
@@ -233,71 +249,46 @@ export class ChatComponent implements OnInit, OnDestroy {
     const fileTypes = ['image/png', 'image/jpeg'];
     if (fileTypes.includes(file.type)) {
       this.icon = 'image.svg';
-      this._extractTextFromImage(file);
+      this._extractTextFromIamge(file);
     } else {
       this.icon = 'pdf.svg';
       this._convertPdfToPng(file);
     }
   }
 
-  private _extractTextFromImage(image) {
-    this.textExtractionService.textExtraction(image).subscribe((ele: any) => {
-      this._extractedText.push(ele.text);
-      const userId = this._userSharedService.userDetails.id;
-      let text = '';
-      if (this._extractedText.length > 0) {
-        this._extractedText.forEach((ele) => {
-          text += ele;
-        });
-      }
-
-      text = `Extracted Text : ${text}`;
-      text += this._prompt;
-      let updatedPrompt = text;
-      const type = this._uploadedFile.type;
-      if (type.includes('image')) {
-        const file = `image : ${this._uploadedFile.name}\n\n`;
-        updatedPrompt = file + updatedPrompt;
-      } else {
-        const file = `pdf : ${this._uploadedFile.name}\n\n`;
-        updatedPrompt = file + updatedPrompt;
-      }
-
-      this._chatfusionxAiService
-        .generateAiResponse(userId, updatedPrompt)
-        .subscribe((response: any) => {
-          this.messages.push(
-            {
-              userName: '',
-              userId: userId,
-              message: updatedPrompt,
-              time: '',
-              isCurrentUser: true,
-              hasAiMessageLoaded: true,
-              isShowMessage: false,
-            },
-            {
-              userName: 'AI',
-              userId: '',
-              message: response.response,
-              time: '',
-              isCurrentUser: false,
-              hasAiMessageLoaded: true,
-              isShowMessage: false,
-            }
-          );
-        });
-      this.isFileUploaded = false;
-    });
-  }
-
   private _convertPdfToPng(pdf) {
     this._extractedText = [];
-    this.textExtractionService.pdfToPngConversion(pdf).subscribe((ele: any) => {
-      this._images = this._base64PngArrayToFiles(ele);
-      this._images.forEach((file) => {
-        this._extractTextFromImage(file);
+    this.textExtractionService
+      .pdfToPngConversion(pdf)
+      .subscribe((image: any) => {
+        this._images = this._base64PngArrayToFiles(image);
+        const batch: Observable<any>[] = [];
+        this._images.forEach((file) => {
+          batch.push(this.textExtractionService.textExtraction(file));
+        });
+        forkJoin(batch).subscribe({
+          next: (responses) => {
+            responses.forEach((res, index) => {
+              this._extractedText.push(
+                `Pdf File Name - ${this._uploadedFile.name}, Page - ${
+                  index + 1
+                }, Extracted Text - ${res.text}\n\n`
+              );
+            });
+            this.isFileUploaded = false;
+          },
+          error: (err) => {
+            console.error('Text extraction failed', err);
+          },
+        });
       });
+  }
+
+  private _extractTextFromIamge(image) {
+    this._extractedText = [];
+    this.textExtractionService.textExtraction(image).subscribe((ele: any) => {
+      this._extractedText.push(`Extracted Text - ${ele.text}`);
+      this.isFileUploaded = false;
     });
   }
 

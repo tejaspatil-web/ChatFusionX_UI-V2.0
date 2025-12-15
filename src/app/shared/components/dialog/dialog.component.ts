@@ -19,7 +19,6 @@ import {
 import { baseUrl } from '../../../environment/environment';
 import { UserSharedService } from '../../services/user-shared.service';
 import { UserService } from '../../../services/user.service';
-import { UserDetails } from '../../models/user.model';
 
 @Component({
   selector: 'app-dialog',
@@ -48,6 +47,7 @@ export class DialogComponent implements OnInit {
   public confirmPassword: string = '';
   private _selectedProfile: File;
   public imagePreviewUrl: string | ArrayBuffer;
+  public isPasswordSet: boolean = false;
 
   constructor(
     private readonly _sharedService: SharedService,
@@ -58,9 +58,14 @@ export class DialogComponent implements OnInit {
     this.userName = this._userSharedService.userDetails.name;
     this.userEmail = this._userSharedService.userDetails.email;
     this._userId = this._userSharedService.userDetails.id;
+
     this.imagePreviewUrl =
       this._userSharedService.userDetails.profileUrl ||
       baseUrl.images + 'avatar.png';
+
+    this.isPasswordSet =
+      this._userSharedService.userDetails.isPasswordSet ||
+      localStorage.getItem('isPasswordSet') === 'true';
   }
 
   onSubmit() {}
@@ -79,7 +84,11 @@ export class DialogComponent implements OnInit {
   }
 
   updatePassword() {
-    if (!this.oldPassword || !this.newPassword || !this.confirmPassword) {
+    const requiredFields = !this.isPasswordSet
+      ? [this.newPassword, this.confirmPassword]
+      : [this.oldPassword, this.newPassword, this.confirmPassword];
+
+    if (requiredFields.some((field) => !field)) {
       this._sharedService.opnSnackBar.next(
         'All required fields must be filled in.'
       );
@@ -105,6 +114,8 @@ export class DialogComponent implements OnInit {
       .subscribe({
         next: (res: any) => {
           this._sharedService.opnSnackBar.next(res?.message);
+          localStorage.setItem('isPasswordSet', JSON.stringify(true));
+          this.isPasswordSet = true;
           this.closeDialog();
         },
         error: (error) => {

@@ -7,15 +7,29 @@ import { baseUrl } from '../environment/environment';
 })
 export class ChatfusionxAiService {
   private _baseUrl = baseUrl.apiUrl;
-constructor(private _httpClient: HttpClient) {}
+  constructor(private _httpClient: HttpClient) {}
 
-  getAiChatHistory(userId:string){
-    return this._httpClient.get(`${this._baseUrl}chatfusionx-ai/get-chat?user_id=${userId}`)
+  getAiChatHistory(userId: string) {
+    return this._httpClient.get(
+      `${this._baseUrl}chatfusionx-ai/get-chat?user_id=${userId}`
+    );
   }
 
-  generateAiResponse(userId:string,prompt:string){
-    const payload = {user_id:userId,prompt:prompt}
-    return this._httpClient.post(`${this._baseUrl}chatfusionx-ai/generate`,payload)
+  generateAiResponse(
+    userId: string,
+    prompt: string,
+    extractedText: string,
+    state: string
+  ) {
+    const payload = {
+      user_id: userId,
+      prompt: prompt,
+      extracted_text: extractedText,
+      state,
+    };
+    return this._httpClient.post(
+      `${this._baseUrl}chatfusionx-ai/generate`,
+      payload
+    );
   }
-
 }

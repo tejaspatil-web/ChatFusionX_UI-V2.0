@@ -86,6 +86,7 @@
     </div>
 
     <div class="profile-details">
+      @if (isPasswordSet) {
       <div class="profile-field">
         <label for="oldPassword">Old Password*</label>
         <input
@@ -95,6 +96,7 @@
           [(ngModel)]="oldPassword"
         />
       </div>
+      }
       <div class="profile-field">
         <label for="newPassword">New Password*</label>
         <input

@@ -8,6 +8,7 @@ export class UserDetails {
   requests: string[];
   addedUsers: string[];
   profileUrl: string;
+  isPasswordSet?: boolean;
   accessToken?: string;
   constructor(
     name: string,
@@ -19,6 +20,7 @@ export class UserDetails {
     requests: string[],
     addedUsers: string[],
     profileUrl: string,
+    isPasswordSet?: boolean,
     accessToken?: string
   ) {
     this.name = name;
@@ -30,6 +32,7 @@ export class UserDetails {
     this.requests = requests;
     this.addedUsers = addedUsers;
     this.profileUrl = profileUrl;
+    this.isPasswordSet = isPasswordSet;
     this.accessToken = accessToken;
   }
 }

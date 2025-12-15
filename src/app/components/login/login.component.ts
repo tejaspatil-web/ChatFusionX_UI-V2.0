@@ -60,7 +60,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
- async ngOnInit() {
+  async ngOnInit() {
     // Load Google SDK
     await this._googleAuthService.loadGoogleScript();
 
@@ -85,8 +85,8 @@ export class LoginComponent implements OnInit {
   private _callTextExtractionService() {
     const imagePath = 'images/logo.png';
     fetch(imagePath)
-      .then(res => res.blob())
-      .then(blob => {
+      .then((res) => res.blob())
+      .then((blob) => {
         const file = new File([blob], 'logo.png', { type: blob.type });
         this._testExtractionService.textExtraction(file).subscribe();
       });
@@ -95,8 +95,8 @@ export class LoginComponent implements OnInit {
   private _callPdfToPngConversionService() {
     const pdfPath = 'files/blank.pdf';
     fetch(pdfPath)
-      .then(res => res.blob())
-      .then(blob => {
+      .then((res) => res.blob())
+      .then((blob) => {
         const pdfFile = new File([blob], 'blank.pdf', { type: blob.type });
         this._testExtractionService.pdfToPngConversion(pdfFile).subscribe();
       });
@@ -120,6 +120,10 @@ export class LoginComponent implements OnInit {
     this._googleAuthService.googleLogin(token).subscribe({
       next: (response: UserDetails) => {
         localStorage.setItem('accessToken', response.accessToken);
+        localStorage.setItem(
+          'isPasswordSet',
+          JSON.stringify(response.isPasswordSet)
+        );
         localStorage.setItem('userDetails', JSON.stringify(response));
         this._userSharedService.userDetails = new UserDetails(
           response.name,
@@ -130,7 +134,8 @@ export class LoginComponent implements OnInit {
           response.requestPending || [],
           response.requests || [],
           response.addedUsers || [],
-          response.profileUrl || ''
+          response.profileUrl || '',
+          response.isPasswordSet
         );
         this.isGoogleLoginLoader = false;
         this._sharedService.opnSnackBar.next('Login successful');
@@ -139,11 +144,11 @@ export class LoginComponent implements OnInit {
       error: (err) => {
         this.isGoogleLoginLoader = false;
         this._sharedService.opnSnackBar.next('Failed to login');
-      }
-    })
+      },
+    });
   }
 
- public googleLogin() {
+  public googleLogin() {
     this._googleAuthService.requestAccessToken();
   }
 
@@ -159,6 +164,10 @@ export class LoginComponent implements OnInit {
         .subscribe({
           next: (response: UserDetails) => {
             localStorage.setItem('accessToken', response.accessToken);
+            localStorage.setItem(
+              'isPasswordSet',
+              JSON.stringify(response.isPasswordSet)
+            );
             localStorage.setItem('userDetails', JSON.stringify(response));
             this._userSharedService.userDetails = new UserDetails(
               response.name,
@@ -169,7 +178,8 @@ export class LoginComponent implements OnInit {
               response.requestPending || [],
               response.requests || [],
               response.addedUsers || [],
-              response.profileUrl || ''
+              response.profileUrl || '',
+              response.isPasswordSet
             );
 
             this._sharedService.opnSnackBar.next('Login successful');
