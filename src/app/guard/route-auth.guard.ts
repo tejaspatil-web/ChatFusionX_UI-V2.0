@@ -19,7 +19,6 @@ import { UserRole } from '../enums/common.enum';
 })
 export class RouteAuthGuardService implements CanActivateChild {
   constructor(
-    private router: Router,
     private _sharedService: SharedService,
     private _userSharedService: UserSharedService
   ) {}
