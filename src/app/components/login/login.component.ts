@@ -135,7 +135,9 @@ export class LoginComponent implements OnInit {
           response.requests || [],
           response.addedUsers || [],
           response.profileUrl || '',
-          response.isPasswordSet
+          response.isPasswordSet,
+          response.accessToken || '',
+          response.role || 'user'
         );
         this.isGoogleLoginLoader = false;
         this._sharedService.opnSnackBar.next('Login successful');
@@ -179,7 +181,9 @@ export class LoginComponent implements OnInit {
               response.requests || [],
               response.addedUsers || [],
               response.profileUrl || '',
-              response.isPasswordSet
+              response.isPasswordSet,
+              response.accessToken || '',
+              response.role || 'user'
             );
 
             this._sharedService.opnSnackBar.next('Login successful');

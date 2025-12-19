@@ -52,7 +52,10 @@ export class AppComponent implements OnDestroy {
         parseUserDetails.requestPending || [],
         parseUserDetails.requests || [],
         parseUserDetails.addedUsers || [],
-        parseUserDetails.profileUrl || ''
+        parseUserDetails.profileUrl || '',
+        parseUserDetails.isPasswordSet || true,
+        parseUserDetails.accessToken || '',
+        parseUserDetails.role || 'user'
       );
     }
 

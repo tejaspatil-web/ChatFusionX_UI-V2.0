@@ -9,6 +9,7 @@ export enum sideNavState {
   home = 'home',
   notification = 'notification',
   chatfusionxai = 'chatfusionxai',
+  adminPanel = 'adminPanel',
 }
 
 @Injectable({

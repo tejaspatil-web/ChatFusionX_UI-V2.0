@@ -1,14 +1,15 @@
 <div class="main">
   @if(!isShowLoader){
   <!-- This Code for Mobile View -->
-  @if(sharedService.isMobile || (sideNavState === 'chatfusionxai')){ @if(!checkRoute()){
+  @if(sharedService.isMobile ||
+  (['chatfusionxai','adminPanel'].includes(sideNavState))){ @if(!checkRoute()){
   <!-- Showing group component -->
   <div class="main-group">
     <div class="user-search">
       @if(isAddUser){
-        <div (click)="onBackButtonClick()">
-          <img src="{{ baseUrl }}arrowback.svg" alt="">
-        </div>
+      <div (click)="onBackButtonClick()">
+        <img src="{{ baseUrl }}arrowback.svg" alt="" />
+      </div>
       }
       <div class="search-field">
         <img src="{{ baseUrl }}search.svg" alt="" />
@@ -24,9 +25,9 @@
     @switch (sideNavState) { @case ('user') {
     <div class="group">
       <app-direct-message
-      (onAddGroupClick)="onAddGroupClick($event)"
-      (onUserClick)="onUserClick($event)"
-      [onBackButton]="onBackButton"
+        (onAddGroupClick)="onAddGroupClick($event)"
+        (onUserClick)="onUserClick($event)"
+        [onBackButton]="onBackButton"
       ></app-direct-message>
     </div>
     } @case ('group') {
@@ -79,9 +80,9 @@
   <div class="main-group">
     <div class="user-search">
       @if(isAddUser){
-        <div (click)="onBackButtonClick()">
-          <img src="{{ baseUrl }}arrowback.svg" alt="">
-        </div>
+      <div (click)="onBackButtonClick()">
+        <img src="{{ baseUrl }}arrowback.svg" alt="" />
+      </div>
       }
       <div class="search-field">
         <img src="{{ baseUrl }}search.svg" alt="" />
