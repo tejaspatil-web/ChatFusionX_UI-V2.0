@@ -11,7 +11,6 @@
 - 🔹 **Real-Time Messaging** – Powered by WebSockets (Socket.IO).
 - 🔹 **User Authentication** – Secure login and session handling.
 - 🔹 **Message History** – Persistent chat storage.
-- 🔹 **Typing Indicators** – See when someone is typing.
 - 🔹 **Online Status** – Check if users are active.
 - 🔹 **Responsive UI** – Optimized for both desktop and mobile.
 
