@@ -25,6 +25,7 @@ export class SidenavComponent implements OnInit {
   public isNotifications: boolean = false;
   public profileUrl: string = '';
   public requests = [];
+  public role: string;
   constructor(
     private readonly _router: Router,
     private _sharedService: SharedService,
@@ -38,6 +39,8 @@ export class SidenavComponent implements OnInit {
     this.profileUrl =
       this._userSharedService?.userDetails?.profileUrl ||
       this.baseUrl + 'avatar.png';
+
+    this.role = this._userSharedService?.userDetails?.role || 'user';
 
     this._sharedService.getUpdatedProfileUrl.subscribe((url) => {
       if (url === '') {
@@ -91,6 +94,10 @@ export class SidenavComponent implements OnInit {
   onSettingClick() {
     this.isShowProfile = false;
     this.isShowSetting = true;
+  }
+
+  onAdminPanelClick() {
+    this._sharedService.sideNavState.next(sideNavState.adminPanel);
   }
 
   acceptRequest(request) {

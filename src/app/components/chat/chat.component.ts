@@ -23,7 +23,7 @@ import { ChatfusionxAiService } from '../../services/chatfusionx-ai.service';
 import { marked } from 'marked';
 import { TextExtractionService } from '../../services/text-extraction.service';
 import { UserService } from '../../services/user.service';
-import { ChatState } from '../../enums/chat.enum';
+import { ChatState } from '../../enums/common.enum';
 import { forkJoin, Observable } from 'rxjs';
 
 export enum aiRole {

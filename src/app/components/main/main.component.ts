@@ -98,6 +98,10 @@ export class MainComponent implements OnInit, OnDestroy {
             }/${'ChatFusionXAI'}`,
           ]);
           break;
+        case sideNavState.adminPanel:
+          this.sideNavState = sideNavState.adminPanel;
+          this._router.navigate([`dashboard/admin-panel`]);
+          break;
         default:
           this.sideNavState = '';
       }
@@ -291,6 +295,8 @@ export class MainComponent implements OnInit, OnDestroy {
       }
       return true;
     } else if (this.sideNavState === sideNavState.chatfusionxai) {
+      return true;
+    } else if (this.sideNavState === sideNavState.adminPanel) {
       return true;
     } else {
       return false;

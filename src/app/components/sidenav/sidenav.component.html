@@ -42,6 +42,18 @@
         class="icons aline"
       />
     </div>
+    @if(role === 'admin'){
+    <div
+      class="pointer"
+      (click)="onAdminPanelClick(); $event.stopPropagation()"
+    >
+      <img
+        src="{{ baseUrl }}admin-panel.svg"
+        alt="Admin-panel-image"
+        class="icons aline"
+      />
+    </div>
+    }
   </div>
   <div class="pointer" (click)="logOut()">
     <img src="{{ baseUrl }}logout.svg" alt="Logout-image" class="icons" />
