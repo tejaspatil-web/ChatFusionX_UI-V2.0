@@ -16,18 +16,13 @@ body {
   background-color: #eff6fc;
 }
 
-img{
+img {
   user-select: none; /* Standard property */
   -webkit-user-drag: none; /* Prevent dragging in WebKit browsers */
   -webkit-user-select: none; /* Safari */
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* IE/Edge */
 }
-
-/* ::-webkit-scrollbar {
-    display: none;
-    Hide scrollbar in Webkit browsers (Chrome, Safari)
-  } */
 
 /* Track */
 ::-webkit-scrollbar {
@@ -48,4 +43,36 @@ img{
   background: #9b9b9b;
   border-radius: 5px;
   /* Color of the scrollbar handle on hover */
+}
+
+/* ================= AG GRID ONLY ================= */
+.ag-root ::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+  border-radius: 10px;
+}
+
+.ag-root ::-webkit-scrollbar-thumb {
+  background: #5c5c5c;
+  border-radius: 10px;
+}
+
+.ag-root ::-webkit-scrollbar-thumb:hover {
+  background: #9b9b9b;
+}
+
+/* Horizontal scrollbar (optional) */
+.ag-body-horizontal-scroll,
+.ag-body-horizontal-scroll-viewport,
+.ag-body-horizontal-scroll-container {
+  min-height: 3px !important;
+  max-height: 3px !important;
+}
+
+/* Vertical scrollbar */
+.ag-body-vertical-scroll,
+.ag-body-vertical-scroll-viewport,
+.ag-body-vertical-scroll-container {
+  min-width: 3px !important;
+  max-width: 3px !important;
 }

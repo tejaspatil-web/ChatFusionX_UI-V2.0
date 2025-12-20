@@ -1,1 +1,14 @@
-<p>admin works!</p>
+<div class="admin-container">
+  <ag-grid-angular
+    style="width: 100%; height: 100%"
+    [rowData]="rowData"
+    [columnDefs]="columnDefs"
+    [theme]="theme"
+    [gridOptions]="gridOptions"
+    [defaultColDef]="defaultColDef"
+    [rowHeight]="35"
+    [headerHeight]="40"
+    [components]="components"
+  >
+  </ag-grid-angular>
+</div>
