@@ -1,0 +1,70 @@
+.admin-container {
+  height: 100%;
+  width: 100%;
+  border-radius: 10px;
+}
+
+::ng-deep .cell-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/*Custom Cell Class */
+::ng-deep .center-divider {
+  border-right: 1px solid #d1d5db;
+}
+
+::ng-deep .ag-header-cell.ag-floating-filter {
+  border-right: 1px solid #d1d5db;
+}
+
+::ng-deep .ag-floating-filter-button {
+  display: none;
+}
+
+/* Cell Selected */
+::ng-deep .ag-cell-focus,
+.ag-cell-range-selected {
+  border: 1px solid #6e00ff !important;
+}
+
+/* Row Hover */
+::ng-deep .ag-row-hover {
+  background-color: #eddfff !important;
+}
+
+/* ================= FILTER ACTIVE STATE ================= */
+/*Filter icon (funnel) */
+::ng-deep .ag-filter-active .ag-icon-filter {
+  color: #6e00ff !important;
+}
+
+/*Active filter dot */
+::ng-deep .ag-filter-active::after {
+  background-color: #6e00ff !important;
+}
+
+::ng-deep .ag-filter-active {
+  --ag-icon-button-active-background-color: #eddfff;
+}
+
+/* ================= FILTER INPUT ================= */
+/* ===== REMOVE browser blue focus ===== */
+::ng-deep .ag-text-field-input:focus,
+::ng-deep .ag-text-field-input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ===== INPUT BORDER + GLOW (purple) ===== */
+::ng-deep .ag-text-field-input:focus {
+  border-color: #a058ff !important;
+  box-shadow: 0 0 0 5px #d7b9ff !important;
+}
+
+/* ===== WRAPPER BACKGROUND (important for Quartz) ===== */
+::ng-deep .ag-input-wrapper.ag-text-field-input-wrapper:focus-within {
+  background-color: #d7b9ff !important;
+  border-radius: 4px;
+}

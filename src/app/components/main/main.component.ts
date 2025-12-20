@@ -58,11 +58,15 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   private _checkRouteDynamic() {
+    const popState: string[] = [
+      sideNavState.chatfusionxai,
+      sideNavState.adminPanel,
+    ];
     this._router.events.subscribe((event) => {
       if (
         event instanceof NavigationEnd &&
         event.url === '/dashboard' &&
-        this.sideNavState === sideNavState.chatfusionxai
+        popState.includes(this.sideNavState)
       ) {
         this.sideNavState = sideNavState.user;
       }

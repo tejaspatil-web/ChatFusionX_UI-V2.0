@@ -1,0 +1,16 @@
+@switch (params.colDef.cellRendererParams.type) { @case ('update') {
+@if(!params.data.isShowActionUpdateBtn){
+<button (click)="onUpdate()" class="btn">Update</button>
+}@else {
+<div class="action-btns">
+  <button (click)="acceptChangesForUpdateBtn()">✓</button>
+  <button (click)="rejectChangesForUpdateBtn()">✗</button>
+</div>
+} } @case('delete'){ @if(!params.data.isShowActionDeleteBtn){
+<button (click)="onDelete()" class="btn">Delete</button>
+}@else {
+<div class="action-btns">
+  <button (click)="acceptChangesForDeleteBtn()">✓</button>
+  <button (click)="rejectChangesForDeleteBtn()">✗</button>
+</div>
+} } }

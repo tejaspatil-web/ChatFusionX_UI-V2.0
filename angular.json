@@ -38,7 +38,7 @@
             }
           },
           "configurations": {
-            "dev":{
+            "dev": {
               "fileReplacements": [
                 {
                   "replace": "src/app/environment/environment.ts",
@@ -55,8 +55,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "2MB",
+                  "maximumError": "4MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -85,7 +85,7 @@
             "development": {
               "buildTarget": "chatfusionx:build:development"
             },
-            "dev":{
+            "dev": {
               "buildTarget": "chatfusionx:build:dev"
             }
           },
