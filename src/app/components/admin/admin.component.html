@@ -1,6 +1,6 @@
 <div class="admin-container">
   <ag-grid-angular
-    style="width: 100%; height: 100%"
+    style="width: 100%; height: 93%"
     [rowData]="rowData"
     [columnDefs]="columnDefs"
     [theme]="theme"
@@ -8,7 +8,15 @@
     [defaultColDef]="defaultColDef"
     [rowHeight]="35"
     [headerHeight]="40"
-    [components]="components"
+    (gridReady)="onGridReady($event)"
   >
   </ag-grid-angular>
+  <div class="refresh-container">
+    <button (click)="refresh()">
+      <span>Refresh </span>
+      @if(isRefresh){
+      <div class="loader"></div>
+      }
+    </button>
+  </div>
 </div>
