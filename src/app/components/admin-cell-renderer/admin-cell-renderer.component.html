@@ -1,16 +1,44 @@
 @switch (params.colDef.cellRendererParams.type) { @case ('update') {
 @if(!params.data.isShowActionUpdateBtn){
-<button (click)="onUpdate()" class="btn">Update</button>
+<button (click)="onUpdate()" class="btn" (mouseover)="params.api.stopEditing()">
+  Update
+</button>
+}@else { @if(this.params.data?.acceptChangesForUpdateBtnClick){
+<div class="loader"></div>
 }@else {
 <div class="action-btns">
-  <button (click)="acceptChangesForUpdateBtn()">✓</button>
-  <button (click)="rejectChangesForUpdateBtn()">✗</button>
+  <button
+    (mouseover)="params.api.stopEditing()"
+    (click)="acceptChangesForUpdateBtn()"
+  >
+    ✓
+  </button>
+  <button
+    (mouseover)="params.api.stopEditing()"
+    (click)="rejectChangesForUpdateBtn()"
+  >
+    ✗
+  </button>
 </div>
-} } @case('delete'){ @if(!params.data.isShowActionDeleteBtn){
-<button (click)="onDelete()" class="btn">Delete</button>
-}@else {
+} } } @case('delete'){ @if(!params.data.isShowActionDeleteBtn){
+<button (mouseover)="params.api.stopEditing()" (click)="onDelete()" class="btn">
+  Delete
+</button>
+}@else { @if(this.params.data?.acceptChangesForDeleteBtnClick ){
+<div class="loader"></div>
+}@else{
 <div class="action-btns">
-  <button (click)="acceptChangesForDeleteBtn()">✓</button>
-  <button (click)="rejectChangesForDeleteBtn()">✗</button>
+  <button
+    (mouseover)="params.api.stopEditing()"
+    (click)="acceptChangesForDeleteBtn()"
+  >
+    ✓
+  </button>
+  <button
+    (mouseover)="params.api.stopEditing()"
+    (click)="rejectChangesForDeleteBtn()"
+  >
+    ✗
+  </button>
 </div>
-} } }
+} } } }
