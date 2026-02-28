@@ -10,8 +10,8 @@
     />
   </div>
   <div class="user-list">
-    @if(this.addedUserList.length > 0){ @for(user of this.addedUserList; let
-    index = $index; track index){
+    @if(this.addedUserList.length > 0){ @for(user of addedUserList; let
+    index = $index; track user){
     <div (click)="userClick(user, index)" class="dm-card pointer">
       <span
         [class]="user.isActiveUser ? 'status-active' : 'status-inactive'"
