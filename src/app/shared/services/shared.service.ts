@@ -17,6 +17,7 @@ export enum sideNavState {
 })
 export class SharedService {
   private _baseUrl = baseUrl.apiUrl;
+  private _healthUrl = baseUrl.healthUrl;
   public isMobile = false;
   public isAlreadyGroupJoin: boolean = false;
   public isLoggedOut: boolean = false;
@@ -29,6 +30,6 @@ export class SharedService {
   constructor(private _httpClient: HttpClient) {}
 
   getServerStatus() {
-    return this._httpClient.get(`${this._baseUrl}serverStatus`);
+    return this._httpClient.get(`${this._healthUrl}`);
   }
 }

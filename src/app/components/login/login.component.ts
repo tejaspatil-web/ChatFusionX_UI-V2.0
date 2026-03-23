@@ -78,28 +78,6 @@ export class LoginComponent implements OnInit {
         this.isLoading = false;
       }, 500);
     });
-    this._callTextExtractionService();
-    this._callPdfToPngConversionService();
-  }
-
-  private _callTextExtractionService() {
-    const imagePath = 'images/logo.png';
-    fetch(imagePath)
-      .then((res) => res.blob())
-      .then((blob) => {
-        const file = new File([blob], 'logo.png', { type: blob.type });
-        this._testExtractionService.textExtraction(file).subscribe();
-      });
-  }
-
-  private _callPdfToPngConversionService() {
-    const pdfPath = 'files/blank.pdf';
-    fetch(pdfPath)
-      .then((res) => res.blob())
-      .then((blob) => {
-        const pdfFile = new File([blob], 'blank.pdf', { type: blob.type });
-        this._testExtractionService.pdfToPngConversion(pdfFile).subscribe();
-      });
   }
 
   onSubmit() {

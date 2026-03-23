@@ -53,7 +53,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   public receiverId: string = '';
   public type: string = '';
   public messages: Message[] = [];
-  private _images: File[] = [];
   private _extractedText: string[] = [];
   private _uploadedFile: File = null;
   public isFileUploaded: boolean = false;
@@ -249,26 +248,44 @@ export class ChatComponent implements OnInit, OnDestroy {
     const fileTypes = ['image/png', 'image/jpeg'];
     if (fileTypes.includes(file.type)) {
       this.icon = 'image.svg';
-      this._extractTextFromIamge(file);
+      this._convertBase64(file).then((base64: any) => {
+        const base64List = [base64];
+        this._extractTextFromIamge(base64List);
+      });
     } else {
       this.icon = 'pdf.svg';
       this._convertPdfToPng(file);
     }
   }
 
+  private _convertBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onload = () => {
+        const result = reader.result;
+        if (typeof(result) === 'string') {
+          const base64 = result.split(',')[1];
+          resolve(base64);
+        } else {
+          resolve('');
+        }
+      };
+
+      reader.onerror = error => reject(error);
+    });
+  }
+
   private _convertPdfToPng(pdf) {
     this._extractedText = [];
     this.textExtractionService
       .pdfToPngConversion(pdf)
-      .subscribe((image: any) => {
-        this._images = this._base64PngArrayToFiles(image);
-        const batch: Observable<any>[] = [];
-        this._images.forEach((file) => {
-          batch.push(this.textExtractionService.textExtraction(file));
-        });
-        forkJoin(batch).subscribe({
-          next: (responses) => {
-            responses.forEach((res, index) => {
+      .subscribe((images: string[]) => {
+        this.textExtractionService.textExtraction(images).subscribe({
+          next: (responses:any) => {
+            const extractedTexts = responses?.pages || [];
+            extractedTexts.forEach((res, index) => {
               this._extractedText.push(
                 `Pdf File Name - ${this._uploadedFile.name}, Page - ${
                   index + 1
@@ -284,7 +301,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       });
   }
 
-  private _extractTextFromIamge(image) {
+  private _extractTextFromIamge(image: string[]) {
     this._extractedText = [];
     this.textExtractionService.textExtraction(image).subscribe((ele: any) => {
       this._extractedText.push(`Extracted Text - ${ele.text}`);
@@ -475,7 +492,11 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
     } else {
       console.warn('Web Share API not supported');
-      this.sharedService.opnSnackBar.next('Web Share API not supported');
+      navigator.clipboard.writeText(fullUrl).then(() => {
+        this.sharedService.opnSnackBar.next('Link copied to clipboard!');
+      }).catch((err) => {
+        this.sharedService.opnSnackBar.next('Failed to copy link');
+      });
     }
   }
 
