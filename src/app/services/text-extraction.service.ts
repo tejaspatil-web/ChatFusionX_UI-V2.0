@@ -16,8 +16,12 @@ pdfToPngConversion(file:File){
  return this._httpClient.post(`${this._pdfToPngConversionUrl}`,formData)
 }
 
-textExtraction(images:string[]){
- return this._httpClient.post(`${this._textExtractionUrl}`, { images })
+textExtraction(files: File[]){
+  const formData = new FormData();
+  files.forEach(file => {
+    formData.append('images', file);
+  });
+ return this._httpClient.post(`${this._textExtractionUrl}`, formData);
 }
 
 }

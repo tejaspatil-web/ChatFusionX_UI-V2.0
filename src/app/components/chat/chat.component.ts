@@ -24,7 +24,6 @@ import { marked } from 'marked';
 import { TextExtractionService } from '../../services/text-extraction.service';
 import { UserService } from '../../services/user.service';
 import { ChatState } from '../../enums/common.enum';
-import { forkJoin, Observable } from 'rxjs';
 
 export enum aiRole {
   model = 'model',
@@ -68,7 +67,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private _userSharedService: UserSharedService,
     private _chatService: ChatService,
     private _chatfusionxAiService: ChatfusionxAiService,
-    private textExtractionService: TextExtractionService,
+    private _textExtractionService: TextExtractionService,
     private renderer: Renderer2,
     private cdRef: ChangeDetectorRef,
     private _userService: UserService
@@ -248,41 +247,27 @@ export class ChatComponent implements OnInit, OnDestroy {
     const fileTypes = ['image/png', 'image/jpeg'];
     if (fileTypes.includes(file.type)) {
       this.icon = 'image.svg';
-      this._convertBase64(file).then((base64: any) => {
-        const base64List = [base64];
-        this._extractTextFromIamge(base64List);
-      });
+      this._extractTextFromIamge([file]);
     } else {
       this.icon = 'pdf.svg';
       this._convertPdfToPng(file);
     }
   }
 
-  private _convertBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-
-      reader.onload = () => {
-        const result = reader.result;
-        if (typeof(result) === 'string') {
-          const base64 = result.split(',')[1];
-          resolve(base64);
-        } else {
-          resolve('');
-        }
-      };
-
-      reader.onerror = error => reject(error);
-    });
-  }
-
   private _convertPdfToPng(pdf) {
     this._extractedText = [];
-    this.textExtractionService
+    this._textExtractionService
       .pdfToPngConversion(pdf)
       .subscribe((images: string[]) => {
-        this.textExtractionService.textExtraction(images).subscribe({
+      //Convert base64 to File[]
+      const files: File[] = images.map((base64, index) => {
+        const blob = this._base64ToBlob(base64, 'image/png');
+        return new File([blob], `page-${index + 1}.png`, {
+          type: 'image/png'
+        });
+      });
+
+        this._textExtractionService.textExtraction(files).subscribe({
           next: (responses:any) => {
             const extractedTexts = responses?.pages || [];
             extractedTexts.forEach((res, index) => {
@@ -301,24 +286,25 @@ export class ChatComponent implements OnInit, OnDestroy {
       });
   }
 
-  private _extractTextFromIamge(image: string[]) {
+  private _extractTextFromIamge(file:File[]) {
     this._extractedText = [];
-    this.textExtractionService.textExtraction(image).subscribe((ele: any) => {
+    this._textExtractionService.textExtraction(file).subscribe((ele: any) => {
       this._extractedText.push(`Extracted Text - ${ele.text}`);
       this.isFileUploaded = false;
     });
   }
 
-  private _base64PngArrayToFiles(base64List: string[]): File[] {
-    return base64List.map((base64, index) => {
-      const byteCharacters = atob(base64);
-      const byteNumbers = Array.from(byteCharacters, (ch) => ch.charCodeAt(0));
-      const byteArray = new Uint8Array(byteNumbers);
-      return new File([byteArray], `image_${index + 1}.png`, {
-        type: 'image/png',
-      });
-    });
+private _base64ToBlob(base64: string, mimeType: string): Blob {
+  const byteCharacters = atob(base64);
+  const byteNumbers = new Array(byteCharacters.length);
+
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
   }
+
+  const byteArray = new Uint8Array(byteNumbers);
+  return new Blob([byteArray], { type: mimeType });
+}
 
   sendMessage() {
     if (this._userInput.value) {

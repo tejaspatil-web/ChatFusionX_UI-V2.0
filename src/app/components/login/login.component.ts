@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
 import { UserSharedService } from '../../shared/services/user-shared.service';
 import { UserDetails } from '../../shared/models/user.model';
 import { LoaderComponent } from '../../shared/components/loader/loader.component';
-import { TextExtractionService } from '../../services/text-extraction.service';
 import { GoogleAuthService } from '../../services/google-auth.service';
 
 @Component({
@@ -39,7 +38,6 @@ export class LoginComponent implements OnInit {
   private _sharedService = inject(SharedService);
   private _userAuthService = inject(UserAuthService);
   private _userSharedService = inject(UserSharedService);
-  private _testExtractionService = inject(TextExtractionService);
   private _googleAuthService = inject(GoogleAuthService);
   private _router = inject(Router);
 

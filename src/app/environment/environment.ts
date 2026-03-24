@@ -10,7 +10,8 @@ export const baseUrl = {
 
   pdfToPngConversionUrl:'https://chatfusionx-api-gateway-v2-0.onrender.com/api/pdf-to-png/convert',
 
-  textExtractionUrl:'https://text-extraction-service-bdqa.onrender.com/extract-text',
+  textExtractionUrl:'https://chatfusionx-api-gateway-v2-0.onrender.com/api/text-extraction/extract',
+  
 
   // assets Path
   images: 'images/',
