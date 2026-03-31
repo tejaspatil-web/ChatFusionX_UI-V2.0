@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import {Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-loader',
@@ -27,6 +26,11 @@ export class LoaderComponent implements OnInit {
     this.isCompleted = false;
     let progress = 0;
     this.progressInterval = setInterval(() => {
+      if (progress >= 95) {
+        clearInterval(this.progressInterval);
+        return;
+      }
+
       progress += 1;
       this.percentage = progress;
 
@@ -36,9 +40,6 @@ export class LoaderComponent implements OnInit {
         this.loadingMessage = 'Still loading... please wait.';
       if (progress === 60) this.loadingMessage = 'Almost done...';
       if (progress === 90) this.loadingMessage = 'Finalizing, just a moment...';
-      if (progress >= 100) {
-        clearInterval(this.progressInterval);
-      }
     }, 1500);
   }
 
