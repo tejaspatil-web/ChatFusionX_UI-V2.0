@@ -241,7 +241,8 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   uploadFile(event) {
     const input = event.target;
-    const file = input.files[0];
+    const file = input.files?.[0];
+    if (!file) return;
     this._uploadedFile = file;
     this.isFileUploaded = true;
     const fileTypes = ['image/png', 'image/jpeg'];
@@ -252,45 +253,62 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.icon = 'pdf.svg';
       this._convertPdfToPng(file);
     }
+    event.target.value = null;
   }
 
   private _convertPdfToPng(pdf) {
     this._extractedText = [];
     this._textExtractionService
       .pdfToPngConversion(pdf)
-      .subscribe((images: string[]) => {
-      //Convert base64 to File[]
-      const files: File[] = images.map((base64, index) => {
-        const blob = this._base64ToBlob(base64, 'image/png');
-        return new File([blob], `page-${index + 1}.png`, {
-          type: 'image/png'
-        });
-      });
-
-        this._textExtractionService.textExtraction(files).subscribe({
-          next: (responses:any) => {
-            const extractedTexts = responses?.pages || [];
-            extractedTexts.forEach((res, index) => {
-              this._extractedText.push(
-                `Pdf File Name - ${this._uploadedFile.name}, Page - ${
-                  index + 1
-                }, Extracted Text - ${res.text}\n\n`
-              );
+      .subscribe({
+        next: ((images: string[]) => {
+          //Convert base64 to File[]
+          const files: File[] = images.map((base64, index) => {
+            const blob = this._base64ToBlob(base64, 'image/png');
+            return new File([blob], `page-${index + 1}.png`, {
+              type: 'image/png'
             });
-            this.isFileUploaded = false;
-          },
-          error: (err) => {
-            console.error('Text extraction failed', err);
-          },
-        });
+          });
+
+          this._textExtractionService.textExtraction(files).subscribe({
+            next: (responses: any) => {
+              const extractedTexts = responses?.pages || [];
+              extractedTexts.forEach((res, index) => {
+                this._extractedText.push(
+                  `Pdf File Name - ${this._uploadedFile.name}, Page - ${index + 1
+                  }, Extracted Text - ${res.text}\n\n`
+                );
+              });
+              this.isFileUploaded = false;
+            },
+            error: (err) => {
+              this.isFileUploaded = false;
+              this._uploadedFile = null;
+              this.sharedService.opnSnackBar.next('Failed to upload file. Please try again.');
+              console.error('Text extraction failed', err);
+            },
+          })
+        }),
+        error:(err)=>{
+          this.isFileUploaded = false;
+          this._uploadedFile = null;
+          this.sharedService.opnSnackBar.next('Failed to upload file. Please try again.');
+        }
       });
   }
 
   private _extractTextFromIamge(file:File[]) {
     this._extractedText = [];
-    this._textExtractionService.textExtraction(file).subscribe((ele: any) => {
-      this._extractedText.push(`Extracted Text - ${ele.text}`);
+    this._textExtractionService.textExtraction(file).subscribe({
+      next: (response:any) => {
+      this._extractedText.push(`Extracted Text - ${response.text}`);
       this.isFileUploaded = false;
+      },
+      error: (err) => {
+        this.isFileUploaded = false;
+        this._uploadedFile = null;
+        this.sharedService.opnSnackBar.next('Failed to upload file. Please try again.');
+      }
     });
   }
 
