@@ -284,6 +284,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             error: (err) => {
               this.isFileUploaded = false;
               this._uploadedFile = null;
+              this.icon = 'plus.svg';
               this.sharedService.opnSnackBar.next('Failed to upload file. Please try again.');
               console.error('Text extraction failed', err);
             },
@@ -292,6 +293,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         error:(err)=>{
           this.isFileUploaded = false;
           this._uploadedFile = null;
+          this.icon = 'plus.svg';
           this.sharedService.opnSnackBar.next('Failed to upload file. Please try again.');
         }
       });
@@ -307,6 +309,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.isFileUploaded = false;
         this._uploadedFile = null;
+        this.icon = 'plus.svg';
         this.sharedService.opnSnackBar.next('Failed to upload file. Please try again.');
       }
     });
