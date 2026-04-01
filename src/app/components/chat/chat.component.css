@@ -45,6 +45,7 @@
   padding: 10px 20px;
   border-radius: 20px;
   display: inline-block;
+  word-break: break-word;
 }
 
 .client-chat span {
@@ -57,6 +58,7 @@
   padding: 10px 20px;
   border-radius: 20px;
   display: inline-block;
+  word-break: break-word;
 }
 
 .group-chat {
