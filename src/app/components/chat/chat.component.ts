@@ -303,7 +303,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     this._extractedText = [];
     this._textExtractionService.textExtraction(file).subscribe({
       next: (response:any) => {
-      this._extractedText.push(`Extracted Text - ${response.text}`);
+      const extractedText = response.fullText || "";
+      this._extractedText.push(`Extracted Text - ${extractedText}`);
       this.isFileUploaded = false;
       },
       error: (err) => {
