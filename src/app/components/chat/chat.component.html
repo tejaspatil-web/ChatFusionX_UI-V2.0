@@ -62,7 +62,7 @@
   </div>
 
   <!-- Message Input Code -->
-  <div class="message w-100 d-flex justify-center item-center gap-10">
+  <div class="message w-100 d-flex item-end gap-10">
     @if(type === 'ai'){ @if(!isFileUploaded){
     <div class="upload">
       <img src="{{ baseUrl }}{{ icon }}" alt="" />
@@ -76,15 +76,14 @@
     <div class="upload-loader"></div>
     } }
     <div class="message-input w-100">
-      <input
-        [disabled]="isFileUploaded"
+      <textarea
         #messageInput
-        (keyup)="onEnter($event)"
-        type="text"
-        name=""
-        id=""
+        [disabled]="isFileUploaded"
+        (keydown)="onKeyDown($event)"
+        (input)="autoResize(messageInput)"
+        rows="1"
         placeholder="Type your message here..."
-      />
+      ></textarea>
     </div>
     <button [disabled]="isFileUploaded" (click)="sendMessage()">
       <img src="{{ baseUrl }}send.svg" alt="" />

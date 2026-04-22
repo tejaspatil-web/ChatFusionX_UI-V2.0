@@ -43,7 +43,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   public baseUrl = baseUrl.images;
   public isShowLoader: boolean = false;
   public isMobile = false;
-  private _userInput: HTMLInputElement;
+  private _userInput: HTMLTextAreaElement;
   private _chatContainer: HTMLDivElement;
   private _groupId: string = '';
   public groupName: string = '';
@@ -117,9 +117,10 @@ export class ChatComponent implements OnInit, OnDestroy {
       this._getAiChatHistory();
     }
   }
-
-  onEnter(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
+  
+  onKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
       this.sendMessage();
     }
   }
@@ -372,6 +373,7 @@ private _base64ToBlob(base64: string, mimeType: string): Blob {
       this._userInput.focus();
       this.cdRef.detectChanges();
       this._scrollToBottom();
+      this.autoResize(this._userInput);
     }
   }
 
@@ -518,6 +520,11 @@ private _base64ToBlob(base64: string, mimeType: string): Blob {
       const chatContainer = this.chatContainer?.nativeElement;
       if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
     });
+  }
+
+  autoResize(textarea: HTMLTextAreaElement) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
   }
 
   ngOnDestroy(): void {}
