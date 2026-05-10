@@ -118,12 +118,14 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
   
-  onKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      this.sendMessage();
-    }
+onKeyDown(event: KeyboardEvent) {
+  const isMobile = window.innerWidth <= 768;
+
+  if (!isMobile && event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    this.sendMessage();
   }
+}
 
   private _getPrivateChat() {
     const userId = this._userSharedService.userDetails.id;

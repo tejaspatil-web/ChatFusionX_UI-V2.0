@@ -213,6 +213,7 @@
 .upload-loader {
   width: 30px;
   padding: 6px;
+  margin-bottom: 5px;
   aspect-ratio: 1;
   border-radius: 50%;
   background: #6e00ff;
