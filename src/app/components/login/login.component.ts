@@ -70,7 +70,7 @@ export class LoginComponent implements OnInit {
 
   private _checkServerStatus() {
     this.isLoading = true;
-    this._sharedService.getServerStatus().subscribe((ele) => {
+    this._sharedService.getServerStatus().subscribe(([...res]) => {
       this.loader.completeLoading();
       setTimeout(() => {
         this.isLoading = false;

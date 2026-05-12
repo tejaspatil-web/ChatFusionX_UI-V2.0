@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { catchError, forkJoin, of, Subject } from 'rxjs';
 import { baseUrl } from '../../environment/environment';
 
 export enum sideNavState {
@@ -17,7 +17,7 @@ export enum sideNavState {
 })
 export class SharedService {
   private _baseUrl = baseUrl.apiUrl;
-  private _healthUrl = baseUrl.healthUrl;
+  private _healthUrl = baseUrl.healthUrls;
   public isMobile = false;
   public isAlreadyGroupJoin: boolean = false;
   public isLoggedOut: boolean = false;
@@ -30,6 +30,20 @@ export class SharedService {
   constructor(private _httpClient: HttpClient) {}
 
   getServerStatus() {
-    return this._httpClient.get(`${this._healthUrl}`);
+    return forkJoin(
+      this._healthUrl.map((url: string) =>
+        this._httpClient.get(url).pipe(
+          catchError((error) => {
+            console.error(`Request failed for ${url}`, error);
+
+            return of({
+              url,
+              status: 'failed',
+              error: true
+            });
+          })
+        )
+      )
+    );
   }
 }

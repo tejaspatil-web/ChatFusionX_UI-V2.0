@@ -3,7 +3,7 @@ export const baseUrl = {
   apiUrl: 'https://chatfusionx-api-gateway-v2-0-f1s9.onrender.com/api/v1/',
 
   // Health Check URL
-  healthUrl: 'https://chatfusionx-api-gateway-v2-0-f1s9.onrender.com/health',
+  healthUrls: [],
 
   // Socket URLs
   socketUrl: 'https://chatfusionx-api-gateway-v2-0-f1s9.onrender.com/ws',

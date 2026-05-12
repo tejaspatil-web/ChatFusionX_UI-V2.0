@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ts-node set-env.ts && ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:chatfusionx": "node dist/chatfusionx/server/server.mjs"
@@ -23,6 +24,7 @@
     "@angular/ssr": "^18.2.12",
     "ag-grid-angular": "^35.0.0",
     "ag-grid-community": "^35.0.0",
+    "dotenv": "^17.4.2",
     "express": "^4.18.2",
     "marked": "^15.0.7",
     "rxjs": "~7.8.0",
