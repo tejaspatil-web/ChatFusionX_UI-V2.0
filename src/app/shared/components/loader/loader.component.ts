@@ -40,7 +40,7 @@ export class LoaderComponent implements OnInit {
         this.loadingMessage = 'Still loading... please wait.';
       if (progress === 60) this.loadingMessage = 'Almost done...';
       if (progress === 90) this.loadingMessage = 'Finalizing, just a moment...';
-    }, 1500);
+    }, 1000);
   }
 
   completeLoading() {

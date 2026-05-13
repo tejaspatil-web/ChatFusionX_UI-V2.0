@@ -9,7 +9,7 @@ export const baseUrl = {
   socketUrl: 'SOCKET_URL',
 
   // PDF to PNG Conversion API Endpoint
-  pdfToPngConversionUrl: 'PDF_TO_PNG_CONVERSION_URL ',
+  pdfToPngConversionUrl: 'PDF_TO_PNG_CONVERSION_URL',
 
   // Text Extraction API Endpoint
   textExtractionUrl: 'TEXT_EXTRACTION_URL',
