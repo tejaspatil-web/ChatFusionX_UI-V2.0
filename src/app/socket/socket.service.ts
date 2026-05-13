@@ -16,9 +16,11 @@ export class SocketService {
   constructor(private _http: HttpClient) {}
 
   socketConnection(userId: string) {
-    this.socket = io(this.socketUrl, {
-      path: '/gateway/socket.io',
-      query: { userId }
+    if (this.socket?.connected) {
+      return;
+    }
+    this.socket = io(this.socketUrl,{
+      query:{userId:userId}
     });
   }
 
