@@ -10,6 +10,7 @@ import { UserSharedService } from '../../shared/services/user-shared.service';
 import { UserService } from '../../services/user.service';
 import { SocketService } from '../../socket/socket.service';
 import { ChatService } from '../../services/chat.service';
+import { BrowserStorageService } from '../../shared/services/browser-storage.service';
 
 @Component({
   selector: 'app-sidenav',
@@ -32,7 +33,8 @@ export class SidenavComponent implements OnInit {
     private _userSharedService: UserSharedService,
     private _userService: UserService,
     private _socketService: SocketService,
-    private _chatService: ChatService
+    private _chatService: ChatService,
+    private _browserStorageService: BrowserStorageService
   ) {}
 
   ngOnInit(): void {
@@ -106,7 +108,7 @@ export class SidenavComponent implements OnInit {
       this.requests = this.requests.filter((ele) => ele.id !== request.id);
       this._userSharedService.userDetails.addedUsers.push(request.id);
       this._userSharedService.userDetails.requests = [...this.requests];
-      localStorage.setItem(
+      this._browserStorageService.setItem(
         'userDetails',
         JSON.stringify(this._userSharedService.userDetails)
       );
@@ -132,7 +134,7 @@ export class SidenavComponent implements OnInit {
         senderId: userId,
         receiverId: request.id,
       });
-      localStorage.setItem(
+      this._browserStorageService.setItem(
         'userDetails',
         JSON.stringify(this._userSharedService.userDetails)
       );
@@ -149,7 +151,7 @@ export class SidenavComponent implements OnInit {
   }
 
   logOut() {
-    localStorage.clear();
+    this._browserStorageService.clear();
     this._socketService.disconnect();
     this._sharedService.isLoggedOut = true;
     this._sharedService.isAlreadyGroupJoin = false;

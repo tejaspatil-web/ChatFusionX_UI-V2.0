@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { io, Socket } from 'socket.io-client';
 import { baseUrl } from '../environment/environment';
 
@@ -11,11 +12,21 @@ export const enum userEvents{
   providedIn: 'root',
 })
 export class SocketService {
-  private socket: Socket;
+  private socket?: Socket;
   private socketUrl: string = baseUrl.socketUrl
-  constructor(private _http: HttpClient) {}
+  private readonly isBrowser: boolean;
+
+  constructor(
+    private _http: HttpClient,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   socketConnection(userId: string) {
+    if (!this.isBrowser || !userId) {
+      return;
+    }
     if (this.socket?.connected) {
       return;
     }
@@ -26,72 +37,72 @@ export class SocketService {
 
   // handle user activity
   handleUserActivity(event:string,data:object){
-    this.socket.emit('userActivity',{event:event,data:data})
+    this.socket?.emit('userActivity',{event:event,data:data})
   }
 
  onUserActivity(callback: (data: any) => void): void{
-    this.socket.on('messageReceived', callback);
+    this.socket?.on('messageReceived', callback);
  }
 
   joinPrivateChat(userId:string){
-    this.socket.emit('joinPrivateChat', userId);
+    this.socket?.emit('joinPrivateChat', userId);
   }
 
   sendPrivateMessage(message: any){
-    this.socket.emit('privateMessage',message)
+    this.socket?.emit('privateMessage',message)
   }
 
   receivedPrivateNotification(callback: (data: any) => void){
-    this.socket.on('notificationReceived',callback)
+    this.socket?.on('notificationReceived',callback)
   }
 
   receivedPrivateMessage(callback: (data: any) => void){
-    this.socket.on('privateMessageReceived',callback)
+    this.socket?.on('privateMessageReceived',callback)
   }
 
   // Join a group
   joinGroups(groupIds: string[]): void {
-    this.socket.emit('joinGroups', groupIds);
+    this.socket?.emit('joinGroups', groupIds);
   }
 
   // Leave a group
   leaveGroup(groupId: string): void {
-    this.socket.emit('leaveGroup', groupId);
+    this.socket?.emit('leaveGroup', groupId);
   }
 
 
   getOnlineUsers(): void {
-    this.socket.emit('getOnlineUsers');
+    this.socket?.emit('getOnlineUsers');
   }
 
   handleOnlineUsers(callback: (value: any) => void): void {
-    this.socket.off('onlineUsers');
-    this.socket.on('onlineUsers', (data) => {
+    this.socket?.off('onlineUsers');
+    this.socket?.on('onlineUsers', (data) => {
       callback(data);
     });
   }
 
   offGettingOnlineUsers(){
-    this.socket.off('onlineUsers')
+    this.socket?.off('onlineUsers')
   }
 
   // Send a message to a group
   sendMessageToGroup(message: any): void {
-    this.socket.emit('groupMessage', message );
+    this.socket?.emit('groupMessage', message );
   }
 
   // Listen for responses from the server
   onMessageReceived(callback: (data: any) => void): void {
-    this.socket.on('messageReceived', callback);
+    this.socket?.on('messageReceived', callback);
   }
 
   // Off Listening responses from the server
   offMessageReceived(): void {
-    this.socket.off('messageReceived');
+    this.socket?.off('messageReceived');
   }
 
   // Disconnect from the server
   disconnect(): void {
-    this.socket.disconnect();
+    this.socket?.disconnect();
   }
 }

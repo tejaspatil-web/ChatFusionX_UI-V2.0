@@ -19,6 +19,7 @@ import {
 import { baseUrl } from '../../../environment/environment';
 import { UserSharedService } from '../../services/user-shared.service';
 import { UserService } from '../../../services/user.service';
+import { BrowserStorageService } from '../../services/browser-storage.service';
 
 @Component({
   selector: 'app-dialog',
@@ -52,7 +53,8 @@ export class DialogComponent implements OnInit {
   constructor(
     private readonly _sharedService: SharedService,
     private readonly _userSharedService: UserSharedService,
-    private readonly _userService: UserService
+    private readonly _userService: UserService,
+    private readonly _browserStorageService: BrowserStorageService
   ) {}
   ngOnInit(): void {
     this.userName = this._userSharedService.userDetails.name;
@@ -65,7 +67,7 @@ export class DialogComponent implements OnInit {
 
     this.isPasswordSet =
       this._userSharedService.userDetails.isPasswordSet ||
-      localStorage.getItem('isPasswordSet') === 'true';
+      this._browserStorageService.getItem('isPasswordSet') === 'true';
   }
 
   onSubmit() {}
@@ -114,7 +116,7 @@ export class DialogComponent implements OnInit {
       .subscribe({
         next: (res: any) => {
           this._sharedService.opnSnackBar.next(res?.message);
-          localStorage.setItem('isPasswordSet', JSON.stringify(true));
+          this._browserStorageService.setItem('isPasswordSet', JSON.stringify(true));
           this.isPasswordSet = true;
           this.closeDialog();
         },
@@ -142,12 +144,12 @@ export class DialogComponent implements OnInit {
       this._userService
         .updateProfile(this._selectedProfile, this._userId, this.userName)
         .subscribe((res: any) => {
-          const userDetails = localStorage.getItem('userDetails');
+          const userDetails = this._browserStorageService.getItem('userDetails');
           if (userDetails) {
             const parseUserDetails = JSON.parse(userDetails);
             if (res.url !== '') parseUserDetails.profileUrl = res.url;
             parseUserDetails.name = this.userName;
-            localStorage.setItem(
+            this._browserStorageService.setItem(
               'userDetails',
               JSON.stringify(parseUserDetails)
             );

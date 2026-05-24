@@ -15,6 +15,7 @@ import { UserList } from '../../shared/models/user.model';
 import { SocketService } from '../../socket/socket.service';
 import { UserSharedService } from '../../shared/services/user-shared.service';
 import { SharedService } from '../../shared/services/shared.service';
+import { BrowserStorageService } from '../../shared/services/browser-storage.service';
 
 @Component({
   selector: 'app-direct-message',
@@ -29,6 +30,7 @@ export class DirectMessageComponent implements OnInit, OnDestroy, OnChanges {
   private _sharedService = inject(SharedService);
   private _userService = inject(UserService);
   private _userSharedService = inject(UserSharedService);
+  private _browserStorageService = inject(BrowserStorageService);
   private _activeUsers: string[] = [];
   @Input() onBackButton: any;
   @Output() onUserClick = new EventEmitter<{
@@ -157,7 +159,7 @@ export class DirectMessageComponent implements OnInit, OnDestroy, OnChanges {
         });
         this._userSharedService.userDetails.requestPending.push(user.id);
         user.isRequestPending = true;
-        localStorage.setItem(
+        this._browserStorageService.setItem(
           'userDetails',
           JSON.stringify(this._userSharedService.userDetails)
         );

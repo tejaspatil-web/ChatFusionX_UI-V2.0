@@ -13,6 +13,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { SharedService, sideNavState } from '../shared/services/shared.service';
 import { UserSharedService } from '../shared/services/user-shared.service';
 import { UserRole } from '../enums/common.enum';
+import { BrowserStorageService } from '../shared/services/browser-storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -20,14 +21,16 @@ import { UserRole } from '../enums/common.enum';
 export class RouteAuthGuardService implements CanActivateChild {
   constructor(
     private _sharedService: SharedService,
-    private _userSharedService: UserSharedService
+    private _userSharedService: UserSharedService,
+    private _browserStorageService: BrowserStorageService
   ) {}
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): MaybeAsync<GuardResult> {
+    const userDetails = this._browserStorageService.getItem('userDetails');
     const userRole =
-      JSON.parse(localStorage.getItem('userDetails'))?.role ||
+      (userDetails ? JSON.parse(userDetails)?.role : null) ||
       this._userSharedService.userDetails.role;
 
     if (state.url.includes('admin-panel')) {

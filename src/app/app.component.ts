@@ -1,4 +1,5 @@
 import {
+  afterNextRender,
   Component,
   Inject,
   OnDestroy,
@@ -13,6 +14,7 @@ import { Subscription } from 'rxjs';
 import { SnackbarComponent } from './shared/components/snackbar/snackbar.component';
 import { UserSharedService } from './shared/services/user-shared.service';
 import { UserDetails } from './shared/models/user.model';
+import { BrowserStorageService } from './shared/services/browser-storage.service';
 
 @Component({
   selector: 'app-root',
@@ -30,8 +32,30 @@ export class AppComponent implements OnDestroy {
     private renderer: Renderer2,
     private _sharedService: SharedService,
     private router: Router,
-    private _userSharedService: UserSharedService
-  ) {}
+    private _userSharedService: UserSharedService,
+    private _browserStorageService: BrowserStorageService
+  ) { 
+        afterNextRender(() => {
+      const userDetails = this._browserStorageService.getItem('userDetails');
+      if (userDetails) {
+        const parseUserDetails = JSON.parse(userDetails);
+        this._userSharedService.userDetails = new UserDetails(
+          parseUserDetails.name,
+          parseUserDetails.email,
+          parseUserDetails.id,
+          parseUserDetails.adminGroupIds,
+          parseUserDetails.joinedGroupIds,
+          parseUserDetails.requestPending || [],
+          parseUserDetails.requests || [],
+          parseUserDetails.addedUsers || [],
+          parseUserDetails.profileUrl || '',
+          parseUserDetails.isPasswordSet || true,
+          parseUserDetails.accessToken || '',
+          parseUserDetails.role || 'user'
+        );
+      }
+    });
+  }
 
   ngOnInit() {
     this.routerSubscription = this.router.events.subscribe((event) => {
@@ -39,25 +63,6 @@ export class AppComponent implements OnDestroy {
         this.currentRoute = this.router.url;
       }
     });
-
-    const userDetails = localStorage.getItem('userDetails');
-    if (userDetails) {
-      const parseUserDetails = JSON.parse(userDetails);
-      this._userSharedService.userDetails = new UserDetails(
-        parseUserDetails.name,
-        parseUserDetails.email,
-        parseUserDetails.id,
-        parseUserDetails.adminGroupIds,
-        parseUserDetails.joinedGroupIds,
-        parseUserDetails.requestPending || [],
-        parseUserDetails.requests || [],
-        parseUserDetails.addedUsers || [],
-        parseUserDetails.profileUrl || '',
-        parseUserDetails.isPasswordSet || true,
-        parseUserDetails.accessToken || '',
-        parseUserDetails.role || 'user'
-      );
-    }
 
     if (isPlatformBrowser(this.platformId)) {
       // Use Renderer2 to safely get screen width in the browser

@@ -24,6 +24,7 @@ import { marked } from 'marked';
 import { TextExtractionService } from '../../services/text-extraction.service';
 import { UserService } from '../../services/user.service';
 import { ChatState } from '../../enums/common.enum';
+import { BrowserStorageService } from '../../shared/services/browser-storage.service';
 
 export enum aiRole {
   model = 'model',
@@ -70,7 +71,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     private _textExtractionService: TextExtractionService,
     private renderer: Renderer2,
     private cdRef: ChangeDetectorRef,
-    private _userService: UserService
+    private _userService: UserService,
+    private _browserStorageService: BrowserStorageService
   ) {}
 
   ngOnInit(): void {
@@ -119,7 +121,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
   
 onKeyDown(event: KeyboardEvent) {
-  const isMobile = window.innerWidth <= 768;
+  const isMobile = this._browserStorageService.isBrowser
+    ? window.innerWidth <= 768
+    : false;
 
   if (!isMobile && event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
@@ -320,7 +324,7 @@ onKeyDown(event: KeyboardEvent) {
   }
 
 private _base64ToBlob(base64: string, mimeType: string): Blob {
-  const byteCharacters = atob(base64);
+  const byteCharacters = globalThis.atob(base64);
   const byteNumbers = new Array(byteCharacters.length);
 
   for (let i = 0; i < byteCharacters.length; i++) {
@@ -384,6 +388,9 @@ private _base64ToBlob(base64: string, mimeType: string): Blob {
   }
 
   private _addCopyButtons() {
+    if (!this._browserStorageService.isBrowser) {
+      return;
+    }
     requestAnimationFrame(() => {
       const chatContainer = this.chatContainer.nativeElement;
       const preTags = chatContainer.querySelectorAll('pre');
@@ -421,6 +428,9 @@ private _base64ToBlob(base64: string, mimeType: string): Blob {
   }
 
   private _copyToClipboard(preTag: HTMLElement) {
+    if (!this._browserStorageService.isBrowser || !navigator.clipboard) {
+      return;
+    }
     const codeBlock = preTag.querySelector('code');
     const text = codeBlock ? codeBlock.innerText : preTag.innerText;
     navigator.clipboard
@@ -486,6 +496,9 @@ private _base64ToBlob(base64: string, mimeType: string): Blob {
   }
 
   shareGroupLink() {
+    if (!this._browserStorageService.isBrowser) {
+      return;
+    }
     const currentUrl = this._router.url;
     const fullUrl = `${window.location.origin}${currentUrl}`;
 
@@ -502,13 +515,15 @@ private _base64ToBlob(base64: string, mimeType: string): Blob {
         .catch((error) => {
           console.error('Error sharing link:', error);
         });
-    } else {
+    } else if (navigator.clipboard) {
       console.warn('Web Share API not supported');
       navigator.clipboard.writeText(fullUrl).then(() => {
         this.sharedService.opnSnackBar.next('Link copied to clipboard!');
       }).catch((err) => {
         this.sharedService.opnSnackBar.next('Failed to copy link');
       });
+    } else {
+      this.sharedService.opnSnackBar.next('Sharing is not supported in this browser');
     }
   }
 
@@ -517,6 +532,9 @@ private _base64ToBlob(base64: string, mimeType: string): Blob {
   }
 
   private _scrollToBottom(): void {
+    if (!this._browserStorageService.isBrowser) {
+      return;
+    }
     requestAnimationFrame(() => {
       this._userInput = this.userInput?.nativeElement;
       const chatContainer = this.chatContainer?.nativeElement;
@@ -525,6 +543,9 @@ private _base64ToBlob(base64: string, mimeType: string): Blob {
   }
 
   autoResize(textarea: HTMLTextAreaElement) {
+    if (!this._browserStorageService.isBrowser || !textarea) {
+      return;
+    }
     textarea.style.height = 'auto';
     textarea.style.height = textarea.scrollHeight + 'px';
   }

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { afterNextRender, Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { baseUrl } from '../../environment/environment';
 import {
   SharedService,
@@ -16,6 +16,8 @@ import { DirectMessageComponent } from '../direct-message/direct-message.compone
 import { UserService } from '../../services/user.service';
 import { UserList } from '../../shared/models/user.model';
 import { lastValueFrom } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
+import { BrowserStorageService } from '../../shared/services/browser-storage.service';
 
 @Component({
   selector: 'app-main',
@@ -35,6 +37,7 @@ export class MainComponent implements OnInit, OnDestroy {
   public isAddUser: boolean = false;
   public onBackButton: object = {};
   constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
     public sharedService: SharedService,
     private _router: Router,
     private _userSharedService: UserSharedService,
@@ -42,19 +45,25 @@ export class MainComponent implements OnInit, OnDestroy {
     private _socketService: SocketService,
     private _sharedService: SharedService,
     private _chatService: ChatService,
-    private _userService: UserService
+    private _userService: UserService,
+    private _browserStorageService: BrowserStorageService
   ) {
-    this._socketService.socketConnection(
-      this._userSharedService.userDetails.id
-    );
+    afterNextRender(() => {
+      if (isPlatformBrowser(this.platformId)) {
+        const userId = this._userSharedService.userDetails.id;
+        this._socketService.socketConnection(userId);
+      }
+    });
   }
 
   ngOnInit(): void {
-    this._checkRouteDynamic();
-    this._redirectToDashboard();
-    this.apiInit();
-    this._requestNotificationPermission();
-    this._getSideNavState();
+    if (isPlatformBrowser(this.platformId)) {
+      this._checkRouteDynamic();
+      this._redirectToDashboard();
+      this.apiInit();
+      this._requestNotificationPermission();
+      this._getSideNavState();
+    }
   }
 
   private _checkRouteDynamic() {
@@ -97,8 +106,7 @@ export class MainComponent implements OnInit, OnDestroy {
         case sideNavState.chatfusionxai:
           this.sideNavState = sideNavState.chatfusionxai;
           this._router.navigate([
-            `dashboard/ai/${
-              this._userSharedService.userDetails.id
+            `dashboard/ai/${this._userSharedService.userDetails.id
             }/${'ChatFusionXAI'}`,
           ]);
           break;
@@ -113,14 +121,14 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   private async _getUser() {
-    const userDetails = localStorage.getItem('userDetails');
+    const userDetails = this._browserStorageService.getItem('userDetails');
     if (userDetails) {
       const parseUserDetails = JSON.parse(userDetails);
       const response = await lastValueFrom(
         this._userService.getUser(parseUserDetails.id)
       );
       this._userSharedService.userDetails = response;
-      localStorage.setItem('userDetails', JSON.stringify(response));
+      this._browserStorageService.setItem('userDetails', JSON.stringify(response));
     }
   }
 
@@ -203,7 +211,7 @@ export class MainComponent implements OnInit, OnDestroy {
               this._userSharedService.userDetails.joinedGroupIds.push(
                 response._id
               );
-              localStorage.setItem(
+              this._browserStorageService.setItem(
                 'userDetails',
                 JSON.stringify(this._userSharedService.userDetails)
               );
@@ -337,7 +345,7 @@ export class MainComponent implements OnInit, OnDestroy {
           this._userSharedService.userDetails.adminGroupIds.push(...admins);
           this._userSharedService.userDetails.joinedGroupIds.push(_id);
           this._socketService.joinGroups([_id]);
-          localStorage.setItem(
+          this._browserStorageService.setItem(
             'userDetails',
             JSON.stringify(this._userSharedService.userDetails)
           );
@@ -405,6 +413,9 @@ export class MainComponent implements OnInit, OnDestroy {
 
   // Notification Section
   private _requestNotificationPermission() {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
     if ('Notification' in window) {
       Notification.requestPermission().then((permission) => {
         console.log('Notification permission:', permission);
@@ -413,6 +424,9 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   private _showNotification(message: Message) {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
     if ('Notification' in window && Notification.permission === 'granted') {
       const group = this._userSharedService.groupData.find(
         (ele) => ele._id === message.groupId

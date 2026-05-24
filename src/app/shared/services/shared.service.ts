@@ -17,7 +17,9 @@ export enum sideNavState {
 })
 export class SharedService {
   private _baseUrl = baseUrl.apiUrl;
-  private _healthUrl = baseUrl.healthUrls;
+  private _healthUrl = Array.isArray(baseUrl.healthUrls)
+    ? baseUrl.healthUrls
+    : String(baseUrl.healthUrls || '').split(',').filter(Boolean);
   public isMobile = false;
   public isAlreadyGroupJoin: boolean = false;
   public isLoggedOut: boolean = false;

@@ -7,6 +7,7 @@ import { SocketService } from './socket/socket.service';
 import {
   HTTP_INTERCEPTORS,
   provideHttpClient,
+  withFetch,
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import { mainRoutes } from './components/main/main.route';
@@ -17,10 +18,16 @@ const combinedRoutes: Routes = [...routes, ...mainRoutes];
 export const appConfig: ApplicationConfig = {
   providers: [
     { provide: SocketService, useClass: SocketService },
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZoneChangeDetection({
+      eventCoalescing: true,
+      runCoalescing: true,
+    }),
     provideRouter(combinedRoutes),
     provideClientHydration(),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(
+      withFetch(),
+      withInterceptorsFromDi()
+    ),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

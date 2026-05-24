@@ -13,6 +13,9 @@ import { UserSharedService } from '../../shared/services/user-shared.service';
 import { UserDetails } from '../../shared/models/user.model';
 import { LoaderComponent } from '../../shared/components/loader/loader.component';
 import { GoogleAuthService } from '../../services/google-auth.service';
+import { Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { BrowserStorageService } from '../../shared/services/browser-storage.service';
 
 @Component({
   selector: 'app-login',
@@ -40,6 +43,7 @@ export class LoginComponent implements OnInit {
   private _userSharedService = inject(UserSharedService);
   private _googleAuthService = inject(GoogleAuthService);
   private _router = inject(Router);
+  private _browserStorageService = inject(BrowserStorageService);
 
   profileForm = new FormGroup({
     username: new FormControl('', [Validators.required]),
@@ -52,13 +56,15 @@ export class LoginComponent implements OnInit {
     ]),
   });
 
-  constructor() {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     if (!this._sharedService.isLoggedOut) {
       this._checkServerStatus();
     }
   }
 
   async ngOnInit() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     // Load Google SDK
     await this._googleAuthService.loadGoogleScript();
 
@@ -95,12 +101,12 @@ export class LoginComponent implements OnInit {
     this.isGoogleLoginLoader = true;
     this._googleAuthService.googleLogin(token).subscribe({
       next: (response: UserDetails) => {
-        localStorage.setItem('accessToken', response.accessToken);
-        localStorage.setItem(
+        this._browserStorageService.setItem('accessToken', response.accessToken);
+        this._browserStorageService.setItem(
           'isPasswordSet',
           JSON.stringify(response.isPasswordSet)
         );
-        localStorage.setItem('userDetails', JSON.stringify(response));
+        this._browserStorageService.setItem('userDetails', JSON.stringify(response));
         this._userSharedService.userDetails = new UserDetails(
           response.name,
           response.email,
@@ -141,12 +147,12 @@ export class LoginComponent implements OnInit {
         .userLogin({ email: email, password: password })
         .subscribe({
           next: (response: UserDetails) => {
-            localStorage.setItem('accessToken', response.accessToken);
-            localStorage.setItem(
+            this._browserStorageService.setItem('accessToken', response.accessToken);
+            this._browserStorageService.setItem(
               'isPasswordSet',
               JSON.stringify(response.isPasswordSet)
             );
-            localStorage.setItem('userDetails', JSON.stringify(response));
+            this._browserStorageService.setItem('userDetails', JSON.stringify(response));
             this._userSharedService.userDetails = new UserDetails(
               response.name,
               response.email,
